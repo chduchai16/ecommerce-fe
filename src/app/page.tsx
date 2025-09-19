@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation'
 
 export default function HomePage() {
-  // TODO: Check if user is authenticated
+  // TODO: Kiểm tra xem user đã đăng nhập chưa
   // const isAuthenticated = checkAuthStatus()
   // const userRole = getUserRole()
   
-  // For now, redirect unauthenticated users to sign-in
-  // Later you can add logic to check auth status
+  // Hiện tại, chuyển hướng user chưa xác thực đến trang đăng nhập
+  // Sau này có thể thêm logic kiểm tra trạng thái xác thực
   const isAuthenticated = true ;
   
   if (!isAuthenticated) {

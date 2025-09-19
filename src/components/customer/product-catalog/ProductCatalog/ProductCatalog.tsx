@@ -6,6 +6,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import ProductCard from '../ProductCard'
 import ProductFilter from '../ProductFilter'
 import { mockProducts, type Product } from '@/data/mockProducts'
+import { CurrencyHelper, NumberHelper } from '@/library/helpers'
 import styles from './ProductCatalog.module.scss'
 
 const { Title } = Typography
@@ -35,34 +36,34 @@ export default function ProductCatalog() {
     inStock: false
   })
 
-  // Filter and search products
+  // Lọc và tìm kiếm sản phẩm
   const filteredProducts = useMemo(() => {
     return mockProducts.filter(product => {
-      // Search filter
+      // Bộ lọc tìm kiếm
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           product.brand.toLowerCase().includes(searchTerm.toLowerCase())
 
-      // Category filter
+      // Bộ lọc danh mục
       const matchesCategory = filters.category === 'Tất cả' || product.category === filters.category
 
-      // Brand filter
+      // Bộ lọc thương hiệu
       const matchesBrand = filters.brand === 'Tất cả' || product.brand === filters.brand
 
-      // Price filter
+      // Bộ lọc giá
       const matchesPrice = product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
 
-      // Rating filter
+      // Bộ lọc đánh giá
       const matchesRating = product.rating >= filters.minRating
 
-      // Stock filter
+      // Bộ lọc tồn kho
       const matchesStock = !filters.inStock || product.inStock
 
       return matchesSearch && matchesCategory && matchesBrand && matchesPrice && matchesRating && matchesStock
     })
   }, [searchTerm, filters])
 
-  // Sort products
+  // Sắp xếp sản phẩm
   const sortedProducts = useMemo(() => {
     const sorted = [...filteredProducts]
     
@@ -81,7 +82,7 @@ export default function ProductCatalog() {
     }
   }, [filteredProducts, sortBy])
 
-  // Paginate products
+  // Phân trang sản phẩm
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
     const endIndex = startIndex + ITEMS_PER_PAGE
@@ -90,7 +91,7 @@ export default function ProductCatalog() {
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters)
-    setCurrentPage(1) // Reset to first page when filters change
+    setCurrentPage(1) // Reset về trang đầu khi thay đổi bộ lọc
   }
 
   const handleClearFilters = () => {
@@ -121,13 +122,13 @@ export default function ProductCatalog() {
   return (
     <div className={styles.catalogContainer}>
       
-      {/* Header */}
+      {/* Tiêu đề */}
       <div className={styles.catalogHeader}>
         <Title level={2} className={styles.catalogTitle}>
           Sản phẩm
         </Title>
         
-        {/* Search and Sort */}
+        {/* Tìm kiếm và Sắp xếp */}
         <Row gutter={16} className={styles.searchSortRow}>
           <Col flex="auto">
             <Input
@@ -157,7 +158,7 @@ export default function ProductCatalog() {
       </div>
 
       <Row gutter={24} className={styles.mainContent}>
-        {/* Filter Sidebar */}
+        {/* Thanh bộ lọc */}
         <Col xs={24} lg={6} className={styles.filterSidebar}>
           <ProductFilter
             filters={filters}
@@ -166,24 +167,24 @@ export default function ProductCatalog() {
           />
         </Col>
 
-        {/* Product Grid */}
+        {/* Lưới sản phẩm */}
         <Col xs={24} lg={18} className={styles.productSection}>
           
-          {/* Results Info */}
+          {/* Thông tin kết quả */}
           <div className={styles.resultsInfo}>
             <span>
               Hiển thị {paginatedProducts.length} trong {sortedProducts.length} sản phẩm
             </span>
           </div>
 
-          {/* Loading */}
+          {/* Đang tải */}
           {loading && (
             <div className={styles.loadingContainer}>
               <Spin size="large" />
             </div>
           )}
 
-          {/* No results */}
+          {/* Không có kết quả */}
           {!loading && sortedProducts.length === 0 && (
             <Empty
               description="Không tìm thấy sản phẩm nào"
@@ -191,7 +192,7 @@ export default function ProductCatalog() {
             />
           )}
 
-          {/* Products Grid */}
+          {/* Lưới sản phẩm */}
           {!loading && sortedProducts.length > 0 && (
             <div className={styles.productsGrid}>
               <Row gutter={[16, 16]} className={styles.productGridRow}>
@@ -213,7 +214,7 @@ export default function ProductCatalog() {
                 ))}
               </Row>
 
-              {/* Pagination */}
+              {/* Phân trang */}
               {sortedProducts.length > ITEMS_PER_PAGE && (
                 <div className={styles.paginationContainer}>
                   <Pagination

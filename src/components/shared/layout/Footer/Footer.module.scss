@@ -1,0 +1,287 @@
+.footer {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #ffffff;
+  margin-top: auto;
+  padding: 0;
+  
+  .footerContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 20px;
+  }
+
+  // Main Footer Sections
+  .mainFooter {
+    margin-bottom: 30px;
+  }
+
+  .footerSection {
+    .sectionTitle {
+      color: #ffffff !important;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background: linear-gradient(90deg, #1890ff, #52c41a);
+        border-radius: 1px;
+      }
+    }
+
+    .companyDesc {
+      color: #cccccc;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .linkList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: 8px;
+        
+        a {
+          color: #cccccc;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          font-size: 14px;
+          
+          &:hover {
+            color: #1890ff;
+            padding-left: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  // Social Media
+  .socialMedia {
+    .socialTitle {
+      color: #ffffff !important;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .socialLink {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      color: #cccccc;
+      font-size: 18px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #1890ff;
+        color: #ffffff;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  // Newsletter
+  .newsletter {
+    margin-bottom: 20px;
+
+    .emailInput {
+      border-radius: 6px 0 0 6px;
+      border: 1px solid #404040;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      
+      &::placeholder {
+        color: #888888;
+      }
+
+      &:focus {
+        border-color: #1890ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+
+    .subscribeBtn {
+      border-radius: 0 6px 6px 0;
+      background: linear-gradient(90deg, #1890ff, #52c41a);
+      border: none;
+      
+      &:hover {
+        background: linear-gradient(90deg, #40a9ff, #73d13d);
+      }
+    }
+  }
+
+  .newsletterDesc {
+    color: #cccccc;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  // Contact Info
+  .contactInfo {
+    .contactTitle {
+      color: #ffffff !important;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .contactItem {
+      color: #cccccc;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+
+      .contactIcon {
+        margin-right: 8px;
+        color: #1890ff;
+      }
+    }
+  }
+
+  // Payment & Shipping Section
+  .paymentSection {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+
+    .paymentTitle {
+      color: #ffffff !important;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .paymentMethods,
+    .shippingMethods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .paymentItem,
+    .shippingItem {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #cccccc;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(24, 144, 255, 0.2);
+        border-color: #1890ff;
+        color: #ffffff;
+      }
+    }
+  }
+
+  // Footer Divider
+  .footerDivider {
+    border-color: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+  }
+
+  // Bottom Footer
+  .bottomFooter {
+    .copyright {
+      color: #888888;
+      font-size: 14px;
+    }
+
+    .legalLinks {
+      display: flex;
+      gap: 20px;
+      justify-content: flex-end;
+
+      .legalLink {
+        color: #888888;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    .footerContainer {
+      padding: 30px 15px 15px;
+    }
+
+    .mainFooter {
+      .footerSection {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+    }
+
+    .paymentSection {
+      text-align: center;
+      
+      .paymentMethods,
+      .shippingMethods {
+        justify-content: center;
+      }
+    }
+
+    .bottomFooter {
+      text-align: center;
+      
+      .legalLinks {
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+    }
+
+    .newsletter {
+      .emailInput {
+        border-radius: 6px 6px 0 0;
+      }
+
+      .subscribeBtn {
+        border-radius: 0 0 6px 6px;
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .paymentMethods,
+    .shippingMethods {
+      gap: 8px;
+      
+      .paymentItem,
+      .shippingItem {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+    }
+
+    .legalLinks {
+      gap: 15px;
+      
+      .legalLink {
+        font-size: 13px;
+      }
+    }
+  }
+}

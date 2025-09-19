@@ -2,17 +2,17 @@ import type { ThemeConfig } from 'antd';
 
 const theme: ThemeConfig = {
   token: {
-    // Seed Token
+    // Token cơ bản
     colorPrimary: '#1677ff',
     borderRadius: 6,
     
-    // Alias Token
+    // Token bí danh
     colorBgContainer: '#ffffff',
   },
   components: {
     Button: {
       colorPrimary: '#1677ff',
-      algorithm: true, // Enable algorithm
+      algorithm: true, // Kích hoạt thuật toán
     },
     Input: {
       colorPrimary: '#1677ff',

@@ -1,6 +1,4 @@
-// Shared Layout Components
-// export { default as Header } from './Header'
-// export { default as Footer } from './Footer'
-// export { default as Sidebar } from './Sidebar'
+// Shared Layout Components - Các component layout dùng chung
+export { default as Footer } from './Footer'
 
-// TODO: Add shared layout components here
+// TODO: Thêm Sidebar và các shared layout components khác

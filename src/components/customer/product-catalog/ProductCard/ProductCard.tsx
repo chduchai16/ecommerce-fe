@@ -4,6 +4,7 @@ import { Card, Typography, Rate, Tag, Button, Image, Space } from 'antd'
 import { ShoppingCartOutlined, HeartOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import type { Product } from '@/data/mockProducts'
+import { CurrencyHelper, NumberHelper } from '@/library/helpers'
 import styles from './ProductCard.module.scss'
 
 const { Text, Title } = Typography
@@ -20,13 +21,6 @@ export default function ProductCard({
   onAddToCart, 
   onAddToWishlist 
 }: ProductCardProps) {
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price)
-  }
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -62,7 +56,7 @@ export default function ProductCard({
                 color="red" 
                 className={styles.discountTag}
               >
-                -{product.discount}%
+                {CurrencyHelper.formatDiscountPercent(product.discount)}
               </Tag>
             )}
             {!product.inStock && (
@@ -106,19 +100,19 @@ export default function ProductCard({
           }
           description={
             <div className={styles.productMeta}>
-              {/* Price */}
+              {/* Giá */}
               <div className={styles.priceSection}>
                 <Text className={styles.currentPrice}>
-                  {formatPrice(product.price)}
+                  {CurrencyHelper.formatVND(product.price)}
                 </Text>
                 {product.originalPrice && (
                   <Text className={styles.originalPrice}>
-                    {formatPrice(product.originalPrice)}
+                    {CurrencyHelper.formatVND(product.originalPrice)}
                   </Text>
                 )}
               </div>
 
-              {/* Rating */}
+              {/* Đánh giá */}
               <div className={styles.ratingSection}>
                 <Rate 
                   disabled 
@@ -130,14 +124,14 @@ export default function ProductCard({
                 </Text>
               </div>
 
-              {/* Brand & Seller */}
+              {/* Thương hiệu & Người bán */}
               <div>
                 <Text className={styles.brandSeller}>
                   {product.brand} • {product.seller.name}
                 </Text>
               </div>
 
-              {/* Tags */}
+              {/* Thẻ tag */}
               {product.tags.length > 0 && (
                 <div className={styles.tagsSection}>
                   {product.tags.map(tag => (

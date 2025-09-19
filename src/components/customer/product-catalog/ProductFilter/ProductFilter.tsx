@@ -3,6 +3,7 @@
 import { Card, Select, Slider, Rate, Typography, Space, Button, Divider } from 'antd'
 import { ClearOutlined } from '@ant-design/icons'
 import { categories, brands } from '@/data/mockProducts'
+import { CurrencyHelper } from '@/library/helpers'
 import styles from './ProductFilter.module.scss'
 
 const { Title, Text } = Typography
@@ -35,15 +36,6 @@ export default function ProductFilter({
     })
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-      notation: 'compact',
-      maximumFractionDigits: 0
-    }).format(price)
-  }
-
   return (
     <Card 
       title={
@@ -65,7 +57,7 @@ export default function ProductFilter({
     >
       <Space direction="vertical" className={styles.filterContent}>
         
-        {/* Category Filter */}
+        {/* Bộ lọc danh mục */}
         <div className={styles.filterSection}>
           <Text className={styles.filterLabel}>
             Danh mục
@@ -86,7 +78,7 @@ export default function ProductFilter({
 
         <Divider className={styles.divider} />
 
-        {/* Brand Filter */}
+        {/* Bộ lọc thương hiệu */}
         <div className={styles.filterSection}>
           <Text className={styles.filterLabel}>
             Thương hiệu
@@ -107,7 +99,7 @@ export default function ProductFilter({
 
         <Divider className={styles.divider} />
 
-        {/* Price Range Filter */}
+        {/* Bộ lọc khoảng giá */}
         <div className={styles.filterSection}>
           <Text className={styles.filterLabel}>
             Khoảng giá
@@ -120,22 +112,22 @@ export default function ProductFilter({
             value={filters.priceRange}
             onChange={(value) => updateFilter('priceRange', value)}
             tooltip={{
-              formatter: (value) => value ? formatPrice(value) : ''
+              formatter: (value) => value ? CurrencyHelper.formatCompactVND(value) : ''
             }}
           />
           <div className={styles.priceRangeLabels}>
             <Text className={styles.priceLabel}>
-              {formatPrice(filters.priceRange[0])}
+              {CurrencyHelper.formatCompactVND(filters.priceRange[0])}
             </Text>
             <Text className={styles.priceLabel}>
-              {formatPrice(filters.priceRange[1])}
+              {CurrencyHelper.formatCompactVND(filters.priceRange[1])}
             </Text>
           </div>
         </div>
 
         <Divider className={styles.divider} />
 
-        {/* Rating Filter */}
+        {/* Bộ lọc đánh giá */}
         <div className={styles.filterSection}>
           <Text className={styles.filterLabel}>
             Đánh giá tối thiểu
@@ -164,7 +156,7 @@ export default function ProductFilter({
 
         <Divider className={styles.divider} />
 
-        {/* In Stock Filter */}
+        {/* Bộ lọc tình trạng kho */}
         <div className={styles.filterSection}>
           <Text className={styles.filterLabel}>
             Tình trạng
