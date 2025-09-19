@@ -3,12 +3,6 @@
   top: 20px;
 }
 
-.filterHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .filterTitle {
   margin: 0;
 }
@@ -84,4 +78,31 @@
 
 .divider {
   margin: 0;
+}
+
+.applySection {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.applyBtn {
+  font-weight: 600;
+  height: 40px;
+  border-radius: 6px;
+}
+
+.clearBtn {
+  font-weight: 500;
+  height: 36px;
+  border-radius: 6px;
+  color: #666;
+  
+  &:hover {
+    color: #ff4d4f;
+    background-color: #fff2f0;
+  }
 }

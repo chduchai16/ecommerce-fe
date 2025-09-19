@@ -1,0 +1,168 @@
+@import '@/styles/theme.scss';
+
+.userProfile {
+  min-height: 100vh;
+  background: $bg-primary;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+}
+
+.pageTitle {
+  margin: 0;
+  
+  @media (max-width: 768px) {
+    text-align: center;
+  }
+}
+
+.profileCard {
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.avatarSection {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.avatar {
+  margin-bottom: 16px;
+}
+
+.avatarUpload {
+  .ant-upload-select {
+    width: 120px !important;
+    height: 120px !important;
+    border-radius: 50% !important;
+  }
+}
+
+.userInfo {
+  .userName {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+  }
+  
+  .userEmail {
+    color: $text-secondary;
+    font-size: 14px;
+  }
+}
+
+.statsSection {
+  .statItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid $border-light;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .statLabel {
+    color: $text-secondary;
+    font-size: 14px;
+  }
+  
+  .statValue {
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.detailsCard {
+  .editForm {
+    .formActions {
+      margin-top: 32px;
+      text-align: right;
+      border-top: 1px solid $border-light;
+      padding-top: 16px;
+    }
+  }
+}
+
+.profileDetails {
+  .infoItem {
+    margin-bottom: 16px;
+  }
+  
+  .infoLabel {
+    display: block;
+    font-weight: 500;
+    color: $text-secondary;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  
+  .infoValue {
+    display: block;
+    color: $text-primary;
+    font-size: 16px;
+  }
+  
+  .addressInfo {
+    margin-bottom: 16px;
+    
+    .ant-typography {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  }
+  
+  .preferencesInfo {
+    .preferenceItem {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      
+      span {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .profileCard {
+    position: static;
+    margin-bottom: 24px;
+  }
+  
+  .statsSection {
+    .statItem {
+      font-size: 14px;
+    }
+  }
+  
+  .editForm {
+    .formActions {
+      text-align: center;
+    }
+  }
+}

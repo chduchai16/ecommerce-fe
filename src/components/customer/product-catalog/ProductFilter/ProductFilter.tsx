@@ -1,7 +1,8 @@
 'use client'
 
 import { Card, Select, Slider, Rate, Typography, Space, Button, Divider } from 'antd'
-import { ClearOutlined } from '@ant-design/icons'
+import { ClearOutlined, FilterOutlined } from '@ant-design/icons'
+import { useState, useEffect } from 'react'
 import { categories, brands } from '@/data/mockProducts'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ProductFilter.module.scss'
@@ -29,29 +30,43 @@ export default function ProductFilter({
   onClearFilters 
 }: ProductFilterProps) {
 
-  const updateFilter = (key: keyof FilterState, value: any) => {
-    onFilterChange({
-      ...filters,
+  // State tạm thời cho bộ lọc
+  const [tempFilters, setTempFilters] = useState<FilterState>(filters)
+
+  // Cập nhật tempFilters khi filters từ parent thay đổi
+  useEffect(() => {
+    setTempFilters(filters)
+  }, [filters])
+
+  const updateTempFilter = (key: keyof FilterState, value: any) => {
+    setTempFilters({
+      ...tempFilters,
       [key]: value
     })
+  }
+
+  const handleApplyFilters = () => {
+    onFilterChange(tempFilters)
+  }
+
+  const handleClearFilters = () => {
+    const defaultFilters: FilterState = {
+      category: 'Tất cả',
+      brand: 'Tất cả',
+      priceRange: [0, 50000000],
+      minRating: 0,
+      inStock: false
+    }
+    setTempFilters(defaultFilters)
+    onClearFilters()
   }
 
   return (
     <Card 
       title={
-        <div className={styles.filterHeader}>
-          <Title level={5} className={styles.filterTitle}>
-            Bộ lọc sản phẩm
-          </Title>
-          <Button 
-            type="text" 
-            icon={<ClearOutlined />} 
-            size="small"
-            onClick={onClearFilters}
-          >
-            Xóa bộ lọc
-          </Button>
-        </div>
+        <Title level={5} className={styles.filterTitle}>
+          Bộ lọc sản phẩm
+        </Title>
       }
       className={styles.filterCard}
     >
@@ -64,8 +79,8 @@ export default function ProductFilter({
           </Text>
           <Select
             className={styles.filterSelect}
-            value={filters.category}
-            onChange={(value) => updateFilter('category', value)}
+            value={tempFilters.category}
+            onChange={(value) => updateTempFilter('category', value)}
             placeholder="Chọn danh mục"
           >
             {categories.map(category => (
@@ -85,8 +100,8 @@ export default function ProductFilter({
           </Text>
           <Select
             className={styles.filterSelect}
-            value={filters.brand}
-            onChange={(value) => updateFilter('brand', value)}
+            value={tempFilters.brand}
+            onChange={(value) => updateTempFilter('brand', value)}
             placeholder="Chọn thương hiệu"
           >
             {brands.map(brand => (
@@ -109,18 +124,18 @@ export default function ProductFilter({
             min={0}
             max={50000000}
             step={1000000}
-            value={filters.priceRange}
-            onChange={(value) => updateFilter('priceRange', value)}
+            value={tempFilters.priceRange}
+            onChange={(value) => updateTempFilter('priceRange', value)}
             tooltip={{
               formatter: (value) => value ? CurrencyHelper.formatCompactVND(value) : ''
             }}
           />
           <div className={styles.priceRangeLabels}>
             <Text className={styles.priceLabel}>
-              {CurrencyHelper.formatCompactVND(filters.priceRange[0])}
+              {CurrencyHelper.formatCompactVND(tempFilters.priceRange[0])}
             </Text>
             <Text className={styles.priceLabel}>
-              {CurrencyHelper.formatCompactVND(filters.priceRange[1])}
+              {CurrencyHelper.formatCompactVND(tempFilters.priceRange[1])}
             </Text>
           </div>
         </div>
@@ -137,9 +152,9 @@ export default function ProductFilter({
               <div 
                 key={rating}
                 className={`${styles.ratingOption} ${
-                  filters.minRating === rating ? styles.selected : ''
+                  tempFilters.minRating === rating ? styles.selected : ''
                 }`}
-                onClick={() => updateFilter('minRating', rating)}
+                onClick={() => updateTempFilter('minRating', rating)}
               >
                 <Rate 
                   disabled 
@@ -163,12 +178,35 @@ export default function ProductFilter({
           </Text>
           <Select
             className={styles.filterSelect}
-            value={filters.inStock ? 'available' : 'all'}
-            onChange={(value) => updateFilter('inStock', value === 'available')}
+            value={tempFilters.inStock ? 'available' : 'all'}
+            onChange={(value) => updateTempFilter('inStock', value === 'available')}
           >
             <Option value="all">Tất cả</Option>
             <Option value="available">Còn hàng</Option>
           </Select>
+        </div>
+
+        {/* Nút áp dụng và xóa bộ lọc */}
+        <div className={styles.applySection}>
+          <Button 
+            type="primary" 
+            icon={<FilterOutlined />}
+            onClick={handleApplyFilters}
+            className={styles.applyBtn}
+            block
+          >
+            Áp dụng bộ lọc
+          </Button>
+          
+          <Button 
+            type="text" 
+            icon={<ClearOutlined />}
+            onClick={handleClearFilters}
+            className={styles.clearBtn}
+            block
+          >
+            Xóa bộ lọc
+          </Button>
         </div>
 
       </Space>

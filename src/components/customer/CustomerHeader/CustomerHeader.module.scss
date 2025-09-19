@@ -1,5 +1,7 @@
+@import '@/styles/theme.scss';
+
 .customerHeader {
-  background: #ffffff;
+  background: $bg-primary;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -8,68 +10,31 @@
   .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
-  }
-
-  // Top Bar
-  .topBar {
-    background: #f5f5f5;
-    border-bottom: 1px solid #e8e8e8;
-    padding: 8px 0;
-    font-size: 13px;
-
-    .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .topLeft {
-      display: flex;
-      gap: 20px;
-      
-      span {
-        color: #666;
-      }
-    }
-
-    .topRight {
-      display: flex;
-      gap: 15px;
-      
-      a {
-        color: #666;
-        text-decoration: none;
-        
-        &:hover {
-          color: #1890ff;
-        }
-      }
-    }
+    padding: 0 24px;
   }
 
   // Main Header
   .mainHeader {
-    padding: 15px 0;
+    padding: 16px 0;
     
     .container {
       display: flex;
       align-items: center;
-      gap: 30px;
+      gap: 32px;
     }
 
     .logo {
       font-size: 24px;
       font-weight: bold;
       text-decoration: none;
-      color: #1890ff;
+      color: $primary-color;
       display: flex;
       align-items: center;
       gap: 8px;
       min-width: 150px;
 
       span {
-        color: #333;
+        color: $text-primary;
       }
     }
 
@@ -79,22 +44,31 @@
 
       .searchGroup {
         width: 100%;
+        display: flex;
         
         .searchInput {
-          border-radius: 20px 0 0 20px;
-          border-right: none;
+          flex: 1;
+          border-radius: 20px 0 0 20px !important;
+          border-right: none !important;
+          height: 40px;
           
-          .ant-input {
-            border: none;
-            padding: 10px 15px;
+          &:focus,
+          &:focus-within {
+            border-color: $primary-color !important;
+            box-shadow: none !important;
           }
         }
 
         .searchBtn {
-          border-radius: 0 20px 20px 0;
-          border-left: none;
-          background: #1890ff;
+          border-radius: 0 20px 20px 0 !important;
+          border-left: none !important;
+          background: $primary-color;
           height: 40px;
+          min-width: 80px;
+          
+          &:hover {
+            background: $primary-hover !important;
+          }
         }
       }
     }
@@ -105,11 +79,12 @@
         display: flex;
         align-items: center;
         gap: 5px;
-        color: #666;
+        color: $text-secondary;
+        transition: all 0.3s ease;
         
         &:hover {
-          color: #1890ff;
-          background: rgba(24, 144, 255, 0.1);
+          color: $primary-color;
+          background: rgba($primary-color, 0.1);
         }
       }
     }

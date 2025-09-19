@@ -1,0 +1,23 @@
+@import '@/styles/theme.scss';
+
+.customer-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: $bg-secondary;
+}
+
+.main-content {
+  flex: 1;
+  min-height: calc(100vh - 200px);
+  padding: 24px 0; // Chỉ padding top/bottom, không padding trái/phải
+  background: $bg-primary;
+  
+  // Không cần container wrapper nữa vì mỗi component tự quản lý
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px;
+  }
+}

@@ -32,47 +32,31 @@ export default function CustomerHeader() {
 
   return (
     <header className={styles.customerHeader}>
-      
-      {/* Top Bar */}
-      <div className={styles.topBar}>
-        <div className={styles.container}>
-          <div className={styles.topLeft}>
-            <span>📞 Hotline: 1900-xxxx</span>
-            <span>🚚 Miễn phí vận chuyển đơn từ 500k</span>
-          </div>
-          <div className={styles.topRight}>
-            <Link href="/customer/help">Hỗ trợ</Link>
-            <Link href="/seller/register">Bán hàng cùng chúng tôi</Link>
-          </div>
-        </div>
-      </div>
-
+  
       {/* Main Header */}
       <div className={styles.mainHeader}>
         <div className={styles.container}>
           
           {/* Logo */}
           <Link href="/customer/products" className={styles.logo}>
-            🛒 <span>EcomStore</span>
+            🛒 <span>Exona</span>
           </Link>
 
           {/* Search Bar */}
           <div className={styles.searchSection}>
-            <Input.Group compact className={styles.searchGroup}>
+            <Space.Compact className={styles.searchGroup}>
               <Input
                 placeholder="Tìm kiếm sản phẩm..."
                 className={styles.searchInput}
-                suffix={
-                  <Button 
-                    type="primary" 
-                    icon={<SearchOutlined />}
-                    className={styles.searchBtn}
-                  >
-                    Tìm
-                  </Button>
-                }
               />
-            </Input.Group>
+              <Button 
+                type="primary" 
+                icon={<SearchOutlined />}
+                className={styles.searchBtn}
+              >
+                Tìm
+              </Button>
+            </Space.Compact>
           </div>
 
           {/* Actions */}

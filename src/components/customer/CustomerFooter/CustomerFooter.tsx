@@ -29,7 +29,7 @@ export default function CustomerFooter() {
           <Col xs={24} sm={12} md={6}>
             <div className={styles.footerSection}>
               <Title level={4} className={styles.sectionTitle}>
-                🛒 EcomStore
+                🛒 Exona
               </Title>
               <Paragraph className={styles.companyDesc}>
                 Nền tảng thương mại điện tử hàng đầu Việt Nam, 
@@ -80,7 +80,7 @@ export default function CustomerFooter() {
           <Col xs={24} sm={12} md={6}>
             <div className={styles.footerSection}>
               <Title level={4} className={styles.sectionTitle}>
-                Về EcomStore
+                Về Exona
               </Title>
               <ul className={styles.linkList}>
                 <li><Link href="/about">Giới thiệu về chúng tôi</Link></li>
@@ -131,7 +131,7 @@ export default function CustomerFooter() {
                   </Text>
                   <Text className={styles.contactItem}>
                     <MailOutlined className={styles.contactIcon} />
-                    support@ecomstore.vn
+                    support@exona.vn
                   </Text>
                   <Text className={styles.contactItem}>
                     <EnvironmentOutlined className={styles.contactIcon} />
@@ -184,7 +184,7 @@ export default function CustomerFooter() {
           <Row justify="space-between" align="middle">
             <Col xs={24} md={12}>
               <Text className={styles.copyright}>
-                © 2025 EcomStore. Tất cả các quyền được bảo lưu.
+                © 2025 Exona. Tất cả các quyền được bảo lưu.
               </Text>
             </Col>
             <Col xs={24} md={12}>

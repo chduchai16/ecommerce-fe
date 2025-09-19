@@ -102,14 +102,14 @@ export default function ProductCard({
             <div className={styles.productMeta}>
               {/* Giá */}
               <div className={styles.priceSection}>
-                <Text className={styles.currentPrice}>
-                  {CurrencyHelper.formatVND(product.price)}
-                </Text>
                 {product.originalPrice && (
                   <Text className={styles.originalPrice}>
                     {CurrencyHelper.formatVND(product.originalPrice)}
                   </Text>
                 )}
+                <Text className={styles.currentPrice}>
+                  {CurrencyHelper.formatVND(product.price)}
+                </Text>
               </div>
 
               {/* Đánh giá */}

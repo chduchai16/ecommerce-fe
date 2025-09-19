@@ -1,5 +1,6 @@
 import CustomerHeader from '@/components/customer/CustomerHeader'
 import CustomerFooter from '@/components/customer/CustomerFooter'
+import styles from './layout.module.scss'
 
 export default function CustomerLayout({
   children,
@@ -7,9 +8,11 @@ export default function CustomerLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="customer-layout">
+    <div className={styles.customerLayout}>
       <CustomerHeader />
-      <main>{children}</main>
+      <main className={styles.mainContent}>
+        {children}
+      </main>
       <CustomerFooter />
     </div>
   )
