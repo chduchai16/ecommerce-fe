@@ -106,7 +106,7 @@ export const mockOrders: Order[] = [
         id: 'item1',
         productId: '1',
         productName: 'iPhone 15 Pro Max 256GB',
-        productImage: 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-pro-max-naturaltitanium-pdp-image-position-1a_AV1?wid=750&hei=750&fmt=jpeg&qlt=95&.v=1693079054112',
+        productImage: 'https://clickbuy.com.vn/uploads/product-variant/iphone-15-pro-max-cu-natural-197422-4091.jpg',
         price: 29990000,
         quantity: 1
       }
@@ -139,7 +139,7 @@ export const mockOrders: Order[] = [
         id: 'item2',
         productId: '3',
         productName: 'MacBook Air M3 13 inch',
-        productImage: 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/macbook-air-13-m3-space-gray-select-202402?wid=752&hei=752&fmt=jpeg&qlt=90&.v=1708369924779',
+        productImage: 'https://clickbuy.com.vn/uploads/product-variant/iphone-15-pro-max-cu-natural-197422-4091.jpg',
         price: 27990000,
         quantity: 1
       },
@@ -147,7 +147,7 @@ export const mockOrders: Order[] = [
         id: 'item3',
         productId: '7',
         productName: 'AirPods Pro 2nd Gen',
-        productImage: 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MQD83?wid=750&hei=750&fmt=jpeg&qlt=95&.v=1660803972361',
+        productImage: 'https://clickbuy.com.vn/uploads/product-variant/iphone-15-pro-max-cu-natural-197422-4091.jpg',
         price: 5990000,
         quantity: 1
       }
@@ -179,7 +179,7 @@ export const mockOrders: Order[] = [
         id: 'item4',
         productId: '5',
         productName: 'Sony WH-1000XM5',
-        productImage: 'https://www.sony.com.vn/image/5d02da5df552836db894cde391181a8b?fmt=pjpg&wid=330&bgcolor=FFFFFF&bgc=FFFFFF',
+        productImage: 'https://clickbuy.com.vn/uploads/product-variant/iphone-15-pro-max-cu-natural-197422-4091.jpg',
         price: 7990000,
         quantity: 2
       }

@@ -44,8 +44,20 @@
   font-size: 16px;
 }
 
+.contentWrapper {
+  max-width: 1152px; /* 1200px - 48px để match với container padding */
+  margin: 0 auto;
+}
+
 .searchCard {
   margin-bottom: 24px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  
+  .ant-card-body {
+    padding: 0;
+  }
 }
 
 .searchInput {
@@ -97,11 +109,15 @@
   position: relative;
   height: 200px;
   overflow: hidden;
+  background: $bg-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 0.3s ease;
   }
   

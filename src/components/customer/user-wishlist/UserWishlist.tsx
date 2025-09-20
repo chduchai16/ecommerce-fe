@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card, Row, Col, Typography, Button, List, Avatar, Tag, Modal, Input, Rate } from 'antd';
 import { HeartOutlined, HeartFilled, DeleteOutlined, ShoppingCartOutlined, EyeOutlined } from '@ant-design/icons';
-import { products } from '@/data/mockProducts';
+import { mockProducts } from '@/data/mockProducts';
 import { wishlistItems } from '@/data/mockUserData';
 import styles from './UserWishlist.module.scss';
 
@@ -18,7 +18,7 @@ export default function UserWishlist() {
 
   // Lọc sản phẩm yêu thích theo tìm kiếm
   const filteredWishlist = wishlist.filter(item => {
-    const product = products.find(p => p.id === item.productId);
+    const product = mockProducts.find(p => p.id === item.productId);
     return product && product.name.toLowerCase().includes(searchText.toLowerCase());
   });
 
@@ -35,7 +35,7 @@ export default function UserWishlist() {
 
   // Xem chi tiết sản phẩm
   const handleViewDetail = (productId: string) => {
-    const product = products.find(p => p.id === productId);
+    const product = mockProducts.find(p => p.id === productId);
     if (product) {
       setSelectedProduct(product);
       setDetailModalVisible(true);
@@ -62,17 +62,18 @@ export default function UserWishlist() {
           </Text>
         </div>
 
-        <Card className={styles.searchCard}>
-          <Search
-            placeholder="Tìm kiếm sản phẩm yêu thích..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className={styles.searchInput}
-            size="large"
-          />
-        </Card>
+        <div className={styles.contentWrapper}>
+          <Card className={styles.searchCard}>
+            <Search
+              placeholder="Tìm kiếm sản phẩm yêu thích..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className={styles.searchInput}
+              size="large"
+            />
+          </Card>
 
-        {filteredWishlist.length === 0 ? (
+          {filteredWishlist.length === 0 ? (
           <Card className={styles.emptyCard}>
             <div className={styles.emptyState}>
               <HeartOutlined className={styles.emptyIcon} />
@@ -88,7 +89,7 @@ export default function UserWishlist() {
         ) : (
           <Row gutter={[16, 16]} className={styles.productGrid}>
             {filteredWishlist.map(item => {
-              const product = products.find(p => p.id === item.productId);
+              const product = mockProducts.find(p => p.id === item.productId);
               if (!product) return null;
 
               return (
@@ -99,7 +100,7 @@ export default function UserWishlist() {
                     cover={
                       <div className={styles.productImage}>
                         <img
-                          src={product.images[0]}
+                          src={product.images?.[0] || product.imageUrl}
                           alt={product.name}
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = '/placeholder-product.jpg';
@@ -131,7 +132,7 @@ export default function UserWishlist() {
                       <div className={styles.productRating}>
                         <Rate disabled defaultValue={product.rating} className={styles.rating} />
                         <Text type="secondary" className={styles.reviewCount}>
-                          ({product.reviews} đánh giá)
+                          ({product.reviewCount} đánh giá)
                         </Text>
                       </div>
 
@@ -191,7 +192,7 @@ export default function UserWishlist() {
               <Row gutter={24}>
                 <Col span={12}>
                   <img
-                    src={selectedProduct.images[0]}
+                    src={selectedProduct.images?.[0] || selectedProduct.imageUrl}
                     alt={selectedProduct.name}
                     className={styles.modalImage}
                     onError={(e) => {
@@ -256,6 +257,7 @@ export default function UserWishlist() {
             </div>
           )}
         </Modal>
+        </div>
       </div>
     </div>
   );

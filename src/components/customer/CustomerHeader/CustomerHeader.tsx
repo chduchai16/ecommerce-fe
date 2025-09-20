@@ -13,22 +13,28 @@ import Link from 'next/link'
 import styles from './CustomerHeader.module.scss'
 
 export default function CustomerHeader() {
-  // User menu dropdown
-  const userMenu = (
-    <Menu>
-      <Menu.Item key="profile">
-        <Link href="/customer/profile">Thông tin cá nhân</Link>
-      </Menu.Item>
-      <Menu.Item key="orders">
-        <Link href="/customer/orders">Đơn hàng của tôi</Link>
-      </Menu.Item>
-      <Menu.Item key="wishlist">
-        <Link href="/customer/wishlist">Sản phẩm yêu thích</Link>
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="logout">Đăng xuất</Menu.Item>
-    </Menu>
-  )
+  // User menu dropdown items
+  const userMenuItems = [
+    {
+      key: 'profile',
+      label: <Link href="/customer/profile">Thông tin cá nhân</Link>
+    },
+    {
+      key: 'orders', 
+      label: <Link href="/customer/orders">Đơn hàng của tôi</Link>
+    },
+    {
+      key: 'wishlist',
+      label: <Link href="/customer/wishlist">Sản phẩm yêu thích</Link>
+    },
+    {
+      type: 'divider'
+    },
+    {
+      key: 'logout',
+      label: 'Đăng xuất'
+    }
+  ]
 
   return (
     <header className={styles.customerHeader}>
@@ -95,7 +101,7 @@ export default function CustomerHeader() {
               </Badge>
 
               {/* User Menu */}
-              <Dropdown overlay={userMenu} placement="bottomRight">
+              <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
                 <Button 
                   type="text" 
                   icon={<UserOutlined />}

@@ -104,7 +104,7 @@ export default function CustomerFooter() {
               </Paragraph>
               
               <div className={styles.newsletter}>
-                <Input.Group compact>
+                <Space.Compact>
                   <Input 
                     placeholder="Nhập email của bạn"
                     className={styles.emailInput}
@@ -116,7 +116,7 @@ export default function CustomerFooter() {
                   >
                     Đăng ký
                   </Button>
-                </Input.Group>
+                </Space.Compact>
               </div>
 
               {/* Contact Info */}
