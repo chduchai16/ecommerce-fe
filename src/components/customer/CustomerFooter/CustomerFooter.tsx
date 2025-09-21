@@ -1,10 +1,10 @@
 'use client'
-
+import styles from './CustomerFooter.module.scss';
 import { Layout, Row, Col, Space, Typography, Input, Button, Divider } from 'antd'
-import { 
-  FacebookOutlined, 
-  TwitterOutlined, 
-  InstagramOutlined, 
+import {
+  FacebookOutlined,
+  TwitterOutlined,
+  InstagramOutlined,
   YoutubeOutlined,
   PhoneOutlined,
   MailOutlined,
@@ -12,7 +12,6 @@ import {
   SendOutlined
 } from '@ant-design/icons'
 import Link from 'next/link'
-import styles from './CustomerFooter.module.scss'
 
 const { Footer: AntFooter } = Layout
 const { Title, Text, Paragraph } = Typography
@@ -21,10 +20,10 @@ export default function CustomerFooter() {
   return (
     <AntFooter className={styles.footer}>
       <div className={styles.footerContainer}>
-        
+
         {/* Main Footer Content */}
         <Row gutter={[32, 32]} className={styles.mainFooter}>
-          
+
           {/* Company Info */}
           <Col xs={24} sm={12} md={6}>
             <div className={styles.footerSection}>
@@ -32,10 +31,10 @@ export default function CustomerFooter() {
                 🛒 Exona
               </Title>
               <Paragraph className={styles.companyDesc}>
-                Nền tảng thương mại điện tử hàng đầu Việt Nam, 
+                Nền tảng thương mại điện tử hàng đầu Việt Nam,
                 mang đến trải nghiệm mua sắm tuyệt vời với hàng triệu sản phẩm chất lượng.
               </Paragraph>
-              
+
               {/* Social Media */}
               <div className={styles.socialMedia}>
                 <Title level={5} className={styles.socialTitle}>
@@ -102,15 +101,15 @@ export default function CustomerFooter() {
               <Paragraph className={styles.newsletterDesc}>
                 Nhận thông tin khuyến mãi và sản phẩm mới nhất
               </Paragraph>
-              
+
               <div className={styles.newsletter}>
                 <Space.Compact>
-                  <Input 
+                  <Input
                     placeholder="Nhập email của bạn"
                     className={styles.emailInput}
                   />
-                  <Button 
-                    type="primary" 
+                  <Button
+                    type="primary"
                     icon={<SendOutlined />}
                     className={styles.subscribeBtn}
                   >

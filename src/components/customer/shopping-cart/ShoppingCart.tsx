@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Row, Col, Typography, Button, Table, InputNumber, Image, Space, Card, Divider, Empty, message } from 'antd'
+import { Row, Col, Typography, Button, Table, InputNumber, Image, Card, Divider, Empty, App } from 'antd'
 import { DeleteOutlined, ShoppingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import type { CartItem } from '@/data/mockProducts'
@@ -21,7 +21,7 @@ const mockCartItems: CartItem[] = [
     addedAt: new Date()
   },
   {
-    id: '2', 
+    id: '2',
     productId: '3',
     product: mockProducts[2],
     quantity: 1,
@@ -30,15 +30,17 @@ const mockCartItems: CartItem[] = [
 ]
 
 export default function ShoppingCart() {
+  const { message } = App.useApp();
+
   const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems)
   const [loading, setLoading] = useState(false)
 
   const updateQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return
-    
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === itemId 
+
+    setCartItems(prev =>
+      prev.map(item =>
+        item.id === itemId
           ? { ...item, quantity: newQuantity }
           : item
       )
@@ -151,7 +153,7 @@ export default function ShoppingCart() {
           <Title level={2} className={styles.pageTitle}>
             Giỏ hàng của bạn
           </Title>
-          
+
           <div className={styles.emptyCart}>
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -178,7 +180,7 @@ export default function ShoppingCart() {
   return (
     <div className={styles.shoppingCart}>
       <div className={styles.container}>
-        
+
         {/* Header */}
         <div className={styles.header}>
           <Link href="/customer/products">
@@ -195,7 +197,7 @@ export default function ShoppingCart() {
         </div>
 
         <Row gutter={[24, 24]}>
-          
+
           {/* Cart Items */}
           <Col xs={24} lg={16}>
             <Card className={styles.cartTable}>
@@ -215,20 +217,20 @@ export default function ShoppingCart() {
               <Title level={4} className={styles.summaryTitle}>
                 Tóm tắt đơn hàng
               </Title>
-              
+
               <div className={styles.summaryContent}>
                 <div className={styles.summaryRow}>
                   <Text>Tạm tính:</Text>
                   <Text strong>{CurrencyHelper.formatVND(calculateTotal())}</Text>
                 </div>
-                
+
                 <div className={styles.summaryRow}>
                   <Text>Phí vận chuyển:</Text>
                   <Text>Miễn phí</Text>
                 </div>
-                
+
                 <Divider className={styles.divider} />
-                
+
                 <div className={styles.summaryRow}>
                   <Text strong>Tổng cộng:</Text>
                   <Text strong className={styles.totalAmount}>
@@ -236,7 +238,7 @@ export default function ShoppingCart() {
                   </Text>
                 </div>
               </div>
-              
+
               <Button
                 type="primary"
                 size="large"
@@ -247,7 +249,7 @@ export default function ShoppingCart() {
               >
                 Tiến hành thanh toán
               </Button>
-              
+
               <div className={styles.securityNote}>
                 <Text type="secondary" className={styles.noteText}>
                   🔒 Thanh toán an toàn và bảo mật

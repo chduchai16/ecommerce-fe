@@ -1,1 +1,1 @@
-export { default } from './CustomerHeader'
+export { default } from './CustomerHeader';

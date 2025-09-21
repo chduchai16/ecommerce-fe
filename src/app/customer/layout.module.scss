@@ -13,7 +13,6 @@
   padding: 24px 0; // Chỉ padding top/bottom, không padding trái/phải
   background: $bg-primary;
   
-  // Không cần container wrapper nữa vì mỗi component tự quản lý
 }
 
 @media (max-width: 768px) {

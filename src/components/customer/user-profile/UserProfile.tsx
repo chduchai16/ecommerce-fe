@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Row, Col, Card, Form, Input, Button, Upload, Avatar, Select, DatePicker, Switch, Typography, Divider, message, Space } from 'antd'
+import { Row, Col, Card, Form, Input, Button, Upload, Avatar, Select, DatePicker, Switch, Typography, Divider, Space, App } from 'antd'
 import { UserOutlined, EditOutlined, SaveOutlined, CameraOutlined } from '@ant-design/icons'
 import type { UploadFile } from 'antd/es/upload/interface'
 import dayjs from 'dayjs'
@@ -13,6 +13,8 @@ const { Title, Text } = Typography
 const { Option } = Select
 
 export default function UserProfile() {
+  const { message } = App.useApp();
+
   const [form] = Form.useForm()
   const [profile, setProfile] = useState<UserProfile>(mockUserProfile)
   const [editing, setEditing] = useState(false)
@@ -34,21 +36,21 @@ export default function UserProfile() {
 
   const handleSave = async (values: any) => {
     setLoading(true)
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       const updatedProfile: UserProfile = {
         ...profile,
         ...values,
         dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : undefined
       }
-      
+
       setProfile(updatedProfile)
       setEditing(false)
       message.success('Cập nhật thông tin thành công!')
-      
+
     } catch (error) {
       message.error('Có lỗi xảy ra, vui lòng thử lại!')
     } finally {
@@ -66,15 +68,15 @@ export default function UserProfile() {
   return (
     <div className={styles.userProfile}>
       <div className={styles.container}>
-        
+
         {/* Header */}
         <div className={styles.header}>
           <Title level={2} className={styles.pageTitle}>
             Thông tin cá nhân
           </Title>
           {!editing && (
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<EditOutlined />}
               onClick={handleEdit}
             >
@@ -84,11 +86,11 @@ export default function UserProfile() {
         </div>
 
         <Row gutter={[24, 24]}>
-          
+
           {/* Profile Summary */}
           <Col xs={24} lg={8}>
             <Card className={styles.profileCard}>
-              
+
               {/* Avatar Section */}
               <div className={styles.avatarSection}>
                 {editing ? (
@@ -106,14 +108,14 @@ export default function UserProfile() {
                     </div>
                   </Upload>
                 ) : (
-                  <Avatar 
-                    size={120} 
+                  <Avatar
+                    size={120}
                     src={profile.avatar}
                     icon={<UserOutlined />}
                     className={styles.avatar}
                   />
                 )}
-                
+
                 <div className={styles.userInfo}>
                   <Title level={4} className={styles.userName}>
                     {profile.lastName} {profile.firstName}
@@ -134,14 +136,14 @@ export default function UserProfile() {
                     {dayjs(profile.memberSince).format('DD/MM/YYYY')}
                   </Text>
                 </div>
-                
+
                 <div className={styles.statItem}>
                   <Text className={styles.statLabel}>Tổng đơn hàng</Text>
                   <Text className={styles.statValue}>
                     {profile.totalOrders} đơn
                   </Text>
                 </div>
-                
+
                 <div className={styles.statItem}>
                   <Text className={styles.statLabel}>Tổng chi tiêu</Text>
                   <Text className={styles.statValue}>
@@ -155,7 +157,7 @@ export default function UserProfile() {
           {/* Profile Details */}
           <Col xs={24} lg={16}>
             <Card className={styles.detailsCard}>
-              
+
               {editing ? (
                 <Form
                   form={form}
@@ -173,7 +175,7 @@ export default function UserProfile() {
                         <Input placeholder="Nhập họ" />
                       </Form.Item>
                     </Col>
-                    
+
                     <Col xs={24} sm={12}>
                       <Form.Item
                         label="Tên"
@@ -198,7 +200,7 @@ export default function UserProfile() {
                         <Input placeholder="Nhập email" />
                       </Form.Item>
                     </Col>
-                    
+
                     <Col xs={24} sm={12}>
                       <Form.Item
                         label="Số điện thoại"
@@ -216,14 +218,14 @@ export default function UserProfile() {
                         label="Ngày sinh"
                         name="dateOfBirth"
                       >
-                        <DatePicker 
+                        <DatePicker
                           style={{ width: '100%' }}
                           placeholder="Chọn ngày sinh"
                           format="DD/MM/YYYY"
                         />
                       </Form.Item>
                     </Col>
-                    
+
                     <Col xs={24} sm={12}>
                       <Form.Item
                         label="Giới tính"
@@ -239,7 +241,7 @@ export default function UserProfile() {
                   </Row>
 
                   <Title level={5}>Địa chỉ</Title>
-                  
+
                   <Form.Item
                     label="Số nhà, tên đường"
                     name={['address', 'street']}
@@ -258,7 +260,7 @@ export default function UserProfile() {
                         <Input placeholder="Phường/Xã" />
                       </Form.Item>
                     </Col>
-                    
+
                     <Col xs={24} sm={8}>
                       <Form.Item
                         label="Quận/Huyện"
@@ -268,7 +270,7 @@ export default function UserProfile() {
                         <Input placeholder="Quận/Huyện" />
                       </Form.Item>
                     </Col>
-                    
+
                     <Col xs={24} sm={8}>
                       <Form.Item
                         label="Tỉnh/Thành phố"
@@ -281,15 +283,15 @@ export default function UserProfile() {
                   </Row>
 
                   <Title level={5}>Tùy chọn thông báo</Title>
-                  
+
                   <Form.Item name={['preferences', 'newsletter']} valuePropName="checked">
                     <Switch /> <span style={{ marginLeft: 8 }}>Nhận bản tin qua email</span>
                   </Form.Item>
-                  
+
                   <Form.Item name={['preferences', 'promotions']} valuePropName="checked">
                     <Switch /> <span style={{ marginLeft: 8 }}>Nhận thông báo khuyến mãi</span>
                   </Form.Item>
-                  
+
                   <Form.Item name={['preferences', 'smsNotifications']} valuePropName="checked">
                     <Switch /> <span style={{ marginLeft: 8 }}>Nhận thông báo qua SMS</span>
                   </Form.Item>
@@ -299,8 +301,8 @@ export default function UserProfile() {
                       <Button onClick={handleCancel}>
                         Hủy
                       </Button>
-                      <Button 
-                        type="primary" 
+                      <Button
+                        type="primary"
                         htmlType="submit"
                         loading={loading}
                         icon={<SaveOutlined />}
@@ -313,7 +315,7 @@ export default function UserProfile() {
               ) : (
                 <div className={styles.profileDetails}>
                   <Title level={4}>Thông tin cá nhân</Title>
-                  
+
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
                       <div className={styles.infoItem}>
@@ -323,21 +325,21 @@ export default function UserProfile() {
                         </Text>
                       </div>
                     </Col>
-                    
+
                     <Col xs={24} sm={12}>
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Email:</Text>
                         <Text className={styles.infoValue}>{profile.email}</Text>
                       </div>
                     </Col>
-                    
+
                     <Col xs={24} sm={12}>
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Số điện thoại:</Text>
                         <Text className={styles.infoValue}>{profile.phone}</Text>
                       </div>
                     </Col>
-                    
+
                     <Col xs={24} sm={12}>
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Ngày sinh:</Text>
@@ -346,7 +348,7 @@ export default function UserProfile() {
                         </Text>
                       </div>
                     </Col>
-                    
+
                     <Col xs={24} sm={12}>
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Giới tính:</Text>
@@ -358,7 +360,7 @@ export default function UserProfile() {
                   </Row>
 
                   <Divider />
-                  
+
                   <Title level={4}>Địa chỉ</Title>
                   <div className={styles.addressInfo}>
                     <Text>
@@ -368,7 +370,7 @@ export default function UserProfile() {
                   </div>
 
                   <Divider />
-                  
+
                   <Title level={4}>Tùy chọn thông báo</Title>
                   <div className={styles.preferencesInfo}>
                     <div className={styles.preferenceItem}>

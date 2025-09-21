@@ -1,7 +1,7 @@
 import '@ant-design/v5-patch-for-react-19';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, App } from 'antd';
 import theme from '@/styles/theme';
 import '../styles/global.scss';
 
@@ -29,7 +29,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ConfigProvider theme={theme}>
-          {children}
+          <App>
+            {children}
+          </App>
         </ConfigProvider>
       </body>
     </html>

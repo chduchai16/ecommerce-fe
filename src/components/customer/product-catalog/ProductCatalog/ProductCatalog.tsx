@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Row, Col, Input, Select, Typography, Pagination, Spin, Empty, message } from 'antd'
+import { Row, Col, Input, Select, Typography, Pagination, Spin, Empty, App } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import ProductCard from '../ProductCard'
 import ProductFilter from '../ProductFilter'
-import { mockProducts, type Product } from '@/data/mockProducts'
-import { CurrencyHelper, NumberHelper } from '@/library/helpers'
+import { mockProducts} from '@/data/mockProducts'
 import styles from './ProductCatalog.module.scss'
 
 const { Title } = Typography
@@ -23,11 +22,13 @@ interface FilterState {
 const ITEMS_PER_PAGE = 12
 
 export default function ProductCatalog() {
+  const { message } = App.useApp();
+
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('newest')
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
-  
+
   const [filters, setFilters] = useState<FilterState>({
     category: 'Tất cả',
     brand: 'Tất cả',
@@ -41,8 +42,8 @@ export default function ProductCatalog() {
     return mockProducts.filter(product => {
       // Bộ lọc tìm kiếm
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.brand.toLowerCase().includes(searchTerm.toLowerCase())
 
       // Bộ lọc danh mục
       const matchesCategory = filters.category === 'Tất cả' || product.category === filters.category
@@ -66,7 +67,7 @@ export default function ProductCatalog() {
   // Sắp xếp sản phẩm
   const sortedProducts = useMemo(() => {
     const sorted = [...filteredProducts]
-    
+
     switch (sortBy) {
       case 'price-low':
         return sorted.sort((a, b) => a.price - b.price)
@@ -121,13 +122,13 @@ export default function ProductCatalog() {
 
   return (
     <div className={styles.catalogContainer}>
-      
+
       {/* Tiêu đề */}
       <div className={styles.catalogHeader}>
         <Title level={2} className={styles.catalogTitle}>
           Sản phẩm
         </Title>
-        
+
         {/* Tìm kiếm và Sắp xếp */}
         <Row gutter={16} className={styles.searchSortRow}>
           <Col flex="auto">
@@ -169,7 +170,7 @@ export default function ProductCatalog() {
 
         {/* Lưới sản phẩm */}
         <Col xs={24} lg={18} className={styles.productSection}>
-          
+
           {/* Thông tin kết quả */}
           <div className={styles.resultsInfo}>
             <span>
@@ -197,11 +198,11 @@ export default function ProductCatalog() {
             <div className={styles.productsGrid}>
               <Row gutter={[16, 16]} className={styles.productGridRow}>
                 {paginatedProducts.map(product => (
-                  <Col 
-                    key={product.id} 
-                    xs={24} 
-                    sm={12} 
-                    md={8} 
+                  <Col
+                    key={product.id}
+                    xs={24}
+                    sm={12}
+                    md={8}
                     xl={6}
                     className={styles.productCol}
                   >
@@ -224,7 +225,7 @@ export default function ProductCatalog() {
                     onChange={setCurrentPage}
                     showSizeChanger={false}
                     showQuickJumper
-                    showTotal={(total, range) => 
+                    showTotal={(total, range) =>
                       `${range[0]}-${range[1]} của ${total} sản phẩm`
                     }
                   />
