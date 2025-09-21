@@ -6,6 +6,8 @@ export { default as ProductDetail } from './product-detail'
 export { default as ShoppingCart } from './shopping-cart'
 export { UserOrders } from './user-orders'
 export { UserWishlist } from './user-wishlist'
+export { default as UserProfile } from './user-profile'
+export { NotificationList } from './notification-list'
 // export { default as Checkout } from './checkout'
 
 // TODO: Thêm các customer specific components khác tại đây

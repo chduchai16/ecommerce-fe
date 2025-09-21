@@ -1,0 +1,185 @@
+@import '@/styles/theme.scss';
+
+.notificationContainer {
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.notificationCard {
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+
+        .headerIcon {
+            font-size: 24px;
+            color: $primary-color;
+        }
+
+        .headerTitle {
+            margin: 0;
+            color: $text-primary;
+        }
+
+        .unreadBadge {
+            .ant-badge-count {
+                background-color: $primary-color;
+            }
+        }
+
+        .actionBtn {
+            color: $text-secondary;
+
+            &:hover {
+                color: $primary-color;
+            }
+
+            &:disabled {
+                color: #bfbfbf;
+            }
+        }
+    }
+}
+
+.notificationItem {
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: #fafafa;
+    }
+
+    &.unread {
+        background-color: #f6ffed;
+        border-left: 4px solid $primary-color;
+        padding-left: 20px;
+
+        &:hover {
+            background-color: #f0f9ff;
+        }
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .notificationAvatar {
+        .orderIcon {
+            color: #1890ff;
+        }
+
+        .shippingIcon {
+            color: #fa8c16;
+        }
+
+        .promotionIcon {
+            color: #f5222d;
+        }
+
+        .reviewIcon {
+            color: #fadb14;
+        }
+
+        .generalIcon {
+            color: #52c41a;
+        }
+    }
+
+    .notificationHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+
+        .notificationTitle {
+            color: $text-primary;
+            font-size: 16px;
+        }
+
+        .typeTag {
+            font-size: 12px;
+            line-height: 20px;
+            height: 20px;
+            margin: 0;
+        }
+
+        .unreadDot {
+            width: 8px;
+            height: 8px;
+            background-color: $primary-color;
+            border-radius: 50%;
+            margin-top: 6px;
+        }
+
+        .timeText {
+            font-size: 12px;
+            color: $text-tertiary;
+            margin-top: 2px;
+        }
+    }
+
+    .notificationContent {
+        .notificationMessage {
+            color: $text-secondary;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .actionLink {
+            padding: 0;
+            height: auto;
+            font-size: 14px;
+            color: $primary-color;
+
+            &:hover {
+                color: $primary-hover;
+            }
+        }
+    }
+
+    .markReadBtn {
+        color: $success-color;
+
+        &:hover {
+            color: #52c41a;
+            background-color: rgba(82, 196, 26, 0.1);
+        }
+    }
+
+    .deleteBtn {
+        color: $error-color;
+
+        &:hover {
+            color: #ff4d4f;
+            background-color: rgba(255, 77, 79, 0.1);
+        }
+    }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+    .notificationContainer {
+        padding: 16px;
+    }
+
+    .notificationCard .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .notificationItem {
+        .notificationHeader {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .ant-list-item-action {
+            margin-top: 12px;
+        }
+    }
+}

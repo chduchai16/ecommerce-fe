@@ -1,16 +1,18 @@
 'use client'
 
 import { Input, Button, Badge, Dropdown, Space, Menu } from 'antd'
-import { 
-  SearchOutlined, 
-  ShoppingCartOutlined, 
-  HeartOutlined, 
+import {
+  SearchOutlined,
+  ShoppingCartOutlined,
+  HeartOutlined,
   UserOutlined,
   BellOutlined,
   MenuOutlined
 } from '@ant-design/icons'
 import Link from 'next/link'
+import Image from 'next/image'
 import styles from './CustomerHeader.module.scss'
+import cartGif from '../../../assets/gifs/cart.gif'
 
 export default function CustomerHeader() {
   // User menu dropdown items
@@ -20,7 +22,7 @@ export default function CustomerHeader() {
       label: <Link href="/customer/profile">Thông tin cá nhân</Link>
     },
     {
-      key: 'orders', 
+      key: 'orders',
       label: <Link href="/customer/orders">Đơn hàng của tôi</Link>
     },
     {
@@ -28,7 +30,7 @@ export default function CustomerHeader() {
       label: <Link href="/customer/wishlist">Sản phẩm yêu thích</Link>
     },
     {
-      type: 'divider'
+      type: 'divider' as const
     },
     {
       key: 'logout',
@@ -38,14 +40,21 @@ export default function CustomerHeader() {
 
   return (
     <header className={styles.customerHeader}>
-  
+
       {/* Main Header */}
       <div className={styles.mainHeader}>
         <div className={styles.container}>
-          
+
           {/* Logo */}
           <Link href="/customer/products" className={styles.logo}>
-            🛒 <span>Exona</span>
+            <Image
+              src={cartGif}
+              alt="Exona Logo"
+              width={32}
+              height={32}
+              className={styles.logoImage}
+            />
+            <span>Exona</span>
           </Link>
 
           {/* Search Bar */}
@@ -55,8 +64,8 @@ export default function CustomerHeader() {
                 placeholder="Tìm kiếm sản phẩm..."
                 className={styles.searchInput}
               />
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 icon={<SearchOutlined />}
                 className={styles.searchBtn}
               >
@@ -68,30 +77,34 @@ export default function CustomerHeader() {
           {/* Actions */}
           <div className={styles.actions}>
             <Space size="large">
-              
+
               {/* Notifications */}
               <Badge count={3} size="small">
-                <Button 
-                  type="text" 
-                  icon={<BellOutlined />}
-                  className={styles.actionBtn}
-                />
+                <Link href="/customer/notifications">
+                  <Button
+                    type="text"
+                    icon={<BellOutlined />}
+                    className={styles.actionBtn}
+                  />
+                </Link>
               </Badge>
 
               {/* Wishlist */}
               <Badge count={5} size="small">
-                <Button 
-                  type="text" 
-                  icon={<HeartOutlined />}
-                  className={styles.actionBtn}
-                />
+                <Link href="/customer/wishlist">
+                  <Button
+                    type="text"
+                    icon={<HeartOutlined />}
+                    className={styles.actionBtn}
+                  />
+                </Link>
               </Badge>
 
               {/* Shopping Cart */}
               <Badge count={2} size="small">
                 <Link href="/customer/cart">
-                  <Button 
-                    type="text" 
+                  <Button
+                    type="text"
                     icon={<ShoppingCartOutlined />}
                     className={styles.actionBtn}
                   >
@@ -102,15 +115,15 @@ export default function CustomerHeader() {
 
               {/* User Menu */}
               <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-                <Button 
-                  type="text" 
+                <Button
+                  type="text"
                   icon={<UserOutlined />}
                   className={styles.actionBtn}
                 >
                   Tài khoản
                 </Button>
               </Dropdown>
-              
+
             </Space>
           </div>
         </div>

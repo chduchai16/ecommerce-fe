@@ -131,7 +131,7 @@ export const mockOrders: Order[] = [
     trackingNumber: 'EX123456789VN'
   },
   {
-    id: 'order2', 
+    id: 'order2',
     orderNumber: 'EX2024002',
     status: 'shipping',
     items: [
@@ -172,7 +172,7 @@ export const mockOrders: Order[] = [
   },
   {
     id: 'order3',
-    orderNumber: 'EX2024003', 
+    orderNumber: 'EX2024003',
     status: 'pending',
     items: [
       {
@@ -211,7 +211,7 @@ export const wishlistItems: WishlistItem[] = [
     addedAt: '2024-09-15T12:00:00Z'
   },
   {
-    id: 'wish2', 
+    id: 'wish2',
     productId: '4',
     addedAt: '2024-09-10T16:30:00Z'
   },
@@ -239,10 +239,68 @@ export const getOrderStatusText = (status: Order['status']) => {
   return statusMap[status]
 }
 
+export interface Notification {
+  id: string
+  type: 'order' | 'promotion' | 'shipping' | 'review' | 'general'
+  title: string
+  message: string
+  isRead: boolean
+  createdAt: string
+  actionUrl?: string
+}
+
+// Mock Notifications
+export const mockNotifications: Notification[] = [
+  {
+    id: '1',
+    type: 'order',
+    title: 'Đơn hàng được xác nhận',
+    message: 'Đơn hàng #DH001 của bạn đã được xác nhận và đang được chuẩn bị.',
+    isRead: false,
+    createdAt: '2024-12-20T10:30:00',
+    actionUrl: '/customer/orders'
+  },
+  {
+    id: '2',
+    type: 'shipping',
+    title: 'Đơn hàng đang giao',
+    message: 'Đơn hàng #DH002 đang trên đường giao đến bạn. Dự kiến giao trong hôm nay.',
+    isRead: false,
+    createdAt: '2024-12-20T09:15:00',
+    actionUrl: '/customer/orders'
+  },
+  {
+    id: '3',
+    type: 'promotion',
+    title: 'Khuyến mãi đặc biệt',
+    message: 'Giảm giá 20% cho tất cả sản phẩm điện tử. Thời gian có hạn!',
+    isRead: true,
+    createdAt: '2024-12-19T14:20:00',
+    actionUrl: '/customer/products?category=electronics'
+  },
+  {
+    id: '4',
+    type: 'review',
+    title: 'Đánh giá sản phẩm',
+    message: 'Hãy đánh giá sản phẩm iPhone 15 Pro Max mà bạn đã mua để nhận điểm thưởng.',
+    isRead: true,
+    createdAt: '2024-12-18T16:45:00'
+  },
+  {
+    id: '5',
+    type: 'general',
+    title: 'Chào mừng bạn đến với Exona',
+    message: 'Cảm ơn bạn đã đăng ký tài khoản. Khám phá hàng ngàn sản phẩm chất lượng ngay hôm nay!',
+    isRead: true,
+    createdAt: '2024-12-15T08:00:00',
+    actionUrl: '/customer/products'
+  }
+]
+
 export const getOrderStatusColor = (status: Order['status']) => {
   const colorMap = {
     pending: 'orange',
-    confirmed: 'blue', 
+    confirmed: 'blue',
     shipping: 'purple',
     delivered: 'green',
     cancelled: 'red'
