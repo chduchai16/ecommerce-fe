@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Form, Input, Button, Checkbox, Typography, Divider, message } from 'antd'
+import { Form, Input, Button, Checkbox, Typography, Divider } from 'antd'
 import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { AuthService } from '@/library/services/auth-service'
+import { useMessage } from '@/hooks/use-message'
 import styles from './sign-in-form.module.scss'
 
 const { Title, Text } = Typography
@@ -12,19 +13,19 @@ const { Title, Text } = Typography
 export default function SignInForm() {
     const [form] = Form.useForm()
     const [isLoading, setIsLoading] = useState(false)
+    const message = useMessage()
     const authService = new AuthService()
 
     const handleSubmit = async (values: { username: string; password: string; remember?: boolean }) => {
         setIsLoading(true)
-
         try {
-            await authService.signIn(values.username, values.password, values.remember);
-            message.success('Đăng nhập thành công!');
-            
-            // Reset form sau khi đăng nhập thành công
+            const response = await authService.signIn(values.username, values.password, values.remember);
+            await authService.setToken(response); // response.data là token
+            const user = await authService.getUserByToken(response);
+            console.log(user);
+            message.success(response.message || 'Đăng nhập thành công!');
             form.resetFields();
         } catch (error) {
-            console.error('Login error:', error)
             message.error('Đăng nhập thất bại. Vui lòng thử lại!')
         } finally {
             setIsLoading(false)
@@ -55,7 +56,7 @@ export default function SignInForm() {
                         className={styles.formItem}
                         rules={[
                             { required: true, message: 'Vui lòng nhập tài khoản!' },
-                            { type: 'email', message: 'Tài khoản không hợp lệ!' }
+                            { message: 'Tài khoản không hợp lệ!' }
                         ]}
                     >
                         <Input
@@ -71,7 +72,7 @@ export default function SignInForm() {
                         className={styles.formItem}
                         rules={[
                             { required: true, message: 'Vui lòng nhập mật khẩu!' },
-                            { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
+                            { min: 3, message: 'Mật khẩu phải có ít nhất 3 ký tự!' }
                         ]}
                     >
                         <Input.Password

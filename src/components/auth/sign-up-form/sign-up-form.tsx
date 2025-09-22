@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Form, Input, Button, Select, Typography, Space, Divider, message, Checkbox } from 'antd'
+import { Form, Input, Button, Select, Typography, Space, Divider, App, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined, MailOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import styles from './sign-up-form.module.scss'
 
 const { Title, Text } = Typography
 const { Option } = Select
+const { useApp } = App
 
 interface SignUpFormProps {
     onSubmit?: (userData: {
@@ -21,6 +22,7 @@ interface SignUpFormProps {
 export default function SignUpForm({ onSubmit }: SignUpFormProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [form] = Form.useForm()
+    const { message } = useApp()
 
     const handleSubmit = async (values: {
         name: string
