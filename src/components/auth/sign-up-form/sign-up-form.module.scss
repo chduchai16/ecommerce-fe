@@ -1,0 +1,176 @@
+/* Sign Up Form Styles */
+
+// Import theme variables
+@import '@/styles/theme.scss';
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, $gradient-start 0%, $gradient-end 100%);
+    padding: 20px;
+}
+
+.formWrapper {
+    width: 100%;
+    max-width: 450px;
+    padding: 32px;
+    background: $bg-primary;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.title {
+    color: $primary-color !important;
+    margin-bottom: 8px !important;
+}
+
+.subtitle {
+    font-size: 16px;
+}
+
+.inputField {
+    border-radius: 8px;
+}
+
+.inputIcon {
+    color: $primary-color;
+}
+
+.selectField {
+    border-radius: 8px;
+}
+
+.formItem {
+    :global(.ant-form-item-label) {
+        margin-bottom: 4px !important;
+        
+        label {
+            height: auto !important;
+        }
+    }
+    
+    margin-bottom: 20px;
+}
+
+.passwordStrength {
+    margin-top: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.strengthWeak {
+    background-color: $strength-weak-bg;
+    color: $strength-weak-color;
+    border: 1px solid $strength-weak-border;
+}
+
+.strengthMedium {
+    background-color: $strength-medium-bg;
+    color: $strength-medium-color;
+    border: 1px solid $strength-medium-border;
+}
+
+.strengthStrong {
+    background-color: $strength-strong-bg;
+    color: $strength-strong-color;
+    border: 1px solid $strength-strong-border;
+}
+
+.termsSection {
+    margin-bottom: 16px;
+}
+
+.termsText {
+    margin-left: 8px;
+}
+
+.termsLink {
+    color: $primary-color;
+    text-decoration: underline;
+}
+
+.submitButton {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+
+    &Margin {
+        margin-bottom: 16px;
+    }
+}
+
+.signinSection {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.signinText {
+    font-size: 14px;
+}
+
+.signinLink {
+    color: $primary-color;
+    font-weight: 600;
+}
+
+.dividerSection {
+    margin: 24px 0;
+}
+
+.socialButtons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.socialIconButton {
+    width: 58px;
+    height: 48px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    border: 1px solid $border-medium;
+
+    &:hover {
+        transform: translateY(-2px);
+        transition: all 0.2s ease;
+    }
+}
+
+.facebookButton {
+    background-color: $facebook-color;
+    border-color: $facebook-color;
+    color: $text-white;
+
+    &:hover {
+        background-color: $facebook-color;
+        border-color: $facebook-color;
+        color: $text-white;
+    }
+}
+
+.githubButton {
+    background-color: $github-color;
+    border-color: $github-color;
+    color: $text-white;
+
+    &:hover {
+        background-color: $github-color;
+        border-color: $github-color;
+        color: $text-white;
+    }
+}

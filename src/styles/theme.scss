@@ -1,9 +1,18 @@
 // Theme Variables - Chỉ chứa màu sắc
 
 // Brand Colors - Màu thương hiệu
-$primary-color: #1890ff;
+$primary-color: #1677ff; // Updated to match form styles
 $primary-hover: #40a9ff;
 $primary-active: #096dd9;
+
+// Social Colors - Màu mạng xã hội
+$facebook-color: #1877f2;
+$google-color: #4285f4;
+$github-color: #333333;
+
+// Gradient Colors - Màu gradient
+$gradient-start: #667eea;
+$gradient-end: #764ba2;
 
 // Background Colors - Màu nền
 $bg-primary: #ffffff;
@@ -29,3 +38,16 @@ $success-color: #52c41a;
 $warning-color: #faad14;
 $error-color: #ff4d4f;
 $info-color: #1890ff;
+
+// Password Strength Colors - Màu độ mạnh mật khẩu
+$strength-weak-bg: #fff2f0;
+$strength-weak-color: #cf1322;
+$strength-weak-border: #ffccc7;
+
+$strength-medium-bg: #fff7e6;
+$strength-medium-color: #d46b08;
+$strength-medium-border: #ffd591;
+
+$strength-strong-bg: #f6ffed;
+$strength-strong-color: #389e0d;
+$strength-strong-border: #b7eb8f;

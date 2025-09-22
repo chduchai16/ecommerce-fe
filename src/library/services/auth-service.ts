@@ -1,5 +1,5 @@
 export class AuthService {
-    async signIn() : Promise<void> {
-        console.log('Sign in method called');
+    async signIn(username : string , password : string , remember?: boolean) : Promise<void> {
+        console.log('Signing in with', { username, password, remember });
     }
 }

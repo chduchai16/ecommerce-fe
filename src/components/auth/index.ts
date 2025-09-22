@@ -1,2 +1,3 @@
-export { default as SignIn } from './SignIn'
-export { default as SignUp } from './SignUp'
+// Export from structured components
+export { default as SignInForm } from './sign-in-form'
+export { default as SignUpForm } from './sign-up-form'

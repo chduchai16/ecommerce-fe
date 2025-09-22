@@ -1,4 +1,4 @@
-import { SignUp } from '@/components/auth'
+import { SignUpForm } from '@/components/auth'
 import { redirect } from 'next/navigation'
 
 export default function SignUpPage() {
@@ -9,14 +9,14 @@ export default function SignUpPage() {
     role?: string
   }) => {
     'use server'
-    
+
     try {
       // TODO: Implement registration logic here
       console.log('Registration attempt:', userData)
-      
+
       // Simulate API call
       // const response = await authService.register(userData)
-      
+
       // On success, redirect based on user role
       if (userData.role === 'seller') {
         redirect('/seller')
@@ -26,7 +26,7 @@ export default function SignUpPage() {
         // Default to customer
         redirect('/customer/products')
       }
-      
+
     } catch (error) {
       console.error('Registration failed:', error)
       // Handle error (show toast, etc.)
@@ -34,5 +34,5 @@ export default function SignUpPage() {
     }
   }
 
-  return <SignUp onSubmit={handleSignUp} />
+  return <SignUpForm onSubmit={handleSignUp} />
 }
