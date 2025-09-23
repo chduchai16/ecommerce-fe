@@ -125,10 +125,6 @@ export default function ProductCatalog() {
 
       {/* Tiêu đề */}
       <div className={styles.catalogHeader}>
-        <Title level={2} className={styles.catalogTitle}>
-          Sản phẩm
-        </Title>
-
         {/* Tìm kiếm và Sắp xếp */}
         <Row gutter={16} className={styles.searchSortRow}>
           <Col flex="auto">

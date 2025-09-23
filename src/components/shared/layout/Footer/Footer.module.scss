@@ -3,7 +3,7 @@
   color: #ffffff;
   margin-top: auto;
   padding: 0;
-  
+
   .footerContainer {
     max-width: 1200px;
     margin: 0 auto;
@@ -22,7 +22,7 @@
       font-weight: 600;
       margin-bottom: 16px;
       position: relative;
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -48,13 +48,13 @@
 
       li {
         margin-bottom: 8px;
-        
+
         a {
           color: #cccccc;
           text-decoration: none;
           transition: all 0.3s ease;
           font-size: 14px;
-          
+
           &:hover {
             color: #1890ff;
             padding-left: 8px;
@@ -102,7 +102,7 @@
       border: 1px solid #404040;
       background: rgba(255, 255, 255, 0.05);
       color: #ffffff;
-      
+
       &::placeholder {
         color: #888888;
       }
@@ -117,7 +117,7 @@
       border-radius: 0 6px 6px 0;
       background: linear-gradient(90deg, #1890ff, #52c41a);
       border: none;
-      
+
       &:hover {
         background: linear-gradient(90deg, #40a9ff, #73d13d);
       }
@@ -220,68 +220,4 @@
     }
   }
 
-  // Responsive Design
-  @media (max-width: 768px) {
-    .footerContainer {
-      padding: 30px 15px 15px;
-    }
-
-    .mainFooter {
-      .footerSection {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-    }
-
-    .paymentSection {
-      text-align: center;
-      
-      .paymentMethods,
-      .shippingMethods {
-        justify-content: center;
-      }
-    }
-
-    .bottomFooter {
-      text-align: center;
-      
-      .legalLinks {
-        justify-content: center;
-        margin-top: 10px;
-        flex-wrap: wrap;
-      }
-    }
-
-    .newsletter {
-      .emailInput {
-        border-radius: 6px 6px 0 0;
-      }
-
-      .subscribeBtn {
-        border-radius: 0 0 6px 6px;
-        width: 100%;
-      }
-    }
-  }
-
-  @media (max-width: 576px) {
-    .paymentMethods,
-    .shippingMethods {
-      gap: 8px;
-      
-      .paymentItem,
-      .shippingItem {
-        font-size: 12px;
-        padding: 4px 8px;
-      }
-    }
-
-    .legalLinks {
-      gap: 15px;
-      
-      .legalLink {
-        font-size: 13px;
-      }
-    }
-  }
 }

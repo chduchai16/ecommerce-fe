@@ -16,21 +16,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-}
-
-.pageTitle {
-  margin: 0;
-  text-align: center;
-  
-  @media (max-width: 768px) {
-    text-align: left;
-  }
 }
 
 .clearBtn {
@@ -162,37 +147,4 @@
 
 .noteText {
   font-size: 12px;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
-  }
-  
-  .productInfo {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .productImage {
-    align-self: center;
-  }
-  
-  .productDetails {
-    text-align: center;
-  }
-  
-  .orderSummary {
-    position: static;
-  }
-  
-  .table {
-    .ant-table {
-      font-size: 14px;
-    }
-    
-    .ant-table-tbody > tr > td {
-      padding: 12px 8px;
-    }
-  }
 }

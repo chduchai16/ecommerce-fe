@@ -1,20 +1,52 @@
 'use client'
 
-import { Input, Button, Badge, Dropdown, Space, Menu } from 'antd'
+import { useEffect } from 'react'
+import { Input, Button, Badge, Dropdown, Space } from 'antd'
 import {
   SearchOutlined,
   ShoppingCartOutlined,
   HeartOutlined,
   UserOutlined,
-  BellOutlined,
   MenuOutlined
 } from '@ant-design/icons'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+
+import { useMessage } from '@/hooks/use-message'
+import { useUser } from '@/contexts/UserContext'
+import { getMockCartCount } from '@/data/mockCartData'
 import styles from './CustomerHeader.module.scss'
 import cartGif from '../../../assets/gifs/cart.gif'
 
 export default function CustomerHeader() {
+  const router = useRouter()
+  const message = useMessage()
+  const { user, clearUser, loadUser } = useUser()
+
+  // Reload user data when component mounts
+  useEffect(() => {
+    loadUser()
+  }, [loadUser])
+
+  useEffect(() => {
+    console.log('CustomerHeader - User state changed:', user)
+  }, [user])
+
+  // Handle logout
+  const handleLogout = async () => {
+    clearUser()
+    message.success('Đăng xuất thành công!')
+    router.push('/auth/sign-in')
+  }
+
+  // Handle menu click
+  const handleMenuClick = (e: { key: string }) => {
+    if (e.key === 'logout') {
+      handleLogout()
+    }
+  }
+
   // User menu dropdown items
   const userMenuItems = [
     {
@@ -78,17 +110,6 @@ export default function CustomerHeader() {
           <div className={styles.actions}>
             <Space size="large">
 
-              {/* Notifications */}
-              <Badge count={3} size="small">
-                <Link href="/customer/notifications">
-                  <Button
-                    type="text"
-                    icon={<BellOutlined />}
-                    className={styles.actionBtn}
-                  />
-                </Link>
-              </Badge>
-
               {/* Wishlist */}
               <Badge count={5} size="small">
                 <Link href="/customer/wishlist">
@@ -96,12 +117,14 @@ export default function CustomerHeader() {
                     type="text"
                     icon={<HeartOutlined />}
                     className={styles.actionBtn}
-                  />
+                  >
+                    Yêu thích
+                  </Button>
                 </Link>
               </Badge>
 
               {/* Shopping Cart */}
-              <Badge count={2} size="small">
+              <Badge count={getMockCartCount()} size="small">
                 <Link href="/customer/cart">
                   <Button
                     type="text"
@@ -114,13 +137,19 @@ export default function CustomerHeader() {
               </Badge>
 
               {/* User Menu */}
-              <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <Dropdown
+                menu={{
+                  items: userMenuItems,
+                  onClick: handleMenuClick
+                }}
+                placement="bottomRight"
+              >
                 <Button
                   type="text"
                   icon={<UserOutlined />}
                   className={styles.actionBtn}
                 >
-                  Tài khoản
+                  {user?.fullname || 'Tài khoản'}
                 </Button>
               </Dropdown>
 

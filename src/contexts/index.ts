@@ -1,1 +1,2 @@
-export { CartProvider, useCart } from './CartContext'
+// Cart context removed - using mock data instead
+// export { CartProvider, useCart } from './cart-context'

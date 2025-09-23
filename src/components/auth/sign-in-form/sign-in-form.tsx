@@ -6,14 +6,23 @@ import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOut
 import Link from 'next/link'
 import { AuthService } from '@/library/services/auth-service'
 import { useMessage } from '@/hooks/use-message'
+import { useUser } from '@/contexts/UserContext'
 import styles from './sign-in-form.module.scss'
+import { useRouter } from 'next/navigation'
 
 const { Title, Text } = Typography
 
 export default function SignInForm() {
+    // states 
     const [form] = Form.useForm()
     const [isLoading, setIsLoading] = useState(false)
+
+    // hooks
     const message = useMessage()
+    const router = useRouter()
+    const { setUser } = useUser()
+
+    // services
     const authService = new AuthService()
 
     const handleSubmit = async (values: { username: string; password: string; remember?: boolean }) => {
@@ -22,11 +31,16 @@ export default function SignInForm() {
             const response = await authService.signIn(values.username, values.password, values.remember);
             await authService.setToken(response); // response.data là token
             const user = await authService.getUserByToken(response);
-            console.log(user);
+
+            // Update UserContext and localStorage
+            setUser(user);
+
             message.success(response.message || 'Đăng nhập thành công!');
+            router.push('/');
             form.resetFields();
         } catch (error) {
-            message.error('Đăng nhập thất bại. Vui lòng thử lại!')
+            console.error('Login error:', error);
+            message.error('Đăng nhập thất bại. Vui lòng thử lại!');
         } finally {
             setIsLoading(false)
         }

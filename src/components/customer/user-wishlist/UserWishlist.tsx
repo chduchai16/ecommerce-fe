@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Button, List, Avatar, Tag, Modal, Input, Rate } from 'antd';
-import { HeartOutlined, HeartFilled, DeleteOutlined, ShoppingCartOutlined, EyeOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Typography, Button, Modal, Input, Rate, Empty } from 'antd';
+import { HeartOutlined, HeartFilled, DeleteOutlined, ShoppingCartOutlined, EyeOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { mockProducts } from '@/data/mockProducts';
 import { wishlistItems } from '@/data/mockUserData';
 import styles from './UserWishlist.module.scss';
+import Link from 'next/link';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -42,6 +43,10 @@ export default function UserWishlist() {
     }
   };
 
+  const handleClearWishlist = () => {
+    setWishlist([]);
+  }
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -52,132 +57,159 @@ export default function UserWishlist() {
   return (
     <div className={styles.userWishlist}>
       <div className={styles.container}>
-        <div className={styles.header}>
-          <Title level={2} className={styles.pageTitle}>
-            <HeartFilled className={styles.heartIcon} />
-            Sản phẩm yêu thích
-          </Title>
-          <Text type="secondary" className={styles.itemCount}>
-            {filteredWishlist.length} sản phẩm
-          </Text>
+        <div className={styles.contentWrapper}>
+          <div className={styles.header}>
+            <Link href="/customer/products">
+              <Button icon={<ArrowLeftOutlined />} type="text">
+                Tiếp tục mua sắm
+              </Button>
+            </Link>
+            <Button onClick={handleClearWishlist} type="text" className={styles.clearBtn}>
+              Xóa tất cả
+            </Button>
+          </div>
         </div>
 
+        <Card className={styles.searchCard}>
+          <Search
+            placeholder="Tìm kiếm sản phẩm yêu thích..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className={styles.searchInput}
+            size="large"
+          />
+        </Card>
+
         <div className={styles.contentWrapper}>
-          <Card className={styles.searchCard}>
-            <Search
-              placeholder="Tìm kiếm sản phẩm yêu thích..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className={styles.searchInput}
-              size="large"
-            />
-          </Card>
-
-          {filteredWishlist.length === 0 ? (
-          <Card className={styles.emptyCard}>
-            <div className={styles.emptyState}>
-              <HeartOutlined className={styles.emptyIcon} />
-              <Title level={4}>Chưa có sản phẩm yêu thích</Title>
-              <Text type="secondary">
-                Hãy thêm những sản phẩm bạn yêu thích để dễ dàng theo dõi
-              </Text>
-              <Button type="primary" size="large" className={styles.browseButton}>
-                Khám phá sản phẩm
-              </Button>
+          {wishlist.length === 0 ? (
+            <div className={styles.emptyWishlist}>
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <div>
+                    <Text>Danh sách yêu thích của bạn đang trống</Text>
+                    <br />
+                    <Text type="secondary">Hãy thêm những sản phẩm bạn yêu thích để dễ dàng theo dõi</Text>
+                  </div>
+                }
+              >
+                <Link href="/customer/products">
+                  <Button type="primary" icon={<HeartOutlined />}>
+                    Khám phá sản phẩm
+                  </Button>
+                </Link>
+              </Empty>
             </div>
-          </Card>
-        ) : (
-          <Row gutter={[16, 16]} className={styles.productGrid}>
-            {filteredWishlist.map(item => {
-              const product = mockProducts.find(p => p.id === item.productId);
-              if (!product) return null;
+          ) : filteredWishlist.length === 0 ? (
+            <div className={styles.emptyWishlist}>
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <div>
+                    <Text>Không tìm thấy sản phẩm nào</Text>
+                    <br />
+                    <Text type="secondary">Thử tìm kiếm với từ khóa khác</Text>
+                  </div>
+                }
+              >
+                <Button type="default" onClick={() => setSearchText('')}>
+                  Xóa bộ lọc
+                </Button>
+              </Empty>
+            </div>
+          ) : (
+            <Row gutter={[16, 16]} className={styles.productGrid}>
+              {filteredWishlist.map(item => {
+                const product = mockProducts.find(p => p.id === item.productId);
+                if (!product) return null;
 
-              return (
-                <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
-                  <Card
-                    hoverable
-                    className={styles.productCard}
-                    cover={
-                      <div className={styles.productImage}>
-                        <img
-                          src={product.images?.[0] || product.imageUrl}
-                          alt={product.name}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/placeholder-product.jpg';
-                          }}
-                        />
-                        <div className={styles.imageOverlay}>
-                          <Button
-                            type="text"
-                            icon={<EyeOutlined />}
-                            className={styles.overlayButton}
-                            onClick={() => handleViewDetail(product.id)}
+                return (
+                  <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
+                    <Card
+                      hoverable
+                      className={styles.productCard}
+                      cover={
+                        <div className={styles.productImage}>
+                          <img
+                            src={product.images?.[0] || product.imageUrl}
+                            alt={product.name}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/placeholder-product.jpg';
+                            }}
                           />
+                          <div className={styles.imageOverlay}>
+                            <Button
+                              type="text"
+                              icon={<EyeOutlined />}
+                              className={styles.overlayButton}
+                              onClick={() => handleViewDetail(product.id)}
+                            />
+                            <Button
+                              type="text"
+                              icon={<DeleteOutlined />}
+                              className={styles.overlayButton}
+                              onClick={() => handleRemoveFromWishlist(product.id)}
+                              danger
+                            />
+                          </div>
+                        </div>
+                      }
+                    >
+                      <div className={styles.productInfo}>
+                        <Title level={5} className={styles.productName}>
+                          {product.name}
+                        </Title>
+
+                        <div className={styles.productRating}>
+                          <Rate disabled defaultValue={product.rating} className={styles.rating} />
+                          <Text type="secondary" className={styles.reviewCount}>
+                            ({product.reviewCount} đánh giá)
+                          </Text>
+                        </div>
+
+                        <div className={styles.productPrice}>
+                          <Text className={styles.currentPrice}>
+                            {formatPrice(product.price)}
+                          </Text>
+                          {product.originalPrice && (
+                            <Text delete type="secondary" className={styles.originalPrice}>
+                              {formatPrice(product.originalPrice)}
+                            </Text>
+                          )}
+                        </div>
+
+                        <Text type="secondary" className={styles.addedDate}>
+                          Thêm vào: {new Date(item.addedAt).toLocaleDateString('vi-VN')}
+                        </Text>
+
+                        <div className={styles.productActions}>
+                          <Button
+                            type="primary"
+                            icon={<ShoppingCartOutlined />}
+                            onClick={() => handleAddToCart(product.id)}
+                            className={styles.addToCartButton}
+                            block
+                          >
+                            Thêm vào giỏ
+                          </Button>
                           <Button
                             type="text"
-                            icon={<DeleteOutlined />}
-                            className={styles.overlayButton}
+                            icon={<HeartFilled />}
                             onClick={() => handleRemoveFromWishlist(product.id)}
+                            className={styles.removeButton}
                             danger
-                          />
+                          >
+                            Xóa
+                          </Button>
                         </div>
                       </div>
-                    }
-                  >
-                    <div className={styles.productInfo}>
-                      <Title level={5} className={styles.productName}>
-                        {product.name}
-                      </Title>
-                      
-                      <div className={styles.productRating}>
-                        <Rate disabled defaultValue={product.rating} className={styles.rating} />
-                        <Text type="secondary" className={styles.reviewCount}>
-                          ({product.reviewCount} đánh giá)
-                        </Text>
-                      </div>
-
-                      <div className={styles.productPrice}>
-                        <Text className={styles.currentPrice}>
-                          {formatPrice(product.price)}
-                        </Text>
-                        {product.originalPrice && (
-                          <Text delete type="secondary" className={styles.originalPrice}>
-                            {formatPrice(product.originalPrice)}
-                          </Text>
-                        )}
-                      </div>
-
-                      <Text type="secondary" className={styles.addedDate}>
-                        Thêm vào: {new Date(item.addedAt).toLocaleDateString('vi-VN')}
-                      </Text>
-
-                      <div className={styles.productActions}>
-                        <Button
-                          type="primary"
-                          icon={<ShoppingCartOutlined />}
-                          onClick={() => handleAddToCart(product.id)}
-                          className={styles.addToCartButton}
-                          block
-                        >
-                          Thêm vào giỏ
-                        </Button>
-                        <Button
-                          type="text"
-                          icon={<HeartFilled />}
-                          onClick={() => handleRemoveFromWishlist(product.id)}
-                          className={styles.removeButton}
-                          danger
-                        >
-                          Xóa
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-        )}
+                    </Card>
+                  </Col>
+                );
+              })}
+            </Row>
+          )}
+        </div>
 
         {/* Modal chi tiết sản phẩm */}
         <Modal
@@ -203,7 +235,7 @@ export default function UserWishlist() {
                 <Col span={12}>
                   <div className={styles.modalInfo}>
                     <Title level={3}>{selectedProduct.name}</Title>
-                    
+
                     <div className={styles.modalRating}>
                       <Rate disabled defaultValue={selectedProduct.rating} />
                       <Text type="secondary">
@@ -257,7 +289,6 @@ export default function UserWishlist() {
             </div>
           )}
         </Modal>
-        </div>
       </div>
     </div>
   );

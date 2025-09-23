@@ -116,42 +116,4 @@
       }
     }
   }
-
-  // Responsive Design
-  @media (max-width: 768px) {
-    .topBar {
-      display: none;
-    }
-
-    .mainHeader {
-      .container {
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-
-      .logo {
-        min-width: auto;
-      }
-
-      .searchSection {
-        order: 3;
-        width: 100%;
-        max-width: none;
-      }
-    }
-
-    .navMenu {
-      .container {
-        display: flex;
-        overflow-x: auto;
-        gap: 10px;
-
-        .navLink {
-          white-space: nowrap;
-          font-size: 13px;
-          padding: 6px 12px;
-        }
-      }
-    }
-  }
 }

@@ -5,29 +5,11 @@ import { Row, Col, Typography, Button, Table, InputNumber, Image, Card, Divider,
 import { DeleteOutlined, ShoppingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import type { CartItem } from '@/data/mockProducts'
-import { mockProducts } from '@/data/mockProducts'
+import { mockCartItems } from '@/data/mockCartData'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ShoppingCart.module.scss'
 
 const { Title, Text } = Typography
-
-// Mock cart data
-const mockCartItems: CartItem[] = [
-  {
-    id: '1',
-    productId: '1',
-    product: mockProducts[0],
-    quantity: 2,
-    addedAt: new Date()
-  },
-  {
-    id: '2',
-    productId: '3',
-    product: mockProducts[2],
-    quantity: 1,
-    addedAt: new Date()
-  }
-]
 
 export default function ShoppingCart() {
   const { message } = App.useApp();
@@ -79,7 +61,7 @@ export default function ShoppingCart() {
       title: 'Sản phẩm',
       dataIndex: 'product',
       key: 'product',
-      render: (_: any, record: CartItem) => (
+      render: (_: unknown, record: CartItem) => (
         <div className={styles.productInfo}>
           <Image
             src={record.product.imageUrl}
@@ -110,7 +92,7 @@ export default function ShoppingCart() {
       dataIndex: 'quantity',
       key: 'quantity',
       width: 150,
-      render: (_: any, record: CartItem) => (
+      render: (_: unknown, record: CartItem) => (
         <InputNumber
           min={1}
           max={99}
@@ -124,7 +106,7 @@ export default function ShoppingCart() {
       title: 'Thành tiền',
       key: 'subtotal',
       width: 150,
-      render: (_: any, record: CartItem) => (
+      render: (_: unknown, record: CartItem) => (
         <Text strong className={styles.subtotal}>
           {CurrencyHelper.formatVND(calculateSubtotal(record))}
         </Text>
@@ -134,7 +116,7 @@ export default function ShoppingCart() {
       title: 'Thao tác',
       key: 'actions',
       width: 100,
-      render: (_: any, record: CartItem) => (
+      render: (_: unknown, record: CartItem) => (
         <Button
           type="text"
           icon={<DeleteOutlined />}
@@ -150,10 +132,6 @@ export default function ShoppingCart() {
     return (
       <div className={styles.shoppingCart}>
         <div className={styles.container}>
-          <Title level={2} className={styles.pageTitle}>
-            Giỏ hàng của bạn
-          </Title>
-
           <div className={styles.emptyCart}>
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -188,9 +166,6 @@ export default function ShoppingCart() {
               Tiếp tục mua sắm
             </Button>
           </Link>
-          <Title level={2} className={styles.pageTitle}>
-            Giỏ hàng ({cartItems.length} sản phẩm)
-          </Title>
           <Button onClick={clearCart} type="text" className={styles.clearBtn}>
             Xóa tất cả
           </Button>
