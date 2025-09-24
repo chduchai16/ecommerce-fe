@@ -1,11 +1,20 @@
 'use client'
 
 import { User } from '@/library/models/user/user'
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+  useMemo,
+} from 'react'
 
 // Context interface
 interface UserContextType {
   user: User | null
+  isAuthenticated: boolean
   setUser: (user: User | null) => void
   clearUser: () => void
   loadUser: () => void
@@ -18,7 +27,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined)
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(null)
 
-  // ✅ load user từ localStorage
   const loadUser = useCallback(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -68,8 +76,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
+  // Tính toán isAuthenticated dựa vào user
+  const isAuthenticated = useMemo(() => !!user, [user])
+
   const value: UserContextType = {
     user,
+    isAuthenticated,
     setUser,
     clearUser,
     loadUser,
