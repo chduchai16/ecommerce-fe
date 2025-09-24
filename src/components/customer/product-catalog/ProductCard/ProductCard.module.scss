@@ -60,37 +60,6 @@
   padding: 8px;
 }
 
-.addToCartBtn {
-  width: 70%;
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    border-radius: 20px;
-    transform: scale(1.02);
-    box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
-  }
-}
-
-.wishlistBtn {
-  width: 30%;
-  padding: 4px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    border-radius: 50%;
-    transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    background-color: #f0f0f0;
-  }
-}
-
 .productTitle {
   margin: 0;
   min-height: 48px;

@@ -49,7 +49,6 @@ export default function ShoppingCart() {
 
   const handleCheckout = () => {
     setLoading(true)
-    // TODO: Implement checkout logic
     setTimeout(() => {
       setLoading(false)
       message.success('Chuyển đến trang thanh toán...')
@@ -172,9 +171,8 @@ export default function ShoppingCart() {
         </div>
 
         <Row gutter={[24, 24]}>
-
           {/* Cart Items */}
-          <Col xs={24} lg={16}>
+          <Col xs={24} lg={17}>
             <Card className={styles.cartTable}>
               <Table
                 dataSource={cartItems}
@@ -187,10 +185,10 @@ export default function ShoppingCart() {
           </Col>
 
           {/* Order Summary */}
-          <Col xs={24} lg={8}>
+          <Col xs={24} lg={7}>
             <Card className={styles.orderSummary}>
               <Title level={4} className={styles.summaryTitle}>
-                Tóm tắt đơn hàng
+                Tổng kết đơn hàng
               </Title>
 
               <div className={styles.summaryContent}>
@@ -224,12 +222,6 @@ export default function ShoppingCart() {
               >
                 Tiến hành thanh toán
               </Button>
-
-              <div className={styles.securityNote}>
-                <Text type="secondary" className={styles.noteText}>
-                  🔒 Thanh toán an toàn và bảo mật
-                </Text>
-              </div>
             </Card>
           </Col>
         </Row>

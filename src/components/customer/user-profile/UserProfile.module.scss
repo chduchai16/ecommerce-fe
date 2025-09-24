@@ -18,10 +18,6 @@
   margin-bottom: 24px;
 }
 
-.pageTitle {
-  margin: 0;
-}
-
 .profileCard {
   height: fit-content;
   position: sticky;
@@ -29,8 +25,10 @@
 }
 
 .avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-bottom: 24px;
 }
 
 .avatar {
@@ -38,10 +36,50 @@
 }
 
 .avatarUpload {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  
   .ant-upload-select {
     width: 120px !important;
     height: 120px !important;
     border-radius: 50% !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    .anticon {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: $text-secondary;
+    }
+    
+    div {
+      font-size: 14px;
+      color: $text-secondary;
+    }
+  }
+}
+
+.avatarUploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom : 10px ;  
+  .changeAvatarButton {
+    margin-top: 8px;
+  }
+  
+  .avatarActions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    
+    button {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
   }
 }
 
@@ -52,8 +90,16 @@
   }
 
   .userEmail {
+    display: block;
+    margin-bottom: 12px;
     color: $text-secondary;
     font-size: 14px;
+  }
+
+  .editButton {
+    border-radius: 6px;
+    height: 32px;
+    font-size: 13px;
   }
 }
 

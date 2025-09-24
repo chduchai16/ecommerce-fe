@@ -109,13 +109,6 @@ export default function UserOrders() {
   return (
     <div className={styles.userOrders}>
       <div className={styles.container}>
-        
-        {/* Header */}
-        <div className={styles.header}>
-          <Title level={2} className={styles.pageTitle}>
-            Đơn hàng của tôi
-          </Title>
-        </div>
 
         {/* Filters */}
         <Card className={styles.filtersCard}>

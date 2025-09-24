@@ -192,7 +192,6 @@ export default function ProductFilter({
             type="primary" 
             icon={<FilterOutlined />}
             onClick={handleApplyFilters}
-            className={styles.applyBtn}
             block
           >
             Áp dụng bộ lọc
@@ -202,7 +201,7 @@ export default function ProductFilter({
             type="text" 
             icon={<ClearOutlined />}
             onClick={handleClearFilters}
-            className={styles.clearBtn}
+            variant="dashed"
             block
           >
             Xóa bộ lọc

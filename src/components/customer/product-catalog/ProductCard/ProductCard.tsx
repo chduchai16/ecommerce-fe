@@ -75,14 +75,12 @@ export default function ProductCard({
               icon={<ShoppingCartOutlined />}
               onClick={handleAddToCart}
               disabled={!product.inStock}
-              className={styles.addToCartBtn}
             >
               Thêm giỏ
             </Button>
             <Button
               icon={<HeartOutlined />}
               onClick={handleAddToWishlist}
-              className={styles.wishlistBtn}
               title="Thêm vào yêu thích"
             />
           </div>

@@ -88,21 +88,3 @@
   flex-direction: column;
   gap: 8px;
 }
-
-.applyBtn {
-  font-weight: 600;
-  height: 40px;
-  border-radius: 6px;
-}
-
-.clearBtn {
-  font-weight: 500;
-  height: 36px;
-  border-radius: 6px;
-  color: #666;
-  
-  &:hover {
-    color: #ff4d4f;
-    background-color: #fff2f0;
-  }
-}

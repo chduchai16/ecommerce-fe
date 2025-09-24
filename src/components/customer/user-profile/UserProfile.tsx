@@ -19,7 +19,8 @@ export default function UserProfile() {
   const [profile, setProfile] = useState<UserProfile>(mockUserProfile)
   const [editing, setEditing] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [fileList, setFileList] = useState<UploadFile[]>([])
+  const [fileList, setFileList] = useState([])
+  const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
 
   const handleEdit = () => {
     setEditing(true)
@@ -59,34 +60,28 @@ export default function UserProfile() {
   }
 
   const handleAvatarChange = (info: any) => {
-    setFileList(info.fileList)
-    if (info.file.status === 'done') {
-      message.success('Cập nhật ảnh đại diện thành công!')
+    const { fileList: newFileList } = info
+    setFileList(newFileList)
+
+    // Nếu có file được chọn, tạo preview URL
+    if (newFileList.length > 0) {
+      const file = newFileList[0]
+      if (file.originFileObj) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          setPreviewAvatar(e.target?.result as string)
+        }
+        reader.readAsDataURL(file.originFileObj)
+      }
+    } else {
+      setPreviewAvatar(null)
     }
   }
 
   return (
     <div className={styles.userProfile}>
       <div className={styles.container}>
-
-        {/* Header */}
-        <div className={styles.header}>
-          <Title level={2} className={styles.pageTitle}>
-            Thông tin cá nhân
-          </Title>
-          {!editing && (
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              onClick={handleEdit}
-            >
-              Chỉnh sửa
-            </Button>
-          )}
-        </div>
-
         <Row gutter={[24, 24]}>
-
           {/* Profile Summary */}
           <Col xs={24} lg={8}>
             <Card className={styles.profileCard}>
@@ -94,19 +89,61 @@ export default function UserProfile() {
               {/* Avatar Section */}
               <div className={styles.avatarSection}>
                 {editing ? (
-                  <Upload
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={handleAvatarChange}
-                    beforeUpload={() => false}
-                    maxCount={1}
-                    className={styles.avatarUpload}
-                  >
-                    <div>
-                      <CameraOutlined />
-                      <div>Thay đổi</div>
-                    </div>
-                  </Upload>
+                  <div className={styles.avatarUploadContainer}>
+                    <Avatar
+                      size={120}
+                      src={previewAvatar || profile.avatar}
+                      icon={<UserOutlined />}
+                      className={styles.avatar}
+                    />
+                    {!previewAvatar ? (
+                      <Upload
+                        listType="text"
+                        fileList={fileList}
+                        onChange={handleAvatarChange}
+                        beforeUpload={() => false}
+                        maxCount={1}
+                        accept="image/*"
+                        showUploadList={false}
+                      >
+                        <Button 
+                          icon={<CameraOutlined />} 
+                          size="small" 
+                          className={styles.changeAvatarButton}
+                        >
+                          Thay đổi
+                        </Button>
+                      </Upload>
+                    ) : (
+                      <div className={styles.avatarActions}>
+                        <Upload
+                          listType="text"
+                          fileList={[]}
+                          onChange={handleAvatarChange}
+                          beforeUpload={() => false}
+                          maxCount={1}
+                          accept="image/*"
+                          showUploadList={false}
+                        >
+                          <Button 
+                            icon={<CameraOutlined />} 
+                            size="small"
+                          >
+                            Chọn ảnh khác
+                          </Button>
+                        </Upload>
+                        <Button 
+                          size="small" 
+                          onClick={() => {
+                            setPreviewAvatar(null)
+                            setFileList([])
+                          }}
+                        >
+                          Hủy
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <Avatar
                     size={120}
@@ -118,11 +155,22 @@ export default function UserProfile() {
 
                 <div className={styles.userInfo}>
                   <Title level={4} className={styles.userName}>
-                    {profile.lastName} {profile.firstName}
+                    {profile.firstName} {profile.lastName}
                   </Title>
                   <Text className={styles.userEmail}>
                     {profile.email}
                   </Text>
+                  {!editing && (
+                    <Button
+                      type="primary"
+                      icon={<EditOutlined />}
+                      onClick={handleEdit}
+                      size="small"
+                      className={styles.editButton}
+                    >
+                      Chỉnh sửa thông tin
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -157,7 +205,6 @@ export default function UserProfile() {
           {/* Profile Details */}
           <Col xs={24} lg={16}>
             <Card className={styles.detailsCard}>
-
               {editing ? (
                 <Form
                   form={form}
@@ -251,7 +298,7 @@ export default function UserProfile() {
                   </Form.Item>
 
                   <Row gutter={[16, 0]}>
-                    <Col xs={24} sm={8}>
+                    <Col xs={24} sm={12}>
                       <Form.Item
                         label="Phường/Xã"
                         name={['address', 'ward']}
@@ -261,17 +308,7 @@ export default function UserProfile() {
                       </Form.Item>
                     </Col>
 
-                    <Col xs={24} sm={8}>
-                      <Form.Item
-                        label="Quận/Huyện"
-                        name={['address', 'district']}
-                        rules={[{ required: true, message: 'Vui lòng nhập quận/huyện!' }]}
-                      >
-                        <Input placeholder="Quận/Huyện" />
-                      </Form.Item>
-                    </Col>
-
-                    <Col xs={24} sm={8}>
+                    <Col xs={24} sm={12}>
                       <Form.Item
                         label="Tỉnh/Thành phố"
                         name={['address', 'city']}
@@ -298,13 +335,14 @@ export default function UserProfile() {
 
                   <div className={styles.formActions}>
                     <Space>
-                      <Button onClick={handleCancel}>
+                      <Button onClick={handleCancel} size='small'>
                         Hủy
                       </Button>
                       <Button
                         type="primary"
                         htmlType="submit"
                         loading={loading}
+                        size='small'
                         icon={<SaveOutlined />}
                       >
                         Lưu thông tin
@@ -321,7 +359,7 @@ export default function UserProfile() {
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Họ và tên:</Text>
                         <Text className={styles.infoValue}>
-                          {profile.lastName} {profile.firstName}
+                          {profile.firstName} {profile.lastName}
                         </Text>
                       </div>
                     </Col>
@@ -364,7 +402,7 @@ export default function UserProfile() {
                   <Title level={4}>Địa chỉ</Title>
                   <div className={styles.addressInfo}>
                     <Text>
-                      {profile.address.street}, {profile.address.ward}, {profile.address.district}, {profile.address.city}
+                      {profile.address.street}, {profile.address.ward}, {profile.address.city}
                       {profile.address.zipCode && `, ${profile.address.zipCode}`}
                     </Text>
                   </div>

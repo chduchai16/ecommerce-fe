@@ -82,8 +82,8 @@ export default function CustomerHeader() {
             <Image
               src={cartGif}
               alt="Exona Logo"
-              width={32}
-              height={32}
+              width={42}
+              height={42}
               className={styles.logoImage}
             />
             <span>Exona</span>
@@ -107,7 +107,7 @@ export default function CustomerHeader() {
           </div>
 
           {/* Actions */}
-          <div className={styles.actions}>
+          <div>
             <Space size="large">
 
               {/* Wishlist */}
@@ -116,7 +116,6 @@ export default function CustomerHeader() {
                   <Button
                     type="text"
                     icon={<HeartOutlined />}
-                    className={styles.actionBtn}
                   >
                     Yêu thích
                   </Button>
@@ -129,7 +128,6 @@ export default function CustomerHeader() {
                   <Button
                     type="text"
                     icon={<ShoppingCartOutlined />}
-                    className={styles.actionBtn}
                   >
                     Giỏ hàng
                   </Button>
@@ -147,7 +145,6 @@ export default function CustomerHeader() {
                 <Button
                   type="text"
                   icon={<UserOutlined />}
-                  className={styles.actionBtn}
                 >
                   {user?.fullname || 'Tài khoản'}
                 </Button>

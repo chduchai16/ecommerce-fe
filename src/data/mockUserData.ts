@@ -12,7 +12,6 @@ export interface UserProfile {
   address: {
     street: string
     ward: string
-    district: string
     city: string
     zipCode?: string
   }
@@ -52,7 +51,6 @@ export interface Order {
     phone: string
     street: string
     ward: string
-    district: string
     city: string
   }
   orderDate: string
@@ -71,18 +69,17 @@ export interface WishlistItem {
 // Mock User Profile
 export const mockUserProfile: UserProfile = {
   id: 'user123',
-  email: 'nguyenvana@gmail.com',
-  firstName: 'Văn A',
-  lastName: 'Nguyễn',
+  email: 'chuduchai1901@gmail.com',
+  firstName: 'Chu Đức',
+  lastName: 'Hải',
   phone: '0987654321',
   dateOfBirth: '1990-05-15',
   gender: 'male',
-  avatar: 'https://i.pravatar.cc/150?img=1',
+  avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROp5-NoOhpja2gLOToBU97XnxbyEsQP1tEUA&s',
   address: {
-    street: '123 Nguyễn Văn Linh',
-    ward: 'Phường Tân Thuận Tây',
-    district: 'Quận 7',
-    city: 'TP. Hồ Chí Minh',
+    street: '165 Hai Bà Trưng',
+    ward: 'Phường Hồng An',
+    city: 'TP. Hải Phòng',
     zipCode: '70000'
   },
   preferences: {
@@ -122,7 +119,6 @@ export const mockOrders: Order[] = [
       phone: '0987654321',
       street: '123 Nguyễn Văn Linh',
       ward: 'Phường Tân Thuận Tây',
-      district: 'Quận 7',
       city: 'TP. Hồ Chí Minh'
     },
     orderDate: '2024-09-10T10:30:00Z',
@@ -163,7 +159,6 @@ export const mockOrders: Order[] = [
       phone: '0987654321',
       street: '123 Nguyễn Văn Linh',
       ward: 'Phường Tân Thuận Tây',
-      district: 'Quận 7',
       city: 'TP. Hồ Chí Minh'
     },
     orderDate: '2024-09-18T14:20:00Z',
@@ -195,7 +190,6 @@ export const mockOrders: Order[] = [
       phone: '0987654321',
       street: '123 Nguyễn Văn Linh',
       ward: 'Phường Tân Thuận Tây',
-      district: 'Quận 7',
       city: 'TP. Hồ Chí Minh'
     },
     orderDate: '2024-09-19T09:15:00Z',

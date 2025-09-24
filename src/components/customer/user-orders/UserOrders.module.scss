@@ -20,15 +20,6 @@
     padding: 24px;
   }
 
-  .header {
-    margin-bottom: 24px;
-  }
-
-  .pageTitle {
-    margin: 0;
-    text-align: center;
-  }
-
   .filtersCard {
     margin-bottom: 24px;
   }
@@ -133,6 +124,8 @@
   }
 
   .orderModal {
+    top: 30px !important;
+    
     .ant-modal-body {
       max-height: 70vh;
       overflow-y: auto;
