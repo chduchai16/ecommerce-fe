@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation'
 import { useMessage } from '@/hooks/use-message'
 import { useUser } from '@/contexts/UserContext'
 import { getMockCartCount } from '@/data/mockCartData'
-import styles from './CustomerHeader.module.scss'
+import styles from './customer-header.module.scss'
 import cartGif from '../../../assets/gifs/cart.gif'
 
 export default function CustomerHeader() {

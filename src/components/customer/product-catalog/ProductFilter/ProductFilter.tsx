@@ -177,7 +177,6 @@ export default function ProductFilter({
             Tình trạng
           </Text>
           <Select
-            className={styles.filterSelect}
             value={tempFilters.inStock ? 'available' : 'all'}
             onChange={(value) => updateTempFilter('inStock', value === 'available')}
           >

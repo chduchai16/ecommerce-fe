@@ -339,7 +339,7 @@ export default function UserOrders() {
                   {selectedOrder.shippingAddress.phone}
                 </Descriptions.Item>
                 <Descriptions.Item label="Địa chỉ">
-                  {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.ward}, {selectedOrder.shippingAddress.district}, {selectedOrder.shippingAddress.city}
+                  {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.ward}, {selectedOrder.shippingAddress.city}
                 </Descriptions.Item>
               </Descriptions>
             </div>

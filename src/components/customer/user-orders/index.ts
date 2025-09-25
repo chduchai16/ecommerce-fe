@@ -1,1 +1,1 @@
-export { default as UserOrders } from './UserOrders';
+export { default} from './UserOrders';

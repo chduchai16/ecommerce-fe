@@ -1,0 +1,122 @@
+@import '@/styles/theme.scss';
+
+.container {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, $gradient-start 0%, $gradient-end 100%);
+  padding: 20px;
+}
+
+.promptWrapper {
+  width: 100%;
+  max-width: 500px;
+  background: $bg-primary;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+.resultIcon {
+  font-size: 48px;
+  color: $primary-color;
+}
+
+.containerInline {
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+  display: block;
+}
+
+.promptWrapperInline {
+  display: inline-block;
+  padding: 8px 12px;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+.headerInline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.inlineIcon {
+  font-size: 20px;
+  color: $primary-color;
+}
+
+.titleInline {
+  margin: 0;
+  color: $primary-color !important;
+}
+
+.descriptionInline {
+  display: block;
+  color: $text-secondary;
+  font-size: 12px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  color: $primary-color !important;
+}
+
+.description {
+  color: $text-secondary;
+}
+
+.dividerSection {
+  margin: 24px 0;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loginButton {
+  width: 160px;
+  font-weight: 600;
+}
+
+.signupButton {
+  width: 160px;
+  font-weight: 600;
+}
+
+.actionButtonsInline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* compact button adjustments */
+.promptWrapperInline .actionButtons {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.promptWrapperInline .loginButton,
+.promptWrapperInline .signupButton {
+  width: auto;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .promptWrapper {
+    padding: 20px;
+  }
+  .loginButton, .signupButton {
+    width: 140px;
+  }
+}

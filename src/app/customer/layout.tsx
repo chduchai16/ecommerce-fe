@@ -1,5 +1,5 @@
-import CustomerHeader from '@/components/customer/CustomerHeader'
-import CustomerFooter from '@/components/customer/CustomerFooter'
+import CustomerHeader from '@/components/customer/customer-header'
+import CustomerFooter from '@/components/customer/customer-footer'
 import styles from './layout.module.scss'
 
 export default function CustomerLayout({

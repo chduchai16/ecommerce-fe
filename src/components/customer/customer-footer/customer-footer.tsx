@@ -1,5 +1,5 @@
 'use client'
-import styles from './CustomerFooter.module.scss';
+import styles from './customer-footer.module.scss';
 import { Layout, Row, Col, Space, Typography, Input, Button, Divider } from 'antd'
 import {
   FacebookOutlined,

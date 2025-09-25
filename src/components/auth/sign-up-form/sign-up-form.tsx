@@ -104,30 +104,6 @@ export default function SignUpForm({ onSubmit }: SignUpFormProps) {
                     </Form.Item>
 
                     <Form.Item
-                        name="role"
-                        label="Loại tài khoản"
-                        className={styles.formItem}
-                        rules={[{ required: true, message: 'Vui lòng chọn loại tài khoản!' }]}
-                        initialValue="customer"
-                    >
-                        <Select
-                            placeholder="Chọn loại tài khoản"
-                            className={styles.selectField}
-                        >
-                            <Option value="customer">
-                                <Space>
-                                    👤 Khách hàng
-                                </Space>
-                            </Option>
-                            <Option value="seller">
-                                <Space>
-                                    🏪 Người bán
-                                </Space>
-                            </Option>
-                        </Select>
-                    </Form.Item>
-
-                    <Form.Item
                         name="password"
                         label="Mật khẩu"
                         className={styles.formItem}
@@ -221,24 +197,21 @@ export default function SignUpForm({ onSubmit }: SignUpFormProps) {
                     </Text>
                 </div>
 
-                <Divider className={styles.dividerSection}>
+                <Divider>
                     <Text type="secondary">Hoặc đăng ký với</Text>
                 </Divider>
 
                 <div className={styles.socialButtons}>
                     <Button
                         icon={<GoogleOutlined />}
-                        className={styles.socialIconButton}
                         size="large"
                     />
                     <Button
                         icon={<FacebookOutlined />}
-                        className={`${styles.socialIconButton} ${styles.facebookButton}`}
                         size="large"
                     />
                     <Button
                         icon={<GithubOutlined />}
-                        className={`${styles.socialIconButton} ${styles.githubButton}`}
                         size="large"
                     />
                 </div>

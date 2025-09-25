@@ -1,12 +1,18 @@
+import AuthGuard from "@/configs/auth-guard"
+import RoleGuard from "@/configs/role-guard"
+
 export default function SellerLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <div className="seller-layout">
-      <nav>Seller Menu</nav>
-      <main>{children}</main>
-    </div>
+    <AuthGuard>
+      <RoleGuard roles={['seller']}>
+        <div className="seller-layout">
+          <main>{children}</main>
+        </div>
+      </RoleGuard>
+    </AuthGuard>
   )
 }

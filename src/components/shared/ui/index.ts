@@ -4,3 +4,4 @@
 // export { default as Modal } from './Modal'
 
 // TODO: Thêm các shared UI components tại đây
+export { default as LoginPrompt } from './login-prompt/login-prompt';

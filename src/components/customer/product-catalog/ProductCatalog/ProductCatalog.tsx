@@ -133,7 +133,6 @@ export default function ProductCatalog() {
               prefix={<SearchOutlined />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              size="large"
               className={styles.searchInput}
             />
           </Col>
@@ -141,7 +140,6 @@ export default function ProductCatalog() {
             <Select
               value={sortBy}
               onChange={setSortBy}
-              size="large"
               className={styles.sortSelect}
             >
               <Option value="newest">Mới nhất</Option>

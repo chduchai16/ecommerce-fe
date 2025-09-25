@@ -1,7 +1,12 @@
 'use client'
 
 import UserProfile from '@/components/customer/user-profile/UserProfile'
+import AuthGuard from '@/configs/auth-guard'
 
 export default function ProfilePage() {
-  return <UserProfile />
+  return (
+    <AuthGuard>
+      <UserProfile />
+    </AuthGuard>
+  )
 }

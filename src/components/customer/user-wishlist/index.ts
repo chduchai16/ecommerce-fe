@@ -1,1 +1,1 @@
-export { default as UserWishlist } from './UserWishlist';
+export { default } from './UserWishlist';

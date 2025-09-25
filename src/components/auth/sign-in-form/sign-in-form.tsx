@@ -66,7 +66,7 @@ export default function SignInForm() {
                 >
                     <Form.Item
                         name="username"
-                        label="Username"
+                        label="Tài khoản"
                         className={styles.formItem}
                         rules={[
                             { required: true, message: 'Vui lòng nhập tài khoản!' },
@@ -139,17 +139,14 @@ export default function SignInForm() {
                 <div className={styles.socialButtons}>
                     <Button
                         icon={<GoogleOutlined />}
-                        className={styles.socialIconButton}
                         size="large"
                     />
                     <Button
                         icon={<FacebookOutlined />}
-                        className={`${styles.socialIconButton} ${styles.facebookButton}`}
                         size="large"
                     />
                     <Button
                         icon={<GithubOutlined />}
-                        className={`${styles.socialIconButton} ${styles.githubButton}`}
                         size="large"
                     />
                 </div>
