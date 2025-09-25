@@ -25,24 +25,15 @@
 .mainContent {
   display: flex;
   gap: 24px;
-  margin-top:20px;
+  margin-top : 20px ;
 }
 
 .filterSidebar {
-  flex: 0 0 300px;
+  flex: 0 0 250px;
 }
 
 .productSection {
   flex: 1;
-}
-
-.resultsInfo {
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  color: #666;
 }
 
 .loadingContainer {

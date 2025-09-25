@@ -10,7 +10,7 @@ export interface Product{
     discount?: number | null
     review_count?: number | null
     in_stock?: boolean
-    tags?: string[] | string | null
+    tags?:string | null
     stock_quantity?: number
     category_name: string | null
     brand?: string | null

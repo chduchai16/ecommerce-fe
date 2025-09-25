@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Row, Col, Image, Typography, Rate, Tag, Button, InputNumber, Divider, Space, Card, Tabs } from 'antd'
+import { Row, Col, Image, Typography, Rate, Tag, Button, InputNumber, Divider, Card, Tabs } from 'antd'
 import { ShoppingCartOutlined, HeartOutlined, ShareAltOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
-import type { Product } from '@/data/mockProducts'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ProductDetail.module.scss'
+import { Product } from '@/library/models/product/product'
+import Link from 'next/link'
 
 const { Title, Text, Paragraph } = Typography
 const { TabPane } = Tabs
@@ -19,7 +20,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1)
   const [selectedVariant, setSelectedVariant] = useState<string>()
 
-  const images = product.images || [product.imageUrl]
+  const images = product.product_images || [product.thumbnail || ""]
 
   const handleAddToCart = () => {
     // TODO: Implement add to cart functionality
@@ -37,9 +38,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         
         {/* Breadcrumb */}
         <div className={styles.breadcrumb}>
-          <a href="/customer/products">Sản phẩm</a>
+          <Link href="/customer/products">Sản phẩm</Link>
           <span> / </span>
-          <a href={`/customer/products?category=${product.category}`}>{product.category}</a>
+          <Link href={`/customer/products?category=${product.category_name}`}>{product.category_name}</Link>
           <span> / </span>
           <span>{product.name}</span>
         </div>
@@ -51,11 +52,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             <div className={styles.imageGallery}>
               <div className={styles.mainImage}>
                 <Image
-                  src={images[selectedImage]}
+                  src={typeof images[selectedImage] === "string" 
+                    ? images[selectedImage] 
+                    : images[selectedImage]?.name ?? ""}
                   alt={product.name}
                   width="100%"
                   height={400}
-                  style={{ objectFit: 'contain' }}
+                  style={{ objectFit: "contain" }}
                 />
                 {product.discount && (
                   <Tag color="red" className={styles.discountTag}>
@@ -73,7 +76,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       onClick={() => setSelectedImage(index)}
                     >
                       <Image
-                        src={image}
+                        src={typeof image === "string" ? image : image.name ?? ""}
                         alt={`${product.name} ${index + 1}`}
                         width={80}
                         height={80}
@@ -103,9 +106,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
               {/* Rating & Reviews */}
               <div className={styles.ratingSection}>
-                <Rate disabled value={product.rating} className={styles.rating} />
+                <Rate disabled value={product.average_rating || 0} className={styles.rating} />
                 <Text className={styles.ratingText}>
-                  {product.rating} ({product.reviewCount} đánh giá)
+                  {product.average_rating || 0} ({product.review_count || 0} đánh giá)
                 </Text>
               </div>
 
@@ -114,29 +117,27 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 <div className={styles.currentPrice}>
                   {CurrencyHelper.formatVND(product.price)}
                 </div>
-                {product.originalPrice && (
+                {product.original_price && (
                   <div className={styles.originalPrice}>
-                    {CurrencyHelper.formatVND(product.originalPrice)}
+                    {CurrencyHelper.formatVND(product.original_price)}
                   </div>
                 )}
               </div>
 
               {/* Tags */}
-              {product.tags.length > 0 && (
+              {product.tags && (
                 <div className={styles.tagsSection}>
-                  {product.tags.map(tag => (
-                    <Tag 
-                      key={tag}
-                      color={
-                        tag === 'hot' ? 'red' :
-                        tag === 'new' ? 'blue' :
-                        tag === 'bestseller' ? 'gold' :
-                        'default'
-                      }
-                    >
-                      {tag.toUpperCase()}
-                    </Tag>
-                  ))}
+                  <Tag 
+                    key={product.tags}
+                    color={
+                      product.tags === 'hot' ? 'red' :
+                      product.tags === 'new' ? 'blue' :
+                      product.tags === 'bestseller' ? 'gold' :
+                      'default'
+                    }
+                  >
+                    {product.tags.toUpperCase()}
+                  </Tag>
                 </div>
               )}
 
@@ -172,7 +173,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     size="large"
                     icon={<ShoppingCartOutlined />}
                     onClick={handleAddToCart}
-                    disabled={!product.inStock}
+                    disabled={!product.in_stock}
                     className={styles.addToCartBtn}
                   >
                     Thêm vào giỏ
@@ -182,7 +183,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     type="default"
                     size="large"
                     onClick={handleBuyNow}
-                    disabled={!product.inStock}
+                    disabled={!product.in_stock}
                     className={styles.buyNowBtn}
                   >
                     Mua ngay
@@ -201,7 +202,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
               {/* Stock Status */}
               <div className={styles.stockStatus}>
-                {product.inStock ? (
+                {product.in_stock ? (
                   <Text type="success">✅ Còn hàng</Text>
                 ) : (
                   <Text type="danger">❌ Hết hàng</Text>
@@ -211,13 +212,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               {/* Seller Info */}
               <Card size="small" className={styles.sellerCard}>
                 <div className={styles.sellerInfo}>
-                  <Text strong>Người bán: {product.seller.name}</Text>
-                  <div>
+                  <Text strong>Người bán: {product.seller}</Text>
+                  {/* <div>
                     <Rate disabled value={product.seller.rating} size="small" />
                     <Text className={styles.sellerRating}>
                       ({product.seller.rating})
                     </Text>
-                  </div>
+                  </div> */}
                 </div>
               </Card>
             </div>
@@ -236,14 +237,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </div>
             </TabPane>
 
-            {product.specifications && (
+            {product.specifications && product.specifications.length > 0 && (
               <TabPane tab="Thông số kỹ thuật" key="specifications">
                 <div className={styles.tabContent}>
                   <div className={styles.specifications}>
-                    {Object.entries(product.specifications).map(([key, value]) => (
-                      <div key={key} className={styles.specRow}>
-                        <div className={styles.specLabel}>{key}:</div>
-                        <div className={styles.specValue}>{value}</div>
+                    {product.specifications.map((spec, index) => (
+                      <div key={index} className={styles.specRow}>
+                        <div className={styles.specLabel}>{spec.key}:</div>
+                        <div className={styles.specValue}>{spec.value}</div>
                       </div>
                     ))}
                   </div>

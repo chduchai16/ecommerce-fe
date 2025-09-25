@@ -1,19 +1,19 @@
 'use client'
 
-import { Card, Typography, Rate, Tag, Button, Image, Space } from 'antd'
+import { Card, Typography, Rate, Tag, Button, Image} from 'antd'
 import { ShoppingCartOutlined, HeartOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import type { Product } from '@/data/mockProducts'
-import { CurrencyHelper, NumberHelper } from '@/library/helpers'
+import { CurrencyHelper} from '@/library/helpers'
 import styles from './ProductCard.module.scss'
+import { Product } from '@/library/models/product/product'
 
 const { Text, Title } = Typography
 const { Meta } = Card
 
 interface ProductCardProps {
   product: Product
-  onAddToCart?: (productId: string) => void
-  onAddToWishlist?: (productId: string) => void
+  onAddToCart?: (productId: number) => void
+  onAddToWishlist?: (productId: number) => void
 }
 
 export default function ProductCard({ 
@@ -47,7 +47,7 @@ export default function ProductCard({
           <div className={styles.imageContainer}>
             <Image
               alt={product.name}
-              src={product.imageUrl}
+              src={product.thumbnail || ""}
               className={styles.productImage}
               preview={false}
             />
@@ -59,7 +59,7 @@ export default function ProductCard({
                 {CurrencyHelper.formatDiscountPercent(product.discount)}
               </Tag>
             )}
-            {!product.inStock && (
+            {!product.in_stock && (
               <div className={styles.outOfStockOverlay}>
                 <Text className={styles.outOfStockText}>
                   Hết hàng
@@ -74,7 +74,7 @@ export default function ProductCard({
               type="primary"
               icon={<ShoppingCartOutlined />}
               onClick={handleAddToCart}
-              disabled={!product.inStock}
+              disabled={!product.in_stock}
             >
               Thêm giỏ
             </Button>
@@ -100,9 +100,9 @@ export default function ProductCard({
             <div className={styles.productMeta}>
               {/* Giá */}
               <div className={styles.priceSection}>
-                {product.originalPrice && (
+                {product.original_price && (
                   <Text className={styles.originalPrice}>
-                    {CurrencyHelper.formatVND(product.originalPrice)}
+                    {CurrencyHelper.formatVND(product.original_price)}
                   </Text>
                 )}
                 <Text className={styles.currentPrice}>
@@ -114,27 +114,27 @@ export default function ProductCard({
               <div className={styles.ratingSection}>
                 <Rate 
                   disabled 
-                  defaultValue={product.rating} 
+                  defaultValue={product.average_rating || 0} 
                   className={styles.ratingStars}
                 />
                 <Text className={styles.reviewCount}>
-                  ({product.reviewCount})
+                  ({product.review_count})
                 </Text>
               </div>
 
               {/* Thương hiệu & Người bán */}
               <div>
                 <Text className={styles.brandSeller}>
-                  {product.brand} • {product.seller.name}
+                  {product.brand} • {product.seller}
                 </Text>
               </div>
 
               {/* Thẻ tag */}
-              {product.tags.length > 0 && (
+              {Array.isArray(product.tags) && product.tags.length > 0 && (
                 <div className={styles.tagsSection}>
                   {product.tags.map(tag => (
-                    <Tag 
-                      key={tag} 
+                    <Tag
+                      key={tag}
                       className={styles.productTag}
                       color={
                         tag === 'hot' ? 'red' :

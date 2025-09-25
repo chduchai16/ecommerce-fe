@@ -15,7 +15,6 @@ import { useRouter } from 'next/navigation'
 
 import { useMessage } from '@/hooks/use-message'
 import { useUser } from '@/contexts/UserContext'
-import { getMockCartCount } from '@/data/mockCartData'
 import styles from './customer-header.module.scss'
 import cartGif from '../../../assets/gifs/cart.gif'
 
@@ -28,10 +27,6 @@ export default function CustomerHeader() {
   useEffect(() => {
     loadUser()
   }, [loadUser])
-
-  useEffect(() => {
-    console.log('CustomerHeader - User state changed:', user)
-  }, [user])
 
   // Handle logout
   const handleLogout = async () => {
@@ -123,7 +118,7 @@ export default function CustomerHeader() {
               </Badge>
 
               {/* Shopping Cart */}
-              <Badge count={getMockCartCount()} size="small">
+              <Badge count={5} size="small">
                 <Link href="/customer/cart">
                   <Button
                     type="text"

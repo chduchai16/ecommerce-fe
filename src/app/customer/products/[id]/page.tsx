@@ -1,19 +1,35 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { useState } from 'react'
-import { mockProducts } from '@/data/mockProducts'
+import { useEffect, useState } from 'react'
 import ProductDetail from '@/components/customer/product-detail/ProductDetail'
 import { Spin, Result } from 'antd'
+import { Product } from '@/library/models/product/product'
+import { ProductService } from '@/library/services/product-service'
+import Link from 'next/link'
 
 export default function ProductDetailPage() {
   const params = useParams()
-  const productId = params.id as string
-
+  const productId : number  = Number(params.id)
   const [loading, setLoading] = useState(false)
 
+  const [product, setProduct] = useState<Product>({} as Product);
+  const productService = new ProductService() ;
   // Tìm sản phẩm theo ID
-  const product = mockProducts.find(p => p.id === productId)
+  useEffect(()=> {
+    const fetchProduct = async () => {
+      setLoading(true)
+      try {
+        const product = await productService.getProductById(productId)
+        setProduct(product)
+      } catch (error) {
+        console.error('Failed to fetch product:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProduct()
+  } , [])
 
   if (loading) {
     return (
@@ -30,13 +46,14 @@ export default function ProductDetailPage() {
         title="404"
         subTitle="Sản phẩm không tồn tại hoặc đã bị xóa."
         extra={
-          <a href="/customer/products">
+          <Link href="/customer/products">
             Quay lại danh sách sản phẩm
-          </a>
+          </Link>
         }
       />
     )
   }
+
 
   return <ProductDetail product={product} />
 }
