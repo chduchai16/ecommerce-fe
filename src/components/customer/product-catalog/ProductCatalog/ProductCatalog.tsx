@@ -122,36 +122,6 @@ export default function ProductCatalog() {
 
   return (
     <div className={styles.catalogContainer}>
-
-      {/* Tiêu đề */}
-      <div className={styles.catalogHeader}>
-        {/* Tìm kiếm và Sắp xếp */}
-        <Row gutter={16} className={styles.searchSortRow}>
-          <Col flex="auto">
-            <Input
-              placeholder="Tìm kiếm sản phẩm..."
-              prefix={<SearchOutlined />}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
-          </Col>
-          <Col>
-            <Select
-              value={sortBy}
-              onChange={setSortBy}
-              className={styles.sortSelect}
-            >
-              <Option value="newest">Mới nhất</Option>
-              <Option value="popular">Phổ biến nhất</Option>
-              <Option value="rating">Đánh giá cao</Option>
-              <Option value="price-low">Giá: Thấp đến cao</Option>
-              <Option value="price-high">Giá: Cao đến thấp</Option>
-            </Select>
-          </Col>
-        </Row>
-      </div>
-
       <Row gutter={24} className={styles.mainContent}>
         {/* Thanh bộ lọc */}
         <Col xs={24} lg={6} className={styles.filterSidebar}>

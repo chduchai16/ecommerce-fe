@@ -36,8 +36,8 @@ export default function CustomerHeader() {
   // Handle logout
   const handleLogout = async () => {
     clearUser()
-    message.success('Đăng xuất thành công!')
     router.push('/auth/sign-in')
+    message.success('Đăng xuất thành công!')
   }
 
   // Handle menu click
