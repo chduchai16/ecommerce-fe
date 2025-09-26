@@ -1,38 +1,60 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { Row, Col, Typography, Button, Table, InputNumber, Image, Card, Divider, Empty, App } from 'antd'
 import { DeleteOutlined, ShoppingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import type { CartItem } from '@/data/mockProducts'
-import { mockCartItems } from '@/data/mockCartData'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ShoppingCart.module.scss'
+import { CartService } from '@/library/services/cart-service'
+import { Cart } from '@/library/models/cart/cart'
+import { CartItem } from '@/library/models/cart/cart-item'
 
 const { Title, Text } = Typography
 
 export default function ShoppingCart() {
   const { message } = App.useApp();
+  const cartService = new CartService();
 
-  const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems)
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(false)
 
-  const updateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity < 1) return
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        setLoading(true);
+        const cart: Cart = await cartService.getCart();
+        setCartItems(cart.cart_items);
+      } catch (error) {
+        message.error('Không thể tải giỏ hàng. Vui lòng thử lại sau.')
+      }
+      finally {
+        setLoading(false)
+      }
+    }
+    fetchCart();
+  }, [])
 
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === itemId
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
-    )
-  }
+  useEffect(() => {
+    console.log(cartItems);
+  }, [cartItems])
 
-  const removeItem = (itemId: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== itemId))
-    message.success('Đã xóa sản phẩm khỏi giỏ hàng')
-  }
+  // const updateQuantity = (itemId: string, newQuantity: number) => {
+  //   if (newQuantity < 1) return
+
+  //   setCartItems(prev =>
+  //     prev.map(item =>
+  //       item.id === itemId
+  //         ? { ...item, quantity: newQuantity }
+  //         : item
+  //     )
+  //   )
+  // }
+
+  // const removeItem = (itemId: string) => {
+  //   setCartItems(prev => prev.filter(item => item.id !== itemId))
+  //   message.success('Đã xóa sản phẩm khỏi giỏ hàng')
+  // }
 
   const clearCart = () => {
     setCartItems([])
@@ -40,7 +62,9 @@ export default function ShoppingCart() {
   }
 
   const calculateSubtotal = (item: CartItem) => {
-    return item.product.price * item.quantity
+    const price = item.product?.price ?? 0
+    const qty = item.quantity ?? 0
+    return price * qty
   }
 
   const calculateTotal = () => {
@@ -62,27 +86,35 @@ export default function ShoppingCart() {
       key: 'product',
       render: (_: unknown, record: CartItem) => (
         <div className={styles.productInfo}>
-          <Image
-            src={record.product.imageUrl}
-            alt={record.product.name}
-            width={80}
-            height={80}
-            style={{ objectFit: 'contain' }}
-            className={styles.productImage}
-          />
-          <div className={styles.productDetails}>
-            <Link href={`/customer/products/${record.product.id}`}>
-              <Text strong className={styles.productName}>
-                {record.product.name}
-              </Text>
-            </Link>
-            <Text className={styles.productBrand}>
-              {record.product.brand}
-            </Text>
-            <Text className={styles.productPrice}>
-              {CurrencyHelper.formatVND(record.product.price)}
-            </Text>
-          </div>
+          {record.product ? (
+            <>
+              <Image
+                src={record.product.thumbnail ?? ""}
+                alt={record.product.name}
+                width={80}
+                height={80}
+                style={{ objectFit: 'contain' }}
+                className={styles.productImage}
+              />
+              <div className={styles.productDetails}>
+                <Link href={`/customer/products/${record.product.id}`}>
+                  <Text strong className={styles.productName}>
+                    {record.product.name}
+                  </Text>
+                </Link>
+                <Text className={styles.productBrand}>
+                  {record.product.brand}
+                </Text>
+                <Text className={styles.productPrice}>
+                  {CurrencyHelper.formatVND(record.product.price)}
+                </Text>
+              </div>
+            </>
+          ) : (
+            <div className={styles.productDetails}>
+              <Text type="secondary">Sản phẩm không khả dụng</Text>
+            </div>
+          )}
         </div>
       ),
     },
@@ -96,7 +128,7 @@ export default function ShoppingCart() {
           min={1}
           max={99}
           value={record.quantity}
-          onChange={(value) => updateQuantity(record.id, value || 1)}
+          // onChange={(value) => updateQuantity(record.id, value || 1)}
           style={{ width: '100px' }}
         />
       ),
@@ -119,7 +151,7 @@ export default function ShoppingCart() {
         <Button
           type="text"
           icon={<DeleteOutlined />}
-          onClick={() => removeItem(record.id)}
+          // onClick={() => removeItem(record.id)}
           className={styles.deleteBtn}
           title="Xóa sản phẩm"
         />
