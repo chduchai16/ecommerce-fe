@@ -3,9 +3,7 @@
 import { useState } from 'react'
 import { Row, Col, Card, Form, Input, Button, Upload, Avatar, Select, DatePicker, Switch, Typography, Divider, Space, App } from 'antd'
 import { UserOutlined, EditOutlined, SaveOutlined, CameraOutlined } from '@ant-design/icons'
-import type { UploadFile } from 'antd/es/upload/interface'
 import dayjs from 'dayjs'
-import { mockUserProfile, type UserProfile } from '@/data/mockUserData'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './UserProfile.module.scss'
 
@@ -16,7 +14,7 @@ export default function UserProfile() {
   const { message } = App.useApp();
 
   const [form] = Form.useForm()
-  const [profile, setProfile] = useState<UserProfile>(mockUserProfile)
+  const [profile, setProfile] = useState<any>({})
   const [editing, setEditing] = useState(false)
   const [loading, setLoading] = useState(false)
   const [fileList, setFileList] = useState([])

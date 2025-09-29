@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Row, Col, Typography, Button, Table, InputNumber, Image, Card, Divider, Empty, App } from 'antd'
 import { DeleteOutlined, ShoppingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
@@ -14,18 +14,25 @@ const { Title, Text } = Typography
 
 export default function ShoppingCart() {
   const { message } = App.useApp();
-  const cartService = new CartService();
+  const cartServiceRef = useRef<CartService>(new CartService())
+  const cartService = cartServiceRef.current
 
   const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [cartId, setCartId] = useState<number>(0);
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
 
+
+  // lấy giỏ hàng từ api
   useEffect(() => {
     const fetchCart = async () => {
       try {
         setLoading(true);
         const cart: Cart = await cartService.getCart();
         setCartItems(cart.cart_items);
-      } catch (error) {
+        setCartId(cart.id);
+      } catch (err) {
+        console.error('Load cart failed', err)
         message.error('Không thể tải giỏ hàng. Vui lòng thử lại sau.')
       }
       finally {
@@ -33,43 +40,68 @@ export default function ShoppingCart() {
       }
     }
     fetchCart();
-  }, [])
+  }, [cartService, message])
 
-  useEffect(() => {
-    console.log(cartItems);
-  }, [cartItems])
+  // (removed auto-save on unmount to keep logic explicit via the Save button)
 
-  // const updateQuantity = (itemId: string, newQuantity: number) => {
-  //   if (newQuantity < 1) return
+  // Xóa sản phẩm khỏi giỏ hàng
+  const removeItem = (itemId?: number) => {
+    if (!itemId) return;
+    setCartItems(cartItems.filter(i => i.id !== itemId));
+  };
 
-  //   setCartItems(prev =>
-  //     prev.map(item =>
-  //       item.id === itemId
-  //         ? { ...item, quantity: newQuantity }
-  //         : item
-  //     )
-  //   )
-  // }
+  // Cập nhật số lượng sản phẩm trong giỏ hàng
+  const updateItemQuantity = (quantity: number, itemId?: number) => {
+    if (!itemId) return;
+    setCartItems(prev =>
+      prev.map(i =>
+        i.id === itemId ? { ...i, quantity } : i
+      )
+    );
+  };
 
-  // const removeItem = (itemId: string) => {
-  //   setCartItems(prev => prev.filter(item => item.id !== itemId))
-  //   message.success('Đã xóa sản phẩm khỏi giỏ hàng')
-  // }
-
+  // Xóa tất cả sản phẩm khỏi giỏ hàng
   const clearCart = () => {
-    setCartItems([])
-    message.success('Đã xóa tất cả sản phẩm')
-  }
+    setCartItems([]);
+    message.success('Đã xóa tất cả sản phẩm');
+  };
 
+  // Tính thành tiền cho mỗi sản phẩm
   const calculateSubtotal = (item: CartItem) => {
     const price = item.product?.price ?? 0
     const qty = item.quantity ?? 0
     return price * qty
   }
 
+  // Tính tổng tiền giỏ hàng
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => total + calculateSubtotal(item), 0)
   }
+
+  // Cập nhật giỏ hàng lên server
+  const handleSaveCart = async () => {
+    if (cartId === 0) return;
+
+    const updateItems: CartItem[] = cartItems.map(item => ({
+      id: item.id,
+      product_id: item.product?.id,
+      quantity: item.quantity ,
+      cart_id : cartId
+    }));
+
+    const cart: Cart = {
+      id: cartId,
+      cart_items: updateItems
+    };
+    const apiResponse = await cartService.updateCart(cart);
+    if (apiResponse.status === 200) {
+      message.success('Cập nhật giỏ hàng thành công');
+    }
+    else {
+      message.error('Cập nhật giỏ hàng thất bại. Vui lòng thử lại sau.');
+    }
+  }
+
 
   const handleCheckout = () => {
     setLoading(true)
@@ -128,7 +160,7 @@ export default function ShoppingCart() {
           min={1}
           max={99}
           value={record.quantity}
-          // onChange={(value) => updateQuantity(record.id, value || 1)}
+          onChange={(value) => updateItemQuantity(value || 1, record.id)}
           style={{ width: '100px' }}
         />
       ),
@@ -151,7 +183,7 @@ export default function ShoppingCart() {
         <Button
           type="text"
           icon={<DeleteOutlined />}
-          // onClick={() => removeItem(record.id)}
+          onClick={() => removeItem(record.id)}
           className={styles.deleteBtn}
           title="Xóa sản phẩm"
         />
@@ -245,8 +277,18 @@ export default function ShoppingCart() {
               </div>
 
               <Button
+                type="default"
+                block
+                onClick={handleSaveCart}
+                loading={saving}
+                className={styles.saveBtn}
+                style={{ marginBottom: 12 }}
+              >
+                Lưu lại thông tin
+              </Button>
+
+              <Button
                 type="primary"
-                size="large"
                 block
                 onClick={handleCheckout}
                 loading={loading}

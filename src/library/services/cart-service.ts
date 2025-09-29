@@ -1,31 +1,27 @@
 import api from "@/configs/axios-config";
-import { CartItem } from "../models/cart/cart-item";
 import { Cart } from "../models/cart/cart";
+import { Product } from "../models/product/product";
+import { CartItem } from "../models/cart/cart-item";
 
 export class CartService {
 
   public async getCart() {
     const response = await api.get(`/carts`);
-    return response.data;
+    const cart: Cart = response.data;
+    return cart;
+  }
+
+  public async addItem (product : Product){
+    const payload : CartItem = {
+      product_id : product.id,
+      quantity : 1
+    } ; 
+    const response = await api.post('/carts/items', payload) ;
+    return response.data ;
   }
 
   public async updateCart(cart: Cart) {
-    api.put(`/carts`, cart);
-  }
-
-  public async addToCart(cartItem : CartItem) {
-
-  }
-
-  public async updateCartItem(userId: string, productId: string, quantity: number) {
-
-  }
-
-  public async removeFromCart(userId: string, productId: string) {
-
-  }
-
-  public async clearCart(userId: string) {
-
+    const response = await api.put(`/carts`, cart);
+    return response;
   }
 }

@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { Row, Col, Typography, Card, Tag, Button, Empty, Image, Timeline, Modal, Descriptions, Space, Input } from 'antd'
-import { EyeOutlined, SearchOutlined, ShopOutlined, TruckOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { EyeOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { mockOrders, getOrderStatusText, getOrderStatusColor, getPaymentMethodText, type Order } from '@/data/mockUserData'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './UserOrders.module.scss'
 
@@ -12,7 +11,7 @@ const { Title, Text } = Typography
 const { Search } = Input
 
 export default function UserOrders() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders)
+  const [orders, setOrders] = useState<Order[]>([])
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [filterStatus, setFilterStatus] = useState<string>('all')

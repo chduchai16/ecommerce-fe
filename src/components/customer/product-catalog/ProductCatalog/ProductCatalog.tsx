@@ -7,6 +7,7 @@ import ProductFilter from '../ProductFilter'
 import styles from './ProductCatalog.module.scss'
 import { ProductService } from '@/library/services/product-service'
 import { Product } from '@/library/models/product/product'
+import { CartService } from '@/library/services/cart-service'
 
 interface FilterState {
   category: string
@@ -21,6 +22,7 @@ const ITEMS_PER_PAGE = 12
 export default function ProductCatalog() {
 
   const productService = new ProductService() ;
+  const cartService = new CartService() ;
 
   const { message } = App.useApp();
 
@@ -102,10 +104,15 @@ export default function ProductCatalog() {
     setCurrentPage(1)
   }
 
-  const handleAddToCart = (productId: number) => {
-    const product = productList.find(p => p.id === productId)
+  const handleAddToCart = async (product : Product) => {
     if (product) {
-      message.success(`Đã thêm ${product.name} vào giỏ hàng`)
+      const cartItemId = await cartService.addItem(product);
+      if(cartItemId){
+        message.success(`Đã thêm ${product.name} vào giỏ hàng`)
+      }
+      else {
+        message.error(`Không thể thêm ${product.name} vào giỏ hàng. Vui lòng thử lại sau.`)
+      }
     }
   }
 
@@ -134,13 +141,13 @@ export default function ProductCatalog() {
     <div className={styles.catalogContainer}>
       <Row gutter={24} className={styles.mainContent}>
         {/* Thanh bộ lọc */}
-        <Col xs={24} lg={6} className={styles.filterSidebar}>
+        {/* <Col xs={24} lg={6} className={styles.filterSidebar}>
           <ProductFilter
             filters={filters}
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
           />
-        </Col>
+        </Col> */}
 
         {/* Lưới sản phẩm */}
         <Col xs={24} lg={18} className={styles.productSection}>
@@ -175,8 +182,8 @@ export default function ProductCatalog() {
                     { 
                     <ProductCard
                       product={product}
-                      onAddToCart={handleAddToCart}
-                      onAddToWishlist={handleAddToWishlist}
+                      onAddToCart={() => handleAddToCart(product)}
+                      onAddToWishlist={() => handleAddToWishlist(product.id)}
                     /> 
                     }
                   </Col>
