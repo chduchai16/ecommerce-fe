@@ -8,6 +8,11 @@ export class ProductService {
     return response.data.page_content;
   }
 
+  public async getProductsByIds(ids: number[]) {
+    const response = await api.post("/products/batch", ids);
+    return response.data;
+  }
+
   public async getProductById(id : number) {
     const response = await api.get(`/products/${id}`);
     return response.data;

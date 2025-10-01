@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 24px;
+}
+
+.result {
+    max-width: 720px;
+    width: 100%;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}

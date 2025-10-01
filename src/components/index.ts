@@ -2,7 +2,7 @@
 export * from './auth'
 
 // Shared Components - Các component dùng chung (bỏ comment khi có components)
-// export * from './shared/ui'
+export * from './shared/ui'
 // export * from './shared/layout'
 // export * from './shared/common'
 

@@ -7,7 +7,8 @@ import {
   ShoppingCartOutlined,
   HeartOutlined,
   UserOutlined,
-  MenuOutlined
+  MenuOutlined,
+  UserAddOutlined
 } from '@ant-design/icons'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -33,6 +34,14 @@ export default function CustomerHeader() {
     clearUser()
     router.push('/auth/sign-in')
     message.success('Đăng xuất thành công!')
+  }
+
+  const handleLogin = () => {
+    router.push('/auth/sign-in')
+  }
+
+  const handleRegister = () => {
+    router.push('/auth/sign-up')
   }
 
   // Handle menu click
@@ -130,21 +139,28 @@ export default function CustomerHeader() {
               </Badge>
 
               {/* User Menu */}
-              <Dropdown
-                menu={{
-                  items: userMenuItems,
-                  onClick: handleMenuClick
-                }}
-                placement="bottomRight"
-              >
-                <Button
-                  type="text"
-                  icon={<UserOutlined />}
+              {user ? (
+                <Dropdown
+                  menu={{
+                    items: userMenuItems,
+                    onClick: handleMenuClick
+                  }}
+                  placement="bottomRight"
                 >
-                  {user?.fullname || 'Tài khoản'}
-                </Button>
-              </Dropdown>
-
+                  <Button
+                    type="text"
+                    icon={<UserOutlined />}
+                  >
+                    {user?.fullname || 'Tài khoản'}
+                  </Button>
+                </Dropdown>
+              ) : (
+                <div className={styles.guestActions}>
+                  <Button type="text" icon={<UserOutlined />} onClick={handleLogin}>Đăng nhập</Button>
+                  <span className={styles.separator} aria-hidden />
+                  <Button type="text" icon={<UserAddOutlined />} onClick={handleRegister}>Đăng ký</Button>
+                </div>
+              )}
             </Space>
           </div>
         </div>

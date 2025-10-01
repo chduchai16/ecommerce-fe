@@ -229,9 +229,6 @@ export default function ShoppingCart() {
               Tiếp tục mua sắm
             </Button>
           </Link>
-          <Button onClick={clearCart} type="text" className={styles.clearBtn}>
-            Xóa tất cả
-          </Button>
         </div>
 
         <Row gutter={[24, 24]}>

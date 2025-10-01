@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Row, Col,Spin, Empty, App } from 'antd'
+import { Row, Col, Spin, Result, Button, App } from 'antd'
 import ProductCard from '../ProductCard'
-import ProductFilter from '../ProductFilter'
 import styles from './ProductCatalog.module.scss'
 import { ProductService } from '@/library/services/product-service'
 import { Product } from '@/library/models/product/product'
 import { CartService } from '@/library/services/cart-service'
+import { WishlistService } from '@/library/services/wishlist-service'
 
 interface FilterState {
   category: string
@@ -17,12 +17,11 @@ interface FilterState {
   inStock: boolean
 }
 
-const ITEMS_PER_PAGE = 12
-
 export default function ProductCatalog() {
 
-  const productService = new ProductService() ;
-  const cartService = new CartService() ;
+  const productService = new ProductService();
+  const cartService = new CartService();
+  const wishListService = new WishlistService() ;
 
   const { message } = App.useApp();
 
@@ -104,10 +103,10 @@ export default function ProductCatalog() {
     setCurrentPage(1)
   }
 
-  const handleAddToCart = async (product : Product) => {
+  const handleAddToCart = async (product: Product) => {
     if (product) {
       const cartItemId = await cartService.addItem(product);
-      if(cartItemId){
+      if (cartItemId) {
         message.success(`Đã thêm ${product.name} vào giỏ hàng`)
       }
       else {
@@ -117,11 +116,15 @@ export default function ProductCatalog() {
   }
 
   const handleAddToWishlist = (productId: number) => {
-    const product = productList.find(p => p.id === productId)
-    if (product) {
-      message.success(`Đã thêm ${product.name} vào danh sách yêu thích`)
+    const result = wishListService.add(productId);
+    if (result) {
+      message.success(`Đã thêm sản phẩm vào danh sách yêu thích`)
+    }
+    else {
+      message.info(`Sản phẩm đã có trong danh sách yêu thích`)
     }
   }
+
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -160,10 +163,18 @@ export default function ProductCatalog() {
 
           {/* Không có kết quả */}
           {!loading && filteredProducts.length === 0 && (
-            <Empty
-              description="Không tìm thấy sản phẩm nào"
-              className={styles.emptyContainer}
-            />
+            <div className={styles.emptyContainer}>
+              <Result
+                status="info"
+                title="Không tìm thấy sản phẩm nào"
+                subTitle="Thử bỏ lọc hoặc tìm kiếm khác để mở rộng kết quả."
+                extra={
+                  <div>
+                    <Button onClick={handleClearFilters}>Xóa bộ lọc</Button>
+                  </div>
+                }
+              />
+            </div>
           )}
 
           {/* Lưới sản phẩm */}
@@ -179,12 +190,12 @@ export default function ProductCatalog() {
                     xl={6}
                     className={styles.productCol}
                   >
-                    { 
-                    <ProductCard
-                      product={product}
-                      onAddToCart={() => handleAddToCart(product)}
-                      onAddToWishlist={() => handleAddToWishlist(product.id)}
-                    /> 
+                    {
+                      <ProductCard
+                        product={product}
+                        onAddToCart={() => handleAddToCart(product)}
+                        onAddToWishlist={() => handleAddToWishlist(product.id)}
+                      />
                     }
                   </Col>
                 ))}
