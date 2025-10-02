@@ -24,4 +24,9 @@ export class CartService {
     const response = await api.put(`/carts`, cart);
     return response;
   }
+
+  public async getNumberOfItems() {
+    const cart = await this.getCart();
+    return cart.cart_items.length;
+  }
 }

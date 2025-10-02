@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Input, Button, Badge, Dropdown, Space } from 'antd'
 import {
   SearchOutlined,
@@ -18,18 +18,37 @@ import { useMessage } from '@/hooks/use-message'
 import { useUser } from '@/contexts/UserContext'
 import styles from './customer-header.module.scss'
 import cartGif from '../../../assets/gifs/cart.gif'
+import { WishlistService } from '@/library/services/wishlist-service'
+import { CartService } from '@/library/services/cart-service'
+import { get } from 'http'
 
 export default function CustomerHeader() {
+
+  // service 
+  const wishListService = new WishlistService() ;
+  const cartService = new CartService() ;
+
+  // hooks
   const router = useRouter()
   const message = useMessage()
   const { user, clearUser, loadUser } = useUser()
 
+  // states
+  const [numberOfWishlistItems, setNumberOfWishlistItems] = useState(0);
+  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
+
+
   // Reload user data when component mounts
   useEffect(() => {
-    loadUser()
+    loadUser();
   }, [loadUser])
 
-  // Handle logout
+  // Load number of wishlist items when component mounts
+  useEffect(() => {
+    getNumberOfWishlistItems();
+    getNumberOfCartItems();
+  }, []);
+
   const handleLogout = async () => {
     clearUser()
     router.push('/auth/sign-in')
@@ -44,14 +63,22 @@ export default function CustomerHeader() {
     router.push('/auth/sign-up')
   }
 
-  // Handle menu click
   const handleMenuClick = (e: { key: string }) => {
     if (e.key === 'logout') {
       handleLogout()
     }
   }
 
-  // User menu dropdown items
+  const getNumberOfWishlistItems = () => {
+    const items = wishListService.getAll();
+    setNumberOfWishlistItems(items.length);
+  }
+
+  const getNumberOfCartItems = async () => {
+    const count = await cartService.getNumberOfItems();
+    setNumberOfCartItems(count);
+  }
+
   const userMenuItems = [
     {
       key: 'profile',
@@ -115,7 +142,7 @@ export default function CustomerHeader() {
             <Space size="large">
 
               {/* Wishlist */}
-              <Badge count={5} size="small">
+              <Badge count={numberOfWishlistItems} size="small">
                 <Link href="/customer/wishlist">
                   <Button
                     type="text"
@@ -127,7 +154,7 @@ export default function CustomerHeader() {
               </Badge>
 
               {/* Shopping Cart */}
-              <Badge count={5} size="small">
+              <Badge count={numberOfCartItems} size="small">
                 <Link href="/customer/cart">
                   <Button
                     type="text"

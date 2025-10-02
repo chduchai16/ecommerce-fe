@@ -83,7 +83,6 @@ export default function UserWishlist() {
     const handleAddToCart = (productId: number) => {
         console.log('Adding to cart:', productId);
         message.success('Đã thêm vào giỏ hàng');
-        // TODO: gọi cartService
     };
 
     const formatPrice = (price: number) =>
