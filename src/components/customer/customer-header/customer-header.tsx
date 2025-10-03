@@ -1,14 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Input, Button, Badge, Dropdown, Space } from 'antd'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import {
+  Input,
+  Button,
+  Badge,
+  Dropdown,
+  Space
+} from 'antd'
 import {
   SearchOutlined,
   ShoppingCartOutlined,
   HeartOutlined,
   UserOutlined,
   MenuOutlined,
-  UserAddOutlined
+  UserAddOutlined,
+  ClearOutlined
 } from '@ant-design/icons'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -16,17 +23,16 @@ import { useRouter } from 'next/navigation'
 
 import { useMessage } from '@/hooks/use-message'
 import { useUser } from '@/contexts/UserContext'
-import styles from './customer-header.module.scss'
-import cartGif from '../../../assets/gifs/cart.gif'
 import { WishlistService } from '@/library/services/wishlist-service'
 import { CartService } from '@/library/services/cart-service'
-import { get } from 'http'
+
+import styles from './customer-header.module.scss'
+import cartGif from '../../../assets/gifs/cart.gif'
 
 export default function CustomerHeader() {
-
-  // service 
-  const wishListService = new WishlistService() ;
-  const cartService = new CartService() ;
+  // services (dùng useMemo để không khởi tạo lại mỗi lần render)
+  const wishListService = useMemo(() => new WishlistService(), [])
+  const cartService = useMemo(() => new CartService(), [])
 
   // hooks
   const router = useRouter()
@@ -34,51 +40,71 @@ export default function CustomerHeader() {
   const { user, clearUser, loadUser } = useUser()
 
   // states
-  const [numberOfWishlistItems, setNumberOfWishlistItems] = useState(0);
-  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
+  const [numberOfWishlistItems, setNumberOfWishlistItems] = useState(0)
+  const [numberOfCartItems, setNumberOfCartItems] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
+  // Loại bỏ searchType, mặc định luôn là tìm kiếm tất cả
 
+  // lấy số lượng wishlist
+  const getNumberOfWishlistItems = useCallback(() => {
+    const items = wishListService.getAll()
+    setNumberOfWishlistItems(items.length)
+  }, [wishListService])
 
-  // Reload user data when component mounts
+  // lấy số lượng cart
+  const getNumberOfCartItems = useCallback(async () => {
+    const count = await cartService.getNumberOfItems()
+    setNumberOfCartItems(count)
+  }, [cartService])
+
+  // reload user khi mount
   useEffect(() => {
-    loadUser();
+    loadUser()
   }, [loadUser])
 
-  // Load number of wishlist items when component mounts
+  // khôi phục search query từ URL
   useEffect(() => {
-    getNumberOfWishlistItems();
-    getNumberOfCartItems();
-  }, []);
+    const searchParams = new URLSearchParams(window.location.search)
 
+    // Chỉ lấy tham số 'search' từ URL
+    const searchParam = searchParams.get('search')
+    if (searchParam) {
+      setSearchQuery(searchParam)
+    }
+  }, [])
+
+  // load wishlist + cart khi mount
+  useEffect(() => {
+    getNumberOfWishlistItems()
+    getNumberOfCartItems()
+  }, [getNumberOfWishlistItems, getNumberOfCartItems])
+
+  // logout
   const handleLogout = async () => {
     clearUser()
     router.push('/auth/sign-in')
     message.success('Đăng xuất thành công!')
   }
 
-  const handleLogin = () => {
-    router.push('/auth/sign-in')
-  }
+  const handleLogin = () => router.push('/auth/sign-in')
+  const handleRegister = () => router.push('/auth/sign-up')
 
-  const handleRegister = () => {
-    router.push('/auth/sign-up')
-  }
-
-  const handleMenuClick = (e: { key: string }) => {
-    if (e.key === 'logout') {
-      handleLogout()
+  // search action
+  const handleSearch = useCallback(() => {
+    const buildSearchParams = () => {
+      if (!searchQuery.trim()) return null
+      const params = new URLSearchParams()
+      params.append('search', searchQuery.trim())
+      return params.toString()
     }
-  }
 
-  const getNumberOfWishlistItems = () => {
-    const items = wishListService.getAll();
-    setNumberOfWishlistItems(items.length);
-  }
+    const queryParams = buildSearchParams()
+    if (queryParams) {
+      router.push(`/customer/products?${queryParams}`)
+    }
+  }, [router, searchQuery])
 
-  const getNumberOfCartItems = async () => {
-    const count = await cartService.getNumberOfItems();
-    setNumberOfCartItems(count);
-  }
-
+  // user menu
   const userMenuItems = [
     {
       key: 'profile',
@@ -92,9 +118,7 @@ export default function CustomerHeader() {
       key: 'wishlist',
       label: <Link href="/customer/wishlist">Sản phẩm yêu thích</Link>
     },
-    {
-      type: 'divider' as const
-    },
+    { type: 'divider' as const },
     {
       key: 'logout',
       label: 'Đăng xuất'
@@ -103,11 +127,9 @@ export default function CustomerHeader() {
 
   return (
     <header className={styles.customerHeader}>
-
       {/* Main Header */}
       <div className={styles.mainHeader}>
         <div className={styles.container}>
-
           {/* Logo */}
           <Link href="/customer/products" className={styles.logo}>
             <Image
@@ -126,11 +148,24 @@ export default function CustomerHeader() {
               <Input
                 placeholder="Tìm kiếm sản phẩm..."
                 className={styles.searchInput}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onPressEnter={handleSearch}
+                suffix={
+                  <ClearOutlined
+                    onClick={() => setSearchQuery('')}
+                    style={{
+                      cursor: 'pointer',
+                      visibility: searchQuery ? 'visible' : 'hidden'
+                    }}
+                  />
+                }
               />
               <Button
                 type="primary"
                 icon={<SearchOutlined />}
                 className={styles.searchBtn}
+                onClick={handleSearch}
               >
                 Tìm
               </Button>
@@ -140,14 +175,10 @@ export default function CustomerHeader() {
           {/* Actions */}
           <div>
             <Space size="large">
-
               {/* Wishlist */}
               <Badge count={numberOfWishlistItems} size="small">
                 <Link href="/customer/wishlist">
-                  <Button
-                    type="text"
-                    icon={<HeartOutlined />}
-                  >
+                  <Button type="text" icon={<HeartOutlined />}>
                     Yêu thích
                   </Button>
                 </Link>
@@ -156,10 +187,7 @@ export default function CustomerHeader() {
               {/* Shopping Cart */}
               <Badge count={numberOfCartItems} size="small">
                 <Link href="/customer/cart">
-                  <Button
-                    type="text"
-                    icon={<ShoppingCartOutlined />}
-                  >
+                  <Button type="text" icon={<ShoppingCartOutlined />}>
                     Giỏ hàng
                   </Button>
                 </Link>
@@ -170,22 +198,25 @@ export default function CustomerHeader() {
                 <Dropdown
                   menu={{
                     items: userMenuItems,
-                    onClick: handleMenuClick
+                    onClick: (e) => {
+                      if (e.key === 'logout') handleLogout()
+                    }
                   }}
                   placement="bottomRight"
                 >
-                  <Button
-                    type="text"
-                    icon={<UserOutlined />}
-                  >
+                  <Button type="text" icon={<UserOutlined />}>
                     {user?.fullname || 'Tài khoản'}
                   </Button>
                 </Dropdown>
               ) : (
                 <div className={styles.guestActions}>
-                  <Button type="text" icon={<UserOutlined />} onClick={handleLogin}>Đăng nhập</Button>
+                  <Button type="text" icon={<UserOutlined />} onClick={handleLogin}>
+                    Đăng nhập
+                  </Button>
                   <span className={styles.separator} aria-hidden />
-                  <Button type="text" icon={<UserAddOutlined />} onClick={handleRegister}>Đăng ký</Button>
+                  <Button type="text" icon={<UserAddOutlined />} onClick={handleRegister}>
+                    Đăng ký
+                  </Button>
                 </div>
               )}
             </Space>
@@ -215,7 +246,6 @@ export default function CustomerHeader() {
           </Space>
         </div>
       </div>
-
     </header>
   )
 }

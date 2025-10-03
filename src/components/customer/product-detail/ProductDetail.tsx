@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Row, Col, Image, Typography, Rate, Tag, Button, InputNumber, Divider, Card, Tabs } from 'antd'
 import { ShoppingCartOutlined, HeartOutlined, ShareAltOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ProductDetail.module.scss'
 import { Product } from '@/library/models/product/product'
 import Link from 'next/link'
+import { WishlistService } from '@/library/services/wishlist-service'
+import { useMessage } from '@/hooks/use-message'
 
 const { Title, Text, Paragraph } = Typography
 const { TabPane } = Tabs
@@ -16,6 +18,12 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
+
+  // services
+  const wishListService = new WishlistService() ;
+  const message = useMessage() ;
+
+  // states
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [selectedVariant, setSelectedVariant] = useState<string>()
@@ -23,13 +31,22 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const images = product.product_images || [product.thumbnail || ""]
 
   const handleAddToCart = () => {
-    // TODO: Implement add to cart functionality
     console.log('Add to cart:', { product, quantity, selectedVariant })
   }
 
   const handleBuyNow = () => {
-    // TODO: Implement buy now functionality
     console.log('Buy now:', { product, quantity, selectedVariant })
+  }
+
+  const handleAddToWishlist = () => {
+    const productId : number | null = wishListService.add(product.id) ;
+
+    if (productId) {
+      message.success('Đã thêm sản phẩm vào danh sách yêu thích')
+    } else {
+      message.error('Sản phẩm đã có trong danh sách yêu thích')
+    }
+    
   }
 
   return (
@@ -132,7 +149,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     color={
                       product.tags === 'hot' ? 'red' :
                       product.tags === 'new' ? 'blue' :
-                      product.tags === 'bestseller' ? 'gold' :
+                      product.tags === 'best seller' ? 'gold' :
                       'default'
                     }
                   >
@@ -147,7 +164,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <div className={styles.actionsSection}>
                 <div className={styles.quantitySection}>
                   <Text className={styles.quantityLabel}>Số lượng:</Text>
-                  <div className={styles.quantityInput}>
+                  <div>
                     <Button
                       icon={<MinusOutlined />}
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -191,7 +208,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 </div>
 
                 <div className={styles.secondaryActions}>
-                  <Button icon={<HeartOutlined />} type="text">
+                  <Button icon={<HeartOutlined />} type="text" onClick={handleAddToWishlist}>
                     Yêu thích
                   </Button>
                   <Button icon={<ShareAltOutlined />} type="text">

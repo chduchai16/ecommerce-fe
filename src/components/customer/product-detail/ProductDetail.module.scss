@@ -150,32 +150,6 @@
     min-width: 80px;
   }
   
-  .quantityInput {
-    display: flex;
-    align-items: center;
-    border: 1px solid $border-medium;
-    border-radius: 6px;
-    overflow: hidden;
-    
-    .ant-btn {
-      border: none;
-      border-radius: 0;
-      width: 36px;
-      height: 36px;
-    }
-    
-    .ant-input-number {
-      border: none;
-      width: 60px;
-      text-align: center;
-      
-      .ant-input-number-input {
-        text-align: center;
-        padding: 0;
-      }
-    }
-  }
-  
   .buttonGroup {
     display: flex;
     gap: 12px;

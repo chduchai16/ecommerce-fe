@@ -1,9 +1,9 @@
 'use client'
 
-import { Card, Typography, Rate, Tag, Button, Image} from 'antd'
+import { Card, Typography, Rate, Tag, Button, Image } from 'antd'
 import { ShoppingCartOutlined, HeartOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import { CurrencyHelper} from '@/library/helpers'
+import { CurrencyHelper } from '@/library/helpers'
 import styles from './ProductCard.module.scss'
 import { Product } from '@/library/models/product/product'
 
@@ -16,10 +16,10 @@ interface ProductCardProps {
   onAddToWishlist?: (productId: number) => void
 }
 
-export default function ProductCard({ 
-  product, 
-  onAddToCart, 
-  onAddToWishlist 
+export default function ProductCard({
+  product,
+  onAddToCart,
+  onAddToWishlist
 }: ProductCardProps) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -38,8 +38,31 @@ export default function ProductCard({
     }
   }
 
+  // Chuẩn bị data sản phẩm để truyền qua URL
+  const productUrl = () => {
+    // Chỉ truyền những dữ liệu cần thiết cho trang detail để tránh URL quá dài
+    const essentialData = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      thumbnail: product.thumbnail,
+      description: product.description,
+      average_rating: product.average_rating,
+      discount: product.discount,
+      in_stock: product.in_stock
+    };
+
+    // Loại bỏ các thuộc tính null/undefined để giảm kích thước URL
+    const cleanData = Object.entries(essentialData)
+      .filter(([, v]) => v !== null && v !== undefined)
+      .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
+
+    const serialized = encodeURIComponent(JSON.stringify(cleanData));
+    return `/customer/products/${product.id}?data=${serialized}`;
+  };
+
   return (
-    <Link href={`/customer/products/${product.id}`}>
+    <Link href={productUrl()}>
       <Card
         hoverable
         className={styles.productCard}
@@ -52,8 +75,8 @@ export default function ProductCard({
               preview={false}
             />
             {product.discount && (
-              <Tag 
-                color="red" 
+              <Tag
+                color="red"
                 className={styles.discountTag}
               >
                 {CurrencyHelper.formatDiscountPercent(product.discount)}
@@ -88,8 +111,8 @@ export default function ProductCard({
       >
         <Meta
           title={
-            <Title 
-              level={5} 
+            <Title
+              level={5}
               ellipsis={{ rows: 2 }}
               className={styles.productTitle}
             >
@@ -112,9 +135,9 @@ export default function ProductCard({
 
               {/* Đánh giá */}
               <div className={styles.ratingSection}>
-                <Rate 
-                  disabled 
-                  defaultValue={product.average_rating || 0} 
+                <Rate
+                  disabled
+                  defaultValue={product.average_rating || 0}
                   className={styles.ratingStars}
                 />
                 <Text className={styles.reviewCount}>
@@ -138,9 +161,9 @@ export default function ProductCard({
                       className={styles.productTag}
                       color={
                         tag === 'hot' ? 'red' :
-                        tag === 'new' ? 'blue' :
-                        tag === 'bestseller' ? 'gold' :
-                        'default'
+                          tag === 'new' ? 'blue' :
+                            tag === 'bestseller' ? 'gold' :
+                              'default'
                       }
                     >
                       {tag.toUpperCase()}

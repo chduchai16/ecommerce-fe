@@ -25,7 +25,7 @@
 .mainContent {
   display: flex;
   gap: 24px;
-  margin-top : 20px ;
+  margin-top: 20px;
 }
 
 .filterSidebar {
@@ -47,6 +47,19 @@
 
 .productsGrid {
   margin-bottom: 32px;
+}
+
+.searchResultsInfo {
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background-color: #f0f5ff;
+  border-radius: 4px;
+  border-left: 3px solid #1890ff;
+  font-size: 14px;
+  color: #595959;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .productGridRow {

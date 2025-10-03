@@ -1,106 +1,47 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Row, Col, Spin, Result, Button, App } from 'antd'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ClearOutlined } from '@ant-design/icons'
 import ProductCard from '../ProductCard'
 import styles from './ProductCatalog.module.scss'
 import { ProductService } from '@/library/services/product-service'
 import { Product } from '@/library/models/product/product'
 import { CartService } from '@/library/services/cart-service'
 import { WishlistService } from '@/library/services/wishlist-service'
+import ProductFilter from '../ProductFilter'
 
-interface FilterState {
-  category: string
-  brand: string
-  priceRange: [number, number]
-  minRating: number
-  inStock: boolean
-}
 
 export default function ProductCatalog() {
 
-  const productService = new ProductService();
-  const cartService = new CartService();
-  const wishListService = new WishlistService() ;
+  // Sử dụng useMemo để tránh tạo lại service mỗi khi render
+  const productService = useMemo(() => new ProductService(), []);
+  const cartService = useMemo(() => new CartService(), []);
+  const wishListService = useMemo(() => new WishlistService(), []);
 
   const { message } = App.useApp();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('newest')
-  const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [productList, setProductList] = useState<Product[]>([]);
+  const [noResults, setNoResults] = useState(false);
 
+  // Lấy search query từ URL params
+  const searchQuery = searchParams.get('search') || '';
 
-  const [filters, setFilters] = useState<FilterState>({
-    category: 'Tất cả',
-    brand: 'Tất cả',
-    priceRange: [0, 50000000],
-    minRating: 0,
-    inStock: false
-  })
+  // Giữ category cho các URL trực tiếp
+  const categoryQuery = searchParams.get('category') || '';
 
-  // Lọc và tìm kiếm sản phẩm
-  const filteredProducts = useMemo(() => {
-    return productList.filter(product => {
-      // normalize field về string để tránh lỗi null/undefined
-      const name = product.name?.toLowerCase() ?? ''
-      const description = product.description?.toLowerCase() ?? ''
-      const brand = product.brand?.toLowerCase() ?? ''
-      const category = product.category_name ?? ''
-
-      // Bộ lọc tìm kiếm
-      const matchesSearch =
-        name.includes(searchTerm.toLowerCase()) ||
-        description.includes(searchTerm.toLowerCase()) ||
-        brand.includes(searchTerm.toLowerCase())
-
-      // Bộ lọc danh mục
-      const matchesCategory =
-        filters.category === 'Tất cả' || category === filters.category
-
-      // Bộ lọc thương hiệu
-      const matchesBrand =
-        filters.brand === 'Tất cả' || brand === filters.brand.toLowerCase()
-
-      // Bộ lọc giá
-      const matchesPrice =
-        product.price >= filters.priceRange[0] &&
-        product.price <= filters.priceRange[1]
-
-      // Bộ lọc đánh giá (average_rating có thể null)
-      const rating = product.average_rating ?? 0
-      const matchesRating = rating >= filters.minRating
-
-      // Bộ lọc tồn kho
-      const matchesStock = !filters.inStock || !!product.in_stock
-
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesBrand &&
-        matchesPrice &&
-        matchesRating &&
-        matchesStock
-      )
-    })
-  }, [searchTerm, filters, productList])
-
-
-  const handleFilterChange = (newFilters: FilterState) => {
-    setFilters(newFilters)
-    setCurrentPage(1) // Reset về trang đầu khi thay đổi bộ lọc
+  const handleFilterChange = () => {
+    message.success('Áp dụng bộ lọc thành công')
   }
 
   const handleClearFilters = () => {
-    setFilters({
-      category: 'Tất cả',
-      brand: 'Tất cả',
-      priceRange: [0, 50000000],
-      minRating: 0,
-      inStock: false
-    })
-    setCurrentPage(1)
+    // Xóa các query params và quay về trang sản phẩm không có filter
+    router.push('/customer/products');
+    message.success('Đã xóa bộ lọc')
   }
 
   const handleAddToCart = async (product: Product) => {
@@ -128,29 +69,53 @@ export default function ProductCatalog() {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
+      setNoResults(false);
       try {
-        const products = await productService.getProducts();
-        await setProductList(products);
+        let products: Product[] = [];
+        const searchParams: Record<string, unknown> = {};
+
+        // Thêm các tham số tìm kiếm vào object params
+        if (searchQuery) searchParams.name = searchQuery; // Tìm theo tên sản phẩm
+        if (categoryQuery) searchParams.category_name = categoryQuery;
+
+        // Nếu có tham số tìm kiếm
+        if (Object.keys(searchParams).length > 0) {
+          products = await productService.getProducts(searchParams);
+        } else {
+          // Nếu không có filter nào thì lấy tất cả sản phẩm
+          products = await productService.getProducts();
+        }
+
+        setProductList(products);
+
+        // Xác định xem có đang tìm kiếm không
+        const isSearching = searchQuery || categoryQuery;
+
+        // Nếu không có kết quả tìm kiếm
+        if (products.length === 0 && isSearching) {
+          setNoResults(true);
+        }
       } catch (error) {
+        console.error("Lỗi khi tải sản phẩm:", error);
         message.error("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
-  }, []);
+  }, [searchQuery, categoryQuery, productService, message]);
 
   return (
     <div className={styles.catalogContainer}>
       <Row gutter={24} className={styles.mainContent}>
         {/* Thanh bộ lọc */}
-        {/* <Col xs={24} lg={6} className={styles.filterSidebar}>
+        <Col xs={24} lg={6} className={styles.filterSidebar}>
           <ProductFilter
-            filters={filters}
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
           />
-        </Col> */}
+        </Col>
 
         {/* Lưới sản phẩm */}
         <Col xs={24} lg={18} className={styles.productSection}>
@@ -161,16 +126,27 @@ export default function ProductCatalog() {
             </div>
           )}
 
-          {/* Không có kết quả */}
-          {!loading && filteredProducts.length === 0 && (
+          {/* Không có kết quả lọc*/}
+          {!loading && noResults && (
             <div className={styles.emptyContainer}>
               <Result
                 status="info"
                 title="Không tìm thấy sản phẩm nào"
-                subTitle="Thử bỏ lọc hoặc tìm kiếm khác để mở rộng kết quả."
+                subTitle={
+                  searchQuery ? `Không tìm thấy sản phẩm cho "${searchQuery}". Thử từ khóa khác hoặc bỏ lọc.` :
+                    categoryQuery ? `Không tìm thấy sản phẩm trong danh mục "${categoryQuery}".` :
+                      "Thử bỏ lọc hoặc tìm kiếm khác để mở rộng kết quả."
+                }
                 extra={
-                  <div>
-                    <Button onClick={handleClearFilters}>Xóa bộ lọc</Button>
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                    <Button onClick={handleClearFilters} icon={<ClearOutlined />}>
+                      Xóa tìm kiếm
+                    </Button>
+                    {(searchQuery || categoryQuery) && (
+                      <Button type="primary" onClick={() => router.push('/customer/products')}>
+                        Xem tất cả sản phẩm
+                      </Button>
+                    )}
                   </div>
                 }
               />
@@ -180,6 +156,26 @@ export default function ProductCatalog() {
           {/* Lưới sản phẩm */}
           {!loading && productList.length > 0 && (
             <div className={styles.productsGrid}>
+              {/* Hiển thị thông tin tìm kiếm khi có tìm kiếm */}
+              {(searchQuery || categoryQuery) && (
+                <div className={styles.searchResultsInfo}>
+                  <span>
+                    <strong>
+                      {searchQuery && `Kết quả tìm kiếm cho "${searchQuery}"`}
+                      {categoryQuery && `Sản phẩm trong danh mục "${categoryQuery}"`}
+                    </strong>
+                    : {productList.length} sản phẩm
+                  </span>
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<ClearOutlined />}
+                    onClick={handleClearFilters}
+                  >
+                    Xóa tìm kiếm
+                  </Button>
+                </div>
+              )}
               <Row gutter={[16, 16]} className={styles.productGridRow}>
                 {productList.map(product => (
                   <Col
