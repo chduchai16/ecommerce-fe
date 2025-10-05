@@ -1,0 +1,40 @@
+.deliveryInfo {
+    margin-bottom: 20px;
+
+    .orderSummary {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+
+        .summaryHeader {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .summaryRow {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+
+            .label {
+                color: #666;
+            }
+
+            .value {
+                font-weight: 500;
+            }
+        }
+
+        .totalRow {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    }
+}

@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Row, Col, Typography, Button, Table, InputNumber, Image, Card, Divider, Empty, App } from 'antd'
 import { DeleteOutlined, ShoppingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ShoppingCart.module.scss'
 import { CartService } from '@/library/services/cart-service'
@@ -14,6 +15,7 @@ const { Title, Text } = Typography
 
 export default function ShoppingCart() {
   const { message } = App.useApp();
+  const router = useRouter();
   const cartServiceRef = useRef<CartService>(new CartService())
   const cartService = cartServiceRef.current
 
@@ -82,32 +84,42 @@ export default function ShoppingCart() {
   const handleSaveCart = async () => {
     if (cartId === 0) return;
 
-    const updateItems: CartItem[] = cartItems.map(item => ({
-      id: item.id,
-      product_id: item.product?.id,
-      quantity: item.quantity ,
-      cart_id : cartId
-    }));
+    setSaving(true);
+    try {
+      const updateItems: CartItem[] = cartItems.map(item => ({
+        id: item.id,
+        product_id: item.product?.id,
+        quantity: item.quantity,
+        cart_id: cartId
+      }));
 
-    const cart: Cart = {
-      id: cartId,
-      cart_items: updateItems
-    };
-    const apiResponse = await cartService.updateCart(cart);
-    if (apiResponse.status === 200) {
-      message.success('Cập nhật giỏ hàng thành công');
-    }
-    else {
+      const cart: Cart = {
+        id: cartId,
+        cart_items: updateItems
+      };
+      const apiResponse = await cartService.updateCart(cart);
+      if (apiResponse.status === 200) {
+        message.success('Cập nhật giỏ hàng thành công');
+      }
+      else {
+        message.error('Cập nhật giỏ hàng thất bại. Vui lòng thử lại sau.');
+      }
+    } catch (error) {
       message.error('Cập nhật giỏ hàng thất bại. Vui lòng thử lại sau.');
+    } finally {
+      setSaving(false);
     }
   }
 
 
   const handleCheckout = () => {
     setLoading(true)
+    // Đợi 1 giây rồi chuyển hướng người dùng đến trang thanh toán
     setTimeout(() => {
       setLoading(false)
       message.success('Chuyển đến trang thanh toán...')
+      // Chuyển hướng đến trang thanh toán
+      router.push('/customer/checkout')
     }, 1000)
   }
 

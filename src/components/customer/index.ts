@@ -1,5 +1,6 @@
 // Customer Components - Các component cho khách hàng
 export * from './product-catalog'
+export * from './checkout'
 export { default as CustomerHeader } from './customer-header'
 export { default as CustomerFooter } from './customer-footer'
 export { default as ProductDetail } from './product-detail'

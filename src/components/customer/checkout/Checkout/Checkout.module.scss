@@ -1,0 +1,25 @@
+.checkoutPage {
+    padding: 30px 0;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    .pageTitle {
+        margin-bottom: 24px;
+        color: #1890ff;
+        text-align: center;
+    }
+
+    .stepContent {
+        margin: 30px 0;
+    }
+
+    .actionButtons {
+        margin-top: 30px;
+        display: flex;
+        justify-content: flex-end;
+
+        .backButton {
+            margin-right: auto;
+        }
+    }
+}

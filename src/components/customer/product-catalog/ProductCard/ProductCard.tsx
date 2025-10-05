@@ -99,7 +99,7 @@ export default function ProductCard({
               onClick={handleAddToCart}
               disabled={!product.in_stock}
             >
-              Thêm giỏ
+              Thêm vào giỏ
             </Button>
             <Button
               icon={<HeartOutlined />}

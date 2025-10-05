@@ -16,7 +16,6 @@ import {
   UserOutlined,
   MenuOutlined,
   UserAddOutlined,
-  ClearOutlined,
   DownOutlined
 } from '@ant-design/icons'
 import Link from 'next/link'
@@ -173,15 +172,6 @@ export default function CustomerHeader() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onPressEnter={handleSearch}
-                suffix={
-                  <ClearOutlined
-                    onClick={() => setSearchQuery('')}
-                    style={{
-                      cursor: 'pointer',
-                      visibility: searchQuery ? 'visible' : 'hidden'
-                    }}
-                  />
-                }
               />
               <Button
                 type="primary"
