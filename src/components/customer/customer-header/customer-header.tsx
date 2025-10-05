@@ -6,7 +6,8 @@ import {
   Button,
   Badge,
   Dropdown,
-  Space
+  Space,
+  Spin
 } from 'antd'
 import {
   SearchOutlined,
@@ -15,7 +16,8 @@ import {
   UserOutlined,
   MenuOutlined,
   UserAddOutlined,
-  ClearOutlined
+  ClearOutlined,
+  DownOutlined
 } from '@ant-design/icons'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -25,6 +27,8 @@ import { useMessage } from '@/hooks/use-message'
 import { useUser } from '@/contexts/UserContext'
 import { WishlistService } from '@/library/services/wishlist-service'
 import { CartService } from '@/library/services/cart-service'
+import { CategoryService } from '@/library/services/category-service'
+import { Category } from '@/library/models/category/category'
 
 import styles from './customer-header.module.scss'
 import cartGif from '../../../assets/gifs/cart.gif'
@@ -33,6 +37,7 @@ export default function CustomerHeader() {
   // services (dùng useMemo để không khởi tạo lại mỗi lần render)
   const wishListService = useMemo(() => new WishlistService(), [])
   const cartService = useMemo(() => new CartService(), [])
+  const categoryService = useMemo(() => new CategoryService(), [])
 
   // hooks
   const router = useRouter()
@@ -43,6 +48,8 @@ export default function CustomerHeader() {
   const [numberOfWishlistItems, setNumberOfWishlistItems] = useState(0)
   const [numberOfCartItems, setNumberOfCartItems] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loadingCategories, setLoadingCategories] = useState(false)
   // Loại bỏ searchType, mặc định luôn là tìm kiếm tất cả
 
   // lấy số lượng wishlist
@@ -74,10 +81,25 @@ export default function CustomerHeader() {
   }, [])
 
   // load wishlist + cart khi mount
+  // lấy danh mục sản phẩm
+  const getCategories = useCallback(async () => {
+    try {
+      setLoadingCategories(true)
+      const data = await categoryService.getAllCategories()
+      setCategories(data)
+    } catch (error) {
+      console.error('Lỗi khi tải danh mục:', error)
+      message.error('Không thể tải danh mục sản phẩm')
+    } finally {
+      setLoadingCategories(false)
+    }
+  }, [categoryService, message])
+
   useEffect(() => {
     getNumberOfWishlistItems()
     getNumberOfCartItems()
-  }, [getNumberOfWishlistItems, getNumberOfCartItems])
+    getCategories()
+  }, [getNumberOfWishlistItems, getNumberOfCartItems, getCategories])
 
   // logout
   const handleLogout = async () => {
@@ -228,9 +250,48 @@ export default function CustomerHeader() {
       <div className={styles.navMenu}>
         <div className={styles.container}>
           <Space size="large">
-            <Link href="/customer/products" className={styles.navLink}>
-              <MenuOutlined /> Danh mục sản phẩm
-            </Link>
+            {/* Dropdown danh mục sản phẩm */}
+            <Dropdown
+              menu={{
+                items: loadingCategories
+                  ? [{
+                    key: 'loading',
+                    label: <Spin size="small" />
+                  }]
+                  : categories.length
+                    ? categories.map(category => ({
+                      key: category.id,
+                      label: (
+                        <Link href={`/customer/products?category=${encodeURIComponent(category.name)}`}>
+                          {category.name}
+                        </Link>
+                      ),
+                      ...(category.children && category.children.length > 0 && {
+                        children: category.children.map(child => ({
+                          key: `${category.id}-${child.id}`,
+                          label: (
+                            <Link href={`/customer/products?category=${encodeURIComponent(child.name)}`}>
+                              {child.name}
+                            </Link>
+                          )
+                        }))
+                      })
+                    }))
+                    : [{
+                      key: 'no-categories',
+                      label: 'Không có danh mục nào'
+                    }]
+              }}
+              trigger={['hover']}
+            >
+              <a className={styles.navLink} onClick={e => e.preventDefault()}>
+                <Space>
+                  <MenuOutlined /> Danh mục sản phẩm tiêu biểu
+                  <DownOutlined />
+                </Space>
+              </a>
+            </Dropdown>
+
             <Link href="/customer/products?category=electronics" className={styles.navLink}>
               📱 Điện tử
             </Link>

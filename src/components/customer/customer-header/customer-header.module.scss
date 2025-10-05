@@ -101,10 +101,32 @@
         border-radius: 6px;
         font-size: 14px;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
 
         &:hover {
           background: rgba(255, 255, 255, 0.2);
           color: #ffffff;
+        }
+      }
+
+      :global(.ant-dropdown-menu) {
+        padding: 6px 0;
+      }
+
+      :global(.ant-dropdown-menu-item) {
+        padding: 6px 16px;
+
+        a {
+          color: $text-primary;
+          text-decoration: none;
+          display: block;
+          width: 100%;
+
+          &:hover {
+            color: $primary-color;
+          }
         }
       }
     }

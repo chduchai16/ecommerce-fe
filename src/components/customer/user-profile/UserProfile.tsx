@@ -1,30 +1,53 @@
 'use client'
 
-import { useState } from 'react'
-import { Row, Col, Card, Form, Input, Button, Upload, Avatar, Select, DatePicker, Switch, Typography, Divider, Space, App } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Row, Col, Card, Form, Input, Button, Upload, Avatar, Select, DatePicker, Typography, Divider, Space, App } from 'antd'
 import { UserOutlined, EditOutlined, SaveOutlined, CameraOutlined } from '@ant-design/icons'
+import type { UploadFile, UploadChangeParam } from 'antd/es/upload/interface'
 import dayjs from 'dayjs'
-import { CurrencyHelper } from '@/library/helpers'
+import { User } from '@/library/models/user/user'
 import styles from './UserProfile.module.scss'
+import { UserService } from '@/library/services/user-service'
 
 const { Title, Text } = Typography
 const { Option } = Select
 
 export default function UserProfile() {
   const { message } = App.useApp();
-
   const [form] = Form.useForm()
-  const [profile, setProfile] = useState<any>({})
+  const [profile, setProfile] = useState<User | null>(null)
   const [editing, setEditing] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [fileList, setFileList] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [fileList, setFileList] = useState<UploadFile[]>([])
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
 
+  // Sử dụng useMemo để tránh tạo mới UserService mỗi khi render
+  const userService = useMemo(() => new UserService(), [])
+
+  // Tải thông tin người dùng
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const userData = await userService.getProfile();
+        setProfile(userData);
+      } catch (error) {
+        message.error('Không thể tải thông tin người dùng. Vui lòng thử lại sau.');
+        console.error('Error fetching profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [userService, message]);
+
   const handleEdit = () => {
+    if (!profile) return;
+
     setEditing(true)
     form.setFieldsValue({
       ...profile,
-      dateOfBirth: profile.dateOfBirth ? dayjs(profile.dateOfBirth) : null
+      date_of_birth: profile.date_of_birth ? dayjs(profile.date_of_birth) : null
     })
   }
 
@@ -33,31 +56,50 @@ export default function UserProfile() {
     form.resetFields()
   }
 
-  const handleSave = async (values: any) => {
+  // Định nghĩa kiểu dữ liệu cho form values
+  interface UserFormValues {
+    fullname: string;
+    email: string;
+    phone_number: string;
+    date_of_birth?: dayjs.Dayjs;
+    gender?: string;
+    address: string;
+    shop_name?: string;
+    shop_description?: string;
+    tax_code?: string;
+    business_license?: string;
+  }
+
+  const handleSave = async (values: UserFormValues) => {
+    if (!profile) return;
     setLoading(true)
 
     try {
-      // Simulate API call
+      // Simulate API call - Ở đây bạn có thể thêm API gọi thực sự
       await new Promise(resolve => setTimeout(resolve, 1000))
 
-      const updatedProfile: UserProfile = {
+      const updatedProfile: User = {
         ...profile,
         ...values,
-        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : undefined
+        date_of_birth: values.date_of_birth ? values.date_of_birth.format('YYYY-MM-DD') : profile.date_of_birth
       }
 
       setProfile(updatedProfile)
       setEditing(false)
+      console.log('Updated profile:', updatedProfile)
       message.success('Cập nhật thông tin thành công!')
 
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Lỗi cập nhật thông tin:', error);
       message.error('Có lỗi xảy ra, vui lòng thử lại!')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleAvatarChange = (info: any) => {
+  const handleAvatarChange = (info: UploadChangeParam<UploadFile>) => {
+    console.log('Upload info:', info)
+    
     const { fileList: newFileList } = info
     setFileList(newFileList)
 
@@ -90,7 +132,7 @@ export default function UserProfile() {
                   <div className={styles.avatarUploadContainer}>
                     <Avatar
                       size={120}
-                      src={previewAvatar || profile.avatar}
+                      src={previewAvatar || profile?.avatar}
                       icon={<UserOutlined />}
                       className={styles.avatar}
                     />
@@ -104,9 +146,9 @@ export default function UserProfile() {
                         accept="image/*"
                         showUploadList={false}
                       >
-                        <Button 
-                          icon={<CameraOutlined />} 
-                          size="small" 
+                        <Button
+                          icon={<CameraOutlined />}
+                          size="small"
                           className={styles.changeAvatarButton}
                         >
                           Thay đổi
@@ -123,15 +165,15 @@ export default function UserProfile() {
                           accept="image/*"
                           showUploadList={false}
                         >
-                          <Button 
-                            icon={<CameraOutlined />} 
+                          <Button
+                            icon={<CameraOutlined />}
                             size="small"
                           >
                             Chọn ảnh khác
                           </Button>
                         </Upload>
-                        <Button 
-                          size="small" 
+                        <Button
+                          size="small"
                           onClick={() => {
                             setPreviewAvatar(null)
                             setFileList([])
@@ -145,7 +187,7 @@ export default function UserProfile() {
                 ) : (
                   <Avatar
                     size={120}
-                    src={profile.avatar}
+                    src={profile?.avatar}
                     icon={<UserOutlined />}
                     className={styles.avatar}
                   />
@@ -153,11 +195,16 @@ export default function UserProfile() {
 
                 <div className={styles.userInfo}>
                   <Title level={4} className={styles.userName}>
-                    {profile.firstName} {profile.lastName}
+                    {profile?.fullname}
                   </Title>
                   <Text className={styles.userEmail}>
-                    {profile.email}
+                    {profile?.email}
                   </Text>
+                  {profile?.role_name === 'SELLER' && (
+                    <Text className={styles.userRole}>
+                      Người bán {profile.is_verified && '✓'}
+                    </Text>
+                  )}
                   {!editing && (
                     <Button
                       type="primary"
@@ -176,26 +223,33 @@ export default function UserProfile() {
 
               {/* Stats */}
               <div className={styles.statsSection}>
+                {/* Thông tin về thành viên */}
                 <div className={styles.statItem}>
-                  <Text className={styles.statLabel}>Thành viên từ</Text>
+                  <Text className={styles.statLabel}>ID Thành viên</Text>
                   <Text className={styles.statValue}>
-                    {dayjs(profile.memberSince).format('DD/MM/YYYY')}
+                    {profile?.id || 'N/A'}
                   </Text>
                 </div>
 
+                {/* Thông tin về vai trò */}
                 <div className={styles.statItem}>
-                  <Text className={styles.statLabel}>Tổng đơn hàng</Text>
+                  <Text className={styles.statLabel}>Vai trò</Text>
                   <Text className={styles.statValue}>
-                    {profile.totalOrders} đơn
+                    {profile?.role_name === 'SELLER' ? 'Người bán' :
+                      profile?.role_name === 'ADMIN' ? 'Quản trị viên' :
+                        profile?.role_name === 'CUSTOMER' ? 'Khách hàng' : profile?.role_name || 'Khách hàng'}
                   </Text>
                 </div>
 
-                <div className={styles.statItem}>
-                  <Text className={styles.statLabel}>Tổng chi tiêu</Text>
-                  <Text className={styles.statValue}>
-                    {CurrencyHelper.formatVND(profile.totalSpent)}
-                  </Text>
-                </div>
+                {/* Nếu là người bán thì hiển thị số lượng bán hàng */}
+                {profile?.role_name === 'SELLER' && (
+                  <div className={styles.statItem}>
+                    <Text className={styles.statLabel}>Đã bán</Text>
+                    <Text className={styles.statValue}>
+                      {profile.total_sales || 0} sản phẩm
+                    </Text>
+                  </div>
+                )}
               </div>
             </Card>
           </Col>
@@ -210,27 +264,13 @@ export default function UserProfile() {
                   onFinish={handleSave}
                   className={styles.editForm}
                 >
-                  <Row gutter={[16, 0]}>
-                    <Col xs={24} sm={12}>
-                      <Form.Item
-                        label="Họ"
-                        name="lastName"
-                        rules={[{ required: true, message: 'Vui lòng nhập họ!' }]}
-                      >
-                        <Input placeholder="Nhập họ" />
-                      </Form.Item>
-                    </Col>
-
-                    <Col xs={24} sm={12}>
-                      <Form.Item
-                        label="Tên"
-                        name="firstName"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}
-                      >
-                        <Input placeholder="Nhập tên" />
-                      </Form.Item>
-                    </Col>
-                  </Row>
+                  <Form.Item
+                    label="Họ và tên"
+                    name="fullname"
+                    rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+                  >
+                    <Input placeholder="Nhập họ và tên" />
+                  </Form.Item>
 
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}>
@@ -249,7 +289,7 @@ export default function UserProfile() {
                     <Col xs={24} sm={12}>
                       <Form.Item
                         label="Số điện thoại"
-                        name="phone"
+                        name="phone_number"
                         rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
                       >
                         <Input placeholder="Nhập số điện thoại" />
@@ -261,7 +301,7 @@ export default function UserProfile() {
                     <Col xs={24} sm={12}>
                       <Form.Item
                         label="Ngày sinh"
-                        name="dateOfBirth"
+                        name="date_of_birth"
                       >
                         <DatePicker
                           style={{ width: '100%' }}
@@ -288,48 +328,56 @@ export default function UserProfile() {
                   <Title level={5}>Địa chỉ</Title>
 
                   <Form.Item
-                    label="Số nhà, tên đường"
-                    name={['address', 'street']}
+                    label="Địa chỉ đầy đủ"
+                    name="address"
                     rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
                   >
-                    <Input placeholder="Nhập số nhà, tên đường" />
+                    <Input.TextArea
+                      placeholder="Nhập địa chỉ đầy đủ (số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố)"
+                      rows={3}
+                    />
                   </Form.Item>
 
-                  <Row gutter={[16, 0]}>
-                    <Col xs={24} sm={12}>
+                  {profile?.role_name === 'SELLER' && (
+                    <>
+                      <Title level={5}>Thông tin cửa hàng</Title>
+
                       <Form.Item
-                        label="Phường/Xã"
-                        name={['address', 'ward']}
-                        rules={[{ required: true, message: 'Vui lòng nhập phường/xã!' }]}
+                        label="Tên cửa hàng"
+                        name="shop_name"
+                        rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
                       >
-                        <Input placeholder="Phường/Xã" />
+                        <Input placeholder="Nhập tên cửa hàng" />
                       </Form.Item>
-                    </Col>
 
-                    <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Tỉnh/Thành phố"
-                        name={['address', 'city']}
-                        rules={[{ required: true, message: 'Vui lòng nhập tỉnh/thành phố!' }]}
+                        label="Mô tả cửa hàng"
+                        name="shop_description"
                       >
-                        <Input placeholder="Tỉnh/Thành phố" />
+                        <Input.TextArea placeholder="Mô tả về cửa hàng của bạn" rows={3} />
                       </Form.Item>
-                    </Col>
-                  </Row>
 
-                  <Title level={5}>Tùy chọn thông báo</Title>
+                      <Row gutter={[16, 0]}>
+                        <Col xs={24} sm={12}>
+                          <Form.Item
+                            label="Mã số thuế"
+                            name="tax_code"
+                          >
+                            <Input placeholder="Nhập mã số thuế" />
+                          </Form.Item>
+                        </Col>
 
-                  <Form.Item name={['preferences', 'newsletter']} valuePropName="checked">
-                    <Switch /> <span style={{ marginLeft: 8 }}>Nhận bản tin qua email</span>
-                  </Form.Item>
-
-                  <Form.Item name={['preferences', 'promotions']} valuePropName="checked">
-                    <Switch /> <span style={{ marginLeft: 8 }}>Nhận thông báo khuyến mãi</span>
-                  </Form.Item>
-
-                  <Form.Item name={['preferences', 'smsNotifications']} valuePropName="checked">
-                    <Switch /> <span style={{ marginLeft: 8 }}>Nhận thông báo qua SMS</span>
-                  </Form.Item>
+                        <Col xs={24} sm={12}>
+                          <Form.Item
+                            label="Giấy phép kinh doanh"
+                            name="business_license"
+                          >
+                            <Input placeholder="Nhập số giấy phép kinh doanh" />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </>
+                  )}
 
                   <div className={styles.formActions}>
                     <Space>
@@ -357,7 +405,7 @@ export default function UserProfile() {
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Họ và tên:</Text>
                         <Text className={styles.infoValue}>
-                          {profile.firstName} {profile.lastName}
+                          {profile?.fullname}
                         </Text>
                       </div>
                     </Col>
@@ -365,14 +413,14 @@ export default function UserProfile() {
                     <Col xs={24} sm={12}>
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Email:</Text>
-                        <Text className={styles.infoValue}>{profile.email}</Text>
+                        <Text className={styles.infoValue}>{profile?.email}</Text>
                       </div>
                     </Col>
 
                     <Col xs={24} sm={12}>
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Số điện thoại:</Text>
-                        <Text className={styles.infoValue}>{profile.phone}</Text>
+                        <Text className={styles.infoValue}>{profile?.phone_number}</Text>
                       </div>
                     </Col>
 
@@ -380,7 +428,7 @@ export default function UserProfile() {
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Ngày sinh:</Text>
                         <Text className={styles.infoValue}>
-                          {profile.dateOfBirth ? dayjs(profile.dateOfBirth).format('DD/MM/YYYY') : 'Chưa cập nhật'}
+                          {profile?.date_of_birth ? dayjs(profile.date_of_birth).format('DD/MM/YYYY') : 'Chưa cập nhật'}
                         </Text>
                       </div>
                     </Col>
@@ -389,7 +437,7 @@ export default function UserProfile() {
                       <div className={styles.infoItem}>
                         <Text className={styles.infoLabel}>Giới tính:</Text>
                         <Text className={styles.infoValue}>
-                          {profile.gender === 'male' ? 'Nam' : profile.gender === 'female' ? 'Nữ' : 'Khác'}
+                          {profile?.gender === 'male' ? 'Nam' : profile?.gender === 'female' ? 'Nữ' : 'Khác'}
                         </Text>
                       </div>
                     </Col>
@@ -400,28 +448,61 @@ export default function UserProfile() {
                   <Title level={4}>Địa chỉ</Title>
                   <div className={styles.addressInfo}>
                     <Text>
-                      {profile.address.street}, {profile.address.ward}, {profile.address.city}
-                      {profile.address.zipCode && `, ${profile.address.zipCode}`}
+                      {profile?.address || 'Chưa cập nhật'}
                     </Text>
                   </div>
 
-                  <Divider />
+                  {/* Seller information section */}
+                  {profile?.role_name === 'SELLER' && (
+                    <>
+                      <Divider />
 
-                  <Title level={4}>Tùy chọn thông báo</Title>
-                  <div className={styles.preferencesInfo}>
-                    <div className={styles.preferenceItem}>
-                      <Switch checked={profile.preferences.newsletter} disabled />
-                      <span>Nhận bản tin qua email</span>
-                    </div>
-                    <div className={styles.preferenceItem}>
-                      <Switch checked={profile.preferences.promotions} disabled />
-                      <span>Nhận thông báo khuyến mãi</span>
-                    </div>
-                    <div className={styles.preferenceItem}>
-                      <Switch checked={profile.preferences.smsNotifications} disabled />
-                      <span>Nhận thông báo qua SMS</span>
-                    </div>
-                  </div>
+                      <Title level={4}>Thông tin cửa hàng</Title>
+                      <Row gutter={[16, 16]}>
+                        <Col xs={24} sm={12}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>Tên cửa hàng:</Text>
+                            <Text className={styles.infoValue}>{profile.shop_name || 'Chưa cập nhật'}</Text>
+                          </div>
+                        </Col>
+
+                        <Col xs={24}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>Mô tả cửa hàng:</Text>
+                            <Text className={styles.infoValue}>{profile.shop_description || 'Chưa cập nhật'}</Text>
+                          </div>
+                        </Col>
+
+                        <Col xs={24} sm={12}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>Mã số thuế:</Text>
+                            <Text className={styles.infoValue}>{profile.tax_code || 'Chưa cập nhật'}</Text>
+                          </div>
+                        </Col>
+
+                        <Col xs={24} sm={12}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>Giấy phép kinh doanh:</Text>
+                            <Text className={styles.infoValue}>{profile.business_license || 'Chưa cập nhật'}</Text>
+                          </div>
+                        </Col>
+
+                        <Col xs={24} sm={12}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>Đánh giá:</Text>
+                            <Text className={styles.infoValue}>{profile.seller_rating || 0}/5</Text>
+                          </div>
+                        </Col>
+
+                        <Col xs={24} sm={12}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>Đã bán:</Text>
+                            <Text className={styles.infoValue}>{profile.total_sales || 0} sản phẩm</Text>
+                          </div>
+                        </Col>
+                      </Row>
+                    </>
+                  )}
                 </div>
               )}
             </Card>
