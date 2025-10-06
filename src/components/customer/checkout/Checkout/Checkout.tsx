@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Button, Steps } from 'antd'
+import { useState, useEffect } from 'react'
+import { Button, Steps, App } from 'antd'
 import { ShoppingCartOutlined, CreditCardOutlined, CheckCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 
@@ -12,6 +12,10 @@ import VnpayPaymentStep from '../VnpayPaymentStep/VnpayPaymentStep'
 import styles from './Checkout.module.scss'
 
 const { Step } = Steps
+
+interface CheckoutProps {
+    cartId?: string | null;
+}
 
 // Giả lập dữ liệu đơn hàng
 const mockOrderData = {
@@ -25,13 +29,24 @@ const mockOrderData = {
     total: 25950000
 }
 
-export default function Checkout() {
+export default function Checkout({ cartId }: CheckoutProps) {
     const [currentStep, setCurrentStep] = useState(0)
     const [selectedPayment, setSelectedPayment] = useState('vnpay')
     const [isProcessing, setIsProcessing] = useState(false)
     const [countdownSeconds, setCountdownSeconds] = useState(300) // 5 phút đếm ngược
-
+    const { message } = App.useApp()
     const router = useRouter()
+
+    useEffect(() => {
+        // Nếu có cartId, có thể dùng để load thông tin giỏ hàng
+        if (cartId) {
+            console.log(`Đang tải thông tin giỏ hàng với ID: ${cartId}`)
+            // Trong thực tế bạn sẽ gọi API để lấy chi tiết giỏ hàng theo cartId
+            // fetchCartDetails(cartId)
+        } else {
+            message.warning('Không tìm thấy thông tin giỏ hàng')
+        }
+    }, [cartId, message])
 
     const handleNextStep = () => {
         setCurrentStep(currentStep + 1)
@@ -93,8 +108,6 @@ export default function Checkout() {
 
     return (
         <div className={styles.checkoutPage}>
-            <h2 className={styles.pageTitle}>Thanh toán</h2>
-
             <Steps current={currentStep} responsive={true}>
                 <Step title="Thông tin giao hàng" icon={<ShoppingCartOutlined />} />
                 <Step title="Phương thức thanh toán" icon={<CreditCardOutlined />} />

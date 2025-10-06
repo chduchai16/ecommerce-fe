@@ -42,9 +42,7 @@ export default function ShoppingCart() {
       }
     }
     fetchCart();
-  }, [cartService, message])
-
-  // (removed auto-save on unmount to keep logic explicit via the Save button)
+  }, [])
 
   // Xóa sản phẩm khỏi giỏ hàng
   const removeItem = (itemId?: number) => {
@@ -65,8 +63,9 @@ export default function ShoppingCart() {
   // Xóa tất cả sản phẩm khỏi giỏ hàng
   const clearCart = () => {
     setCartItems([]);
-    message.success('Đã xóa tất cả sản phẩm');
+    handleSaveCart([]); // Truyền giá trị rỗng vào
   };
+
 
   // Tính thành tiền cho mỗi sản phẩm
   const calculateSubtotal = (item: CartItem) => {
@@ -81,27 +80,26 @@ export default function ShoppingCart() {
   }
 
   // Cập nhật giỏ hàng lên server
-  const handleSaveCart = async () => {
+  const handleSaveCart = async (items?: CartItem[]) => {
+    const newItems = items ?? cartItems; // nếu không truyền thì dùng state hiện tại
+
     if (cartId === 0) return;
 
     setSaving(true);
     try {
-      const updateItems: CartItem[] = cartItems.map(item => ({
+      const updateItems = newItems.map(item => ({
         id: item.id,
         product_id: item.product?.id,
         quantity: item.quantity,
         cart_id: cartId
       }));
 
-      const cart: Cart = {
-        id: cartId,
-        cart_items: updateItems
-      };
+      const cart: Cart = { id: cartId, cart_items: updateItems };
       const apiResponse = await cartService.updateCart(cart);
+
       if (apiResponse.status === 200) {
         message.success('Cập nhật giỏ hàng thành công');
-      }
-      else {
+      } else {
         message.error('Cập nhật giỏ hàng thất bại. Vui lòng thử lại sau.');
       }
     } catch (error) {
@@ -109,19 +107,15 @@ export default function ShoppingCart() {
     } finally {
       setSaving(false);
     }
-  }
-
+  };
 
   const handleCheckout = () => {
-    setLoading(true)
-    // Đợi 1 giây rồi chuyển hướng người dùng đến trang thanh toán
+    setLoading(true);
     setTimeout(() => {
-      setLoading(false)
-      message.success('Chuyển đến trang thanh toán...')
-      // Chuyển hướng đến trang thanh toán
-      router.push('/customer/checkout')
-    }, 1000)
-  }
+      setLoading(false);
+      router.push(`/customer/checkout?cartId=${cartId}`);
+    }, 300);
+  };
 
   const columns = [
     {
@@ -241,6 +235,9 @@ export default function ShoppingCart() {
               Tiếp tục mua sắm
             </Button>
           </Link>
+          <Button type="text" onClick={clearCart} className={styles.clearBtn}>
+            Xoá tất cả
+          </Button>
         </div>
 
         <Row gutter={[24, 24]}>
@@ -288,7 +285,7 @@ export default function ShoppingCart() {
               <Button
                 type="default"
                 block
-                onClick={handleSaveCart}
+                onClick={() => handleSaveCart()}
                 loading={saving}
                 className={styles.saveBtn}
                 style={{ marginBottom: 12 }}

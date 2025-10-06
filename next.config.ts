@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
   transpilePackages: ['antd'],
   experimental: {
     optimizePackageImports: ['antd']
-  }
+  },
+  // Tắt chế độ Strict Mode để tránh component bị mount 2 lần
+  reactStrictMode: false
 };
 
 export default nextConfig;
