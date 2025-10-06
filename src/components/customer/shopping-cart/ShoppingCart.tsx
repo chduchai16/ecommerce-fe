@@ -42,7 +42,7 @@ export default function ShoppingCart() {
       }
     }
     fetchCart();
-  }, [])
+  }, [cartService, message])
 
   // Xóa sản phẩm khỏi giỏ hàng
   const removeItem = (itemId?: number) => {
@@ -102,7 +102,7 @@ export default function ShoppingCart() {
       } else {
         message.error('Cập nhật giỏ hàng thất bại. Vui lòng thử lại sau.');
       }
-    } catch (error) {
+    } catch {
       message.error('Cập nhật giỏ hàng thất bại. Vui lòng thử lại sau.');
     } finally {
       setSaving(false);
@@ -110,6 +110,12 @@ export default function ShoppingCart() {
   };
 
   const handleCheckout = () => {
+    // Kiểm tra nếu giỏ hàng trống thì hiển thị thông báo
+    if (cartItems.length <= 0) {
+      message.warning('Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm vào giỏ hàng để tiếp tục.');
+      return;
+    }
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -298,6 +304,7 @@ export default function ShoppingCart() {
                 block
                 onClick={handleCheckout}
                 loading={loading}
+                disabled={cartItems.length <= 0}
                 className={styles.checkoutBtn}
               >
                 Tiến hành thanh toán
