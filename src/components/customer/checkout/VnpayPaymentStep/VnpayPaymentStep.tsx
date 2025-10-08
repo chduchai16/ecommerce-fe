@@ -1,6 +1,7 @@
-import { Alert, Spin, Typography } from 'antd';
+import { Alert, Spin, Typography, Button } from 'antd';
 import { CurrencyHelper } from '@/library/helpers/CurrencyHelper';
 import styles from './VnpayPaymentStep.module.scss';
+import { useEffect, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -27,9 +28,32 @@ interface VnpayPaymentStepProps {
 export default function VnpayPaymentStep({
     isProcessing,
     orderData,
-    countdownSeconds,
+    countdownSeconds: initialCountdown,
     formatCountdown
 }: VnpayPaymentStepProps) {
+    const [remainingSeconds, setRemainingSeconds] = useState<number>(initialCountdown);
+    const [isExpired, setIsExpired] = useState<boolean>(false);
+
+    // Thiết lập interval để đếm ngược
+    useEffect(() => {
+        // Đảm bảo giá trị khởi tạo
+        setRemainingSeconds(initialCountdown);
+
+        const intervalId = setInterval(() => {
+            setRemainingSeconds((prev) => {
+                if (prev <= 1) {
+                    clearInterval(intervalId);
+                    setIsExpired(true);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        // Xóa interval khi component unmount
+        return () => clearInterval(intervalId);
+    }, [initialCountdown]);
+
     return (
         <div className={styles.vnpaySection}>
             <div className={styles.vnpayHeader}>
@@ -49,32 +73,58 @@ export default function VnpayPaymentStep({
                 </div>
             ) : (
                 <>
-                    <Alert
-                        message="Giao dịch đang chờ xử lý"
-                        description={`Vui lòng hoàn thành thanh toán trong thời gian còn lại: ${formatCountdown(countdownSeconds)}`}
-                        type="warning"
-                        showIcon
-                        style={{ marginBottom: 20 }}
-                    />
+                    {isExpired ? (
+                        <Alert
+                            message="Giao dịch đã hết hạn"
+                            description="Thời gian thanh toán đã hết hạn. Vui lòng thực hiện lại giao dịch."
+                            type="error"
+                            showIcon
+                            style={{ marginBottom: 20 }}
+                            action={
+                                <Button size="small" type="primary" danger onClick={() => window.location.reload()}>
+                                    Thử lại
+                                </Button>
+                            }
+                        />
+                    ) : (
+                        <Alert
+                            message="Giao dịch đang chờ xử lý"
+                            description={
+                                <div>
+                                    Vui lòng hoàn thành thanh toán trong thời gian còn lại:
+                                    <span className={styles.countdown}>
+                                        {formatCountdown(remainingSeconds)}
+                                    </span>
+                                </div>
+                            }
+                            type="warning"
+                            showIcon
+                            style={{ marginBottom: 20 }}
+                        />
+                    )}
 
                     <div className={styles.vnpayAmount}>
                         <div className={styles.amountLabel}>Số tiền thanh toán</div>
                         <div className={styles.amountValue}>{CurrencyHelper.formatVND(orderData.total)}</div>
                     </div>
 
-                    <div className={styles.qrCodeSection}>
-                        <div className={styles.qrDescription}>
-                            <Text>Quét mã QR để thanh toán</Text>
+                    {!isExpired && (
+                        <div className={styles.qrCodeSection}>
+                            <div className={styles.qrDescription}>
+                                <Text>Quét mã QR để thanh toán</Text>
+                            </div>
+                            <div className={styles.qrPlaceholder}>
+                                <Text type="secondary">[Mã QR thanh toán]</Text>
+                            </div>
+                            <Text type="secondary">Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã</Text>
                         </div>
-                        <div className={styles.qrPlaceholder}>
-                            <Text type="secondary">[Mã QR thanh toán]</Text>
-                        </div>
-                        <Text type="secondary">Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã</Text>
-                    </div>
+                    )}
 
                     <Alert
                         message="Lưu ý"
-                        description="Đây chỉ là giao diện mô phỏng, không thực hiện thanh toán thật."
+                        description={isExpired
+                            ? "Giao dịch đã hết hạn. Bạn cần tạo lại giao dịch mới để tiếp tục thanh toán."
+                            : "Đây chỉ là giao diện mô phỏng, không thực hiện thanh toán thật."}
                         type="info"
                         showIcon
                     />

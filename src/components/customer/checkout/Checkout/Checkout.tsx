@@ -9,6 +9,8 @@ import DeliveryInfoStep, { DeliveryFormValues } from '../DeliveryInfoStep/Delive
 import PaymentMethodStep from '../PaymentMethodStep/PaymentMethodStep'
 import VnpayPaymentStep from '../VnpayPaymentStep/VnpayPaymentStep'
 import { CartService } from '@/library/services/cart-service'
+// OrderService sẽ được sử dụng sau này
+// import { OrderService } from '@/library/services/order-service'
 import { Order } from '@/library/models/order/order'
 
 import styles from './Checkout.module.scss'
@@ -33,16 +35,18 @@ const mockOrderData = {
 }
 
 export default function Checkout({ cartId }: CheckoutProps) {
-    const [currentStep, setCurrentStep] = useState(0)
-    const [selectedPayment, setSelectedPayment] = useState('vnpay')
-    const [isProcessing, setIsProcessing] = useState(false)
-    const [countdownSeconds, setCountdownSeconds] = useState(300) // 5 phút đếm ngược
+    const [currentStep, setCurrentStep] = useState<number>(0)
+    const [selectedPayment, setSelectedPayment] = useState<string>('vnpay')
+    const [isProcessing, setIsProcessing] = useState<boolean>(false)
+    const [countdownSeconds, setCountdownSeconds] = useState<number>(300)
     const [cartItems, setCartItems] = useState<CartItem[]>([])
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState<boolean>(true)
     const [orderData, setOrderData] = useState(mockOrderData)
     const { message } = App.useApp()
     const router = useRouter()
     const cartService = useMemo(() => new CartService(), [])
+    // OrderService sẽ được khởi tạo sau này khi cần
+    // const orderService = useMemo(() => new OrderService(), [])
 
     // Khởi tạo trạng thái form giao hàng
     const [deliveryFormValues, setDeliveryFormValues] = useState<DeliveryFormValues>({
@@ -65,12 +69,11 @@ export default function Checkout({ cartId }: CheckoutProps) {
             if (cartId) {
                 try {
                     setLoading(true)
-                    console.log(`Đang tải thông tin giỏ hàng với ID: ${cartId}`)
                     // Gọi API để lấy chi tiết giỏ hàng theo cartId
                     const cart = await cartService.getCart()
                     setCartItems(cart.cart_items)
 
-                    // Cập nhật orderData từ cart items thực tế
+                    // Cập nhật orderData từ cart items
                     if (cart.cart_items.length > 0) {
                         const items = cart.cart_items.map(item => ({
                             id: item.id || 0,
@@ -105,10 +108,42 @@ export default function Checkout({ cartId }: CheckoutProps) {
         fetchCartDetails()
     }, [cartId, cartService, message])
 
-    const handleNextStep = () => {
-        // Kiểm tra điều kiện trước khi chuyển bước
+    // Tạo đơn hàng
+    const createOrder = async (): Promise<boolean> => {
+        try {
+            setIsProcessing(true);
+
+            const order: Partial<Order> = {
+                ...orderInfo,
+                total_price: orderData.total,
+                payment_method: selectedPayment,
+                status: 0,
+                order_details: cartItems.map(item => ({
+                    product_id: item.product?.id,
+                    quantity: item.quantity,
+                    total: (item.product?.price || 0) * item.quantity
+                }))
+            };
+
+            // Chỉ log ra thông tin đơn hàng, chưa gọi API
+            console.log('Đơn hàng sẽ được tạo:', JSON.stringify(order, null, 2));
+
+            // Sau này sẽ gọi API tạo đơn hàng:
+            // const createdOrder = await orderService.createOrder(order);
+
+            message.success('Đơn hàng của bạn đã được tạo thành công!');
+            return true;
+        } catch (error) {
+            console.error('Lỗi khi tạo đơn hàng:', error);
+            message.error('Không thể tạo đơn hàng. Vui lòng thử lại sau.');
+            return false;
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleNextStep = async () => {
         if (currentStep === 0) {
-            // Đang ở bước nhập thông tin giao hàng, kiểm tra thông tin cần thiết
             const { customer_name, phone_number, shipping_address, shipping_method } = deliveryFormValues;
             if (!customer_name || !phone_number || !shipping_address || !shipping_method) {
                 message.error('Vui lòng điền đầy đủ thông tin giao hàng');
@@ -116,49 +151,19 @@ export default function Checkout({ cartId }: CheckoutProps) {
             }
         }
 
-        // Tiến hành chuyển bước
-        setCurrentStep(currentStep + 1);
-
-        // Nếu đến bước thanh toán VNPAY, bắt đầu đếm ngược và tạo đơn hàng
-        if (currentStep + 1 === 2) {
-            setIsProcessing(true);
-
-            // Chuẩn bị dữ liệu đơn hàng để gửi đi
-            const order: Partial<Order> = {
-                ...orderInfo,
-                total_price: orderData.total,
-                payment_method: selectedPayment,
-                status: 1, // Đang xử lý
-                // Trong trường hợp thực tế, sẽ chuyển đổi cart_items thành order_details
-                order_details: cartItems.map(item => ({
-                    // product_id: item.product?.id,
-                    quantity: item.quantity,
-                    total: (item.product?.price || 0) * item.quantity
-                }))
-            };
-
-            console.log('Đơn hàng sẽ được tạo:', order);
-            // Trong trường hợp thực tế, ở đây sẽ gọi API tạo đơn hàng
-            // const createdOrder = await orderService.createOrder(order);
-
-            // Giả lập xử lý thanh toán trong 2 giây
-            setTimeout(() => {
-                setIsProcessing(false);
-                // Đây là nơi sẽ xử lý kết quả tạo đơn hàng (nếu thành công/thất bại)
-                message.success('Đã tạo đơn hàng thành công!');
-            }, 2000);
-
-            // Đếm ngược từ 5 phút
-            const countdown = setInterval(() => {
-                setCountdownSeconds((prev) => {
-                    if (prev <= 1) {
-                        clearInterval(countdown);
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
+        // Nếu là phương thức COD và đang ở bước chọn phương thức thanh toán, tạo đơn hàng luôn
+        if (currentStep === 1 && selectedPayment === 'cod') {
+            await createOrder();
+            return;
         }
+
+        // Nếu là thanh toán VNPAY và chuyển sang bước cuối cùng
+        if (currentStep === 1 && selectedPayment === 'vnpay') {
+            // Khởi tạo đếm ngược
+            setCountdownSeconds(300); // Đặt lại bộ đếm ngược thành 5 phút
+        }
+
+        setCurrentStep(currentStep + 1);
     }
 
     const handlePreviousStep = () => {
@@ -251,20 +256,34 @@ export default function Checkout({ cartId }: CheckoutProps) {
                     </Button>
                 )}
 
-                {currentStep === 1 && (
-                    <Button type="primary" onClick={handleNextStep}>
-                        Thanh toán ngay
-                    </Button>
-                )}
+                {
+                    currentStep === 1 && selectedPayment === 'cod' && (
+                        <Button type="primary" onClick={handleNextStep} loading={isProcessing}>
+                            Đặt hàng
+                        </Button>
+                    )
+                }
+
+                {
+                    currentStep === 1 && selectedPayment === 'vnpay' && (
+                        <Button type="primary" onClick={handleNextStep}>
+                            Tiếp tục
+                        </Button>
+                    )
+                }
 
                 {currentStep === 2 && (
-                    <Button type="primary" onClick={() => {
-                        message.success('Đơn hàng của bạn đã được xác nhận!');
-                        // Trong thực tế, ở đây sẽ lưu thông tin đơn hàng nếu cần
-                        // Chuyển hướng đến trang đơn hàng hoặc trang sản phẩm
-                        router.push('/customer/orders');
-                    }}>
-                        Xem đơn hàng
+                    <Button
+                        type="primary"
+                        onClick={async () => {
+                            const success = await createOrder();
+                            if (success) {
+                                router.push('/customer/orders');
+                            }
+                        }}
+                        loading={isProcessing}
+                    >
+                        Hoàn thành thanh toán
                     </Button>
                 )}
             </div>

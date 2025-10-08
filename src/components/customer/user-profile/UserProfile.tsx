@@ -211,7 +211,6 @@ export default function UserProfile() {
                       icon={<EditOutlined />}
                       onClick={handleEdit}
                       size="small"
-                      className={styles.editButton}
                     >
                       Chỉnh sửa thông tin
                     </Button>
