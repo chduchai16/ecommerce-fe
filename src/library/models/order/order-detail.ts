@@ -5,6 +5,7 @@ export interface OrderDetail {
     order_id?: number ;
     product?: Product;
     product_id?: number ;
-    quantity : number ;
-    total: number ;
+    number_of_products : number ;
+    price : number ;
+    total_money: number ;
 }

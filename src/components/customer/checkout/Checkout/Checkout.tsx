@@ -15,6 +15,7 @@ import { Order } from '@/library/models/order/order'
 
 import styles from './Checkout.module.scss'
 import { CartItem } from '@/library/models/cart/cart-item'
+import { OrderService } from '@/library/services/order-service'
 
 const { Step } = Steps
 
@@ -45,8 +46,7 @@ export default function Checkout({ cartId }: CheckoutProps) {
     const { message } = App.useApp()
     const router = useRouter()
     const cartService = useMemo(() => new CartService(), [])
-    // OrderService sẽ được khởi tạo sau này khi cần
-    // const orderService = useMemo(() => new OrderService(), [])
+    const orderService = new OrderService() ;
 
     // Khởi tạo trạng thái form giao hàng
     const [deliveryFormValues, setDeliveryFormValues] = useState<DeliveryFormValues>({
@@ -120,17 +120,12 @@ export default function Checkout({ cartId }: CheckoutProps) {
                 status: 0,
                 order_details: cartItems.map(item => ({
                     product_id: item.product?.id,
-                    quantity: item.quantity,
-                    total: (item.product?.price || 0) * item.quantity
+                    number_of_products: item.quantity,
+                    price: item.product?.price || 0,
+                    total_money: (item.product?.price || 0) * item.quantity
                 }))
             };
-
-            // Chỉ log ra thông tin đơn hàng, chưa gọi API
-            console.log('Đơn hàng sẽ được tạo:', JSON.stringify(order, null, 2));
-
-            // Sau này sẽ gọi API tạo đơn hàng:
-            // const createdOrder = await orderService.createOrder(order);
-
+            await orderService.createOrder(order as Order);
             message.success('Đơn hàng của bạn đã được tạo thành công!');
             return true;
         } catch (error) {
@@ -159,10 +154,8 @@ export default function Checkout({ cartId }: CheckoutProps) {
 
         // Nếu là thanh toán VNPAY và chuyển sang bước cuối cùng
         if (currentStep === 1 && selectedPayment === 'vnpay') {
-            // Khởi tạo đếm ngược
             setCountdownSeconds(300); // Đặt lại bộ đếm ngược thành 5 phút
         }
-
         setCurrentStep(currentStep + 1);
     }
 
@@ -177,7 +170,6 @@ export default function Checkout({ cartId }: CheckoutProps) {
         return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
     }
 
-    // Xử lý thay đổi form giao hàng
     const handleDeliveryFormChange = (values: DeliveryFormValues) => {
         setDeliveryFormValues(values);
 
@@ -267,7 +259,7 @@ export default function Checkout({ cartId }: CheckoutProps) {
                 {
                     currentStep === 1 && selectedPayment === 'vnpay' && (
                         <Button type="primary" onClick={handleNextStep}>
-                            Tiếp tục
+                            Thanh toán với VNPAY
                         </Button>
                     )
                 }

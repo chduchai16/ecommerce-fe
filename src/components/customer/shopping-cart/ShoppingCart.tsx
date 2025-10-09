@@ -307,7 +307,7 @@ export default function ShoppingCart() {
                 disabled={cartItems.length <= 0}
                 className={styles.checkoutBtn}
               >
-                Tiến hành thanh toán
+                Tiến hành đặt hàng
               </Button>
             </Card>
           </Col>

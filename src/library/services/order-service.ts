@@ -6,4 +6,9 @@ export class OrderService {
         const response = await api.post("/orders", order);
         return response.data;
     }
+
+    public async getOrderById (orderId : string){
+        const response = await api.get(`/orders/${orderId}`);
+        return response.data;
+    }
 }
