@@ -35,7 +35,6 @@ export default function ShoppingCart() {
         setCartId(cart.id);
       } catch (err) {
         console.error('Load cart failed', err)
-        message.error('Không thể tải giỏ hàng. Vui lòng thử lại sau.')
       }
       finally {
         setLoading(false)

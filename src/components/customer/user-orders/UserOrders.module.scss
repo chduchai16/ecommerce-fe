@@ -3,7 +3,7 @@
 .userOrders {
   min-height: 100vh;
 
-  backg.orderItem {
+  .orderItem {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -71,6 +71,7 @@
 
   .orderItems {
     display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     gap: 16px;
     margin: 16px 0;
@@ -90,6 +91,7 @@
   .itemImage {
     flex-shrink: 0;
     border-radius: 4px;
+    display: inline;
     border: 1px solid $border-light;
   }
 
@@ -98,7 +100,7 @@
     min-width: 0;
 
     .itemName {
-      display: block;
+      display: inline;
       font-weight: 500;
       margin-bottom: 4px;
       overflow: hidden;
@@ -107,6 +109,7 @@
     }
 
     .itemDetails {
+      display: inline;
       color: $text-secondary;
       font-size: 14px;
     }
@@ -125,75 +128,148 @@
 
   .orderModal {
     top: 30px !important;
-    
+
     .ant-modal-body {
-      max-height: 70vh;
+      max-height: calc(100vh - 200px);
       overflow-y: auto;
+      padding: 16px;
     }
   }
 
   .orderDetail {
-    .statusTimeline {
-      margin-bottom: 24px;
+    .detailCard {
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 
+      .ant-card-body {
+        padding: 16px;
+      }
+    }
+
+    .statusTimeline {
       .ant-timeline {
-        margin-top: 16px;
+        margin-top: 12px;
       }
     }
 
     .modalProducts {
-      margin: 24px 0;
+      margin-top: 12px;
+      max-height: 450px;
+      overflow-y: auto;
+
+      // Custom scrollbar
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+
+        &:hover {
+          background: #555;
+        }
+      }
     }
 
     .modalItem {
       display: flex;
+      flex-direction: row;
+      align-items: flex-start;
       gap: 16px;
       padding: 16px;
       border: 1px solid $border-light;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 12px;
+      transition: all 0.2s;
+      background: #fafafa;
 
       &:last-child {
         margin-bottom: 0;
       }
-    }
 
-    .modalItemInfo {
-      flex: 1;
+      &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-color: #d9d9d9;
+        background: #fff;
+      }
 
-      .ant-typography {
-        display: block;
-        margin-bottom: 4px;
+      .productImageWrapper {
+        flex-shrink: 0;
+        width: 80px;
+        height: 80px;
+        border: 1px solid $border-light;
+        border-radius: 8px;
+        padding: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
 
-        &:last-child {
-          margin-bottom: 0;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+
+      .modalItemInfo {
+        display: inline;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        justify-content: center;
+
+        .productName {
+          font-size: 15px;
+          line-height: 1.5;
+          margin: 0;
+          display: block;
+        }
+
+        .productDetails {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+
+          .ant-typography {
+            margin: 0;
+            font-size: 14px;
+          }
         }
       }
     }
 
     .modalSummary {
-      margin: 24px 0;
-      padding: 16px;
-      background: $bg-light;
-      border-radius: 6px;
-    }
+      padding: 0;
 
-    .summaryRow {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+      .summaryRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px dashed $border-light;
 
-      &:last-child {
-        margin-bottom: 0;
-        padding-top: 8px;
-        border-top: 1px solid $border-light;
+        &:last-child,
+        &.totalRow {
+          border-bottom: none;
+          padding-top: 12px;
+          border-top: 2px solid $border-light;
+          margin-top: 4px;
+        }
+
+        .finalAmount {
+          font-size: 18px;
+          color: $error-color;
+        }
       }
-    }
-
-    .finalAmount {
-      font-size: 18px;
-      color: $error-color;
     }
   }
 }

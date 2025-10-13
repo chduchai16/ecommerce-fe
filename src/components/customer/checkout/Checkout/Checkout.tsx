@@ -4,15 +4,11 @@ import { useState, useEffect, useMemo } from 'react'
 import { Button, Steps, App } from 'antd'
 import { ShoppingCartOutlined, CreditCardOutlined, CheckCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
-
 import DeliveryInfoStep, { DeliveryFormValues } from '../DeliveryInfoStep/DeliveryInfoStep'
 import PaymentMethodStep from '../PaymentMethodStep/PaymentMethodStep'
 import VnpayPaymentStep from '../VnpayPaymentStep/VnpayPaymentStep'
 import { CartService } from '@/library/services/cart-service'
-// OrderService sẽ được sử dụng sau này
-// import { OrderService } from '@/library/services/order-service'
 import { Order } from '@/library/models/order/order'
-
 import styles from './Checkout.module.scss'
 import { CartItem } from '@/library/models/cart/cart-item'
 import { OrderService } from '@/library/services/order-service'
@@ -23,17 +19,14 @@ interface CheckoutProps {
     cartId?: string | null;
 }
 
-// Giả lập dữ liệu đơn hàng
-const mockOrderData = {
-    items: [
-        { id: 1, name: 'Laptop Asus ZenBook', quantity: 1, price: 25000000 },
-        { id: 2, name: 'Chuột không dây Logitech', quantity: 2, price: 450000 }
-    ],
-    subtotal: 25900000,
-    shippingFee: 50000,
-    discount: 0,
-    total: 25950000
+interface OrderData {
+    items: { id: number; name: string; quantity: number; price: number }[];
+    subtotal: number;
+    shippingFee: number;
+    discount: number;
+    total: number;
 }
+
 
 export default function Checkout({ cartId }: CheckoutProps) {
     const [currentStep, setCurrentStep] = useState<number>(0)
@@ -42,11 +35,17 @@ export default function Checkout({ cartId }: CheckoutProps) {
     const [countdownSeconds, setCountdownSeconds] = useState<number>(300)
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [loading, setLoading] = useState<boolean>(true)
-    const [orderData, setOrderData] = useState(mockOrderData)
+    const [orderData, setOrderData] = useState<OrderData>({
+        items: [],
+        subtotal: 0,
+        shippingFee: 0,
+        discount: 0,
+        total: 0
+    })
     const { message } = App.useApp()
     const router = useRouter()
     const cartService = useMemo(() => new CartService(), [])
-    const orderService = new OrderService() ;
+    const orderService = new OrderService()
 
     // Khởi tạo trạng thái form giao hàng
     const [deliveryFormValues, setDeliveryFormValues] = useState<DeliveryFormValues>({
