@@ -148,6 +148,7 @@ export default function Checkout({ cartId }: CheckoutProps) {
         // Nếu là phương thức COD và đang ở bước chọn phương thức thanh toán, tạo đơn hàng luôn
         if (currentStep === 1 && selectedPayment === 'cod') {
             await createOrder();
+            redirectToOrders();
             return;
         }
 
@@ -183,6 +184,10 @@ export default function Checkout({ cartId }: CheckoutProps) {
             notes: values.notes || null
         }));
     };
+
+    const redirectToOrders = () => {
+        router.push('/customer/orders');
+    }
 
     // Nội dung các bước thanh toán
     const stepContent = [
@@ -269,7 +274,7 @@ export default function Checkout({ cartId }: CheckoutProps) {
                         onClick={async () => {
                             const success = await createOrder();
                             if (success) {
-                                router.push('/customer/orders');
+                                redirectToOrders();
                             }
                         }}
                         loading={isProcessing}

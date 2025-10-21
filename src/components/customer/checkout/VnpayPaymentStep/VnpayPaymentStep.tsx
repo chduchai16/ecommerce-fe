@@ -81,7 +81,7 @@ export default function VnpayPaymentStep({
                             showIcon
                             style={{ marginBottom: 20 }}
                             action={
-                                <Button size="small" type="primary" danger onClick={() => window.location.reload()}>
+                                <Button type="primary" danger onClick={() => window.location.reload()}>
                                     Thử lại
                                 </Button>
                             }
@@ -124,7 +124,7 @@ export default function VnpayPaymentStep({
                         message="Lưu ý"
                         description={isExpired
                             ? "Giao dịch đã hết hạn. Bạn cần tạo lại giao dịch mới để tiếp tục thanh toán."
-                            : "Đây chỉ là giao diện mô phỏng, không thực hiện thanh toán thật."}
+                            : "Nếu có bất kỳ vấn đề nào trong quá trình thanh toán, vui lòng liên hệ bộ phận hỗ trợ khách hàng."}
                         type="info"
                         showIcon
                     />

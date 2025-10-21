@@ -39,7 +39,7 @@
   display: flex;
   justify-content: center;
   margin-bottom: 16px;
-  
+
   .ant-upload-select {
     width: 120px !important;
     height: 120px !important;
@@ -48,13 +48,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
+
     .anticon {
       font-size: 24px;
       margin-bottom: 8px;
       color: $text-secondary;
     }
-    
+
     div {
       font-size: 14px;
       color: $text-secondary;
@@ -66,16 +66,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom : 10px ;  
+  margin-bottom: 10px;
+
   .changeAvatarButton {
     margin-top: 8px;
   }
-  
+
   .avatarActions {
     display: flex;
     gap: 8px;
     margin-top: 8px;
-    
+
     button {
       font-size: 12px;
       padding: 4px 8px;
@@ -123,6 +124,12 @@
 }
 
 .detailsCard {
+  .tabActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+
   .editForm {
     .formActions {
       margin-top: 32px;
@@ -130,6 +137,10 @@
       border-top: 1px solid $border-light;
       padding-top: 16px;
     }
+  }
+
+  .passwordForm {
+    max-width: 500px;
   }
 }
 

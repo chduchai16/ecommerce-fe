@@ -2,17 +2,18 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Card, Row, Col, Typography, Button, Modal, Input, Rate, Empty, message,
+    Card, Row, Col, Typography, Button, Modal, Input, Rate, Empty, message, Image,
 } from 'antd';
 import {
     HeartOutlined, HeartFilled, DeleteOutlined, ShoppingCartOutlined,
-    EyeOutlined, ArrowLeftOutlined,
+    ArrowLeftOutlined,
 } from '@ant-design/icons';
 import styles from './UserWishlist.module.scss';
 import Link from 'next/link';
 import { Product } from '@/library/models/product/product';
 import { WishlistService } from '@/library/services/wishlist-service';
 import { ProductService } from '@/library/services/product-service';
+import { CartService } from '@/library/services/cart-service';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -25,7 +26,8 @@ export default function UserWishlist() {
     const [loading, setLoading] = useState(false);
 
     const wishlistService = new WishlistService();
-    const productService = new ProductService() ;
+    const productService = new ProductService();
+    const cartService = new CartService() ;
 
     // Hàm fetch product theo id
     const fetchWishlistProducts = useCallback(async () => {
@@ -75,14 +77,8 @@ export default function UserWishlist() {
         wishlistService.clear();
     };
 
-    const handleViewDetail = (product: Product) => {
-        setSelectedProduct(product);
-        setDetailModalVisible(true);
-    };
-
-    const handleAddToCart = (productId: number) => {
-        console.log('Adding to cart:', productId);
-        message.success('Đã thêm vào giỏ hàng');
+    const handleAddToCart = (product: Product) => {
+        cartService.addItem(product);
     };
 
     const formatPrice = (price: number) =>
@@ -106,16 +102,14 @@ export default function UserWishlist() {
                     </div>
                 </div>
 
-                <Card className={styles.searchCard}>
-                    <Search
-                        placeholder="Tìm kiếm sản phẩm yêu thích..."
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
-                        className={styles.searchInput}
-                        size="large"
-                        allowClear
-                    />
-                </Card>
+                <Search
+                    placeholder="Tìm kiếm sản phẩm yêu thích..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    className={styles.searchInput}
+                    size="large"
+                    allowClear
+                />
 
                 <div className={styles.contentWrapper}>
                     {loading ? (
@@ -159,36 +153,31 @@ export default function UserWishlist() {
                     ) : (
                         <Row gutter={[16, 16]} className={styles.productGrid}>
                             {filteredWishlist.map((product) => (
-                                <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
+                                <Col
+                                    key={product.id}
+                                    xs={24}
+                                    sm={12}
+                                    md={8}
+                                    xl={6}
+                                >
                                     <Card
                                         hoverable
                                         className={styles.productCard}
                                         cover={
                                             <div className={styles.productImage}>
-                                                <img
+                                                <Image
                                                     src={product.product_images?.[0]?.name || product.thumbnail || '/placeholder-product.jpg'}
                                                     alt={product.name}
+                                                    preview={{
+                                                        mask: 'Xem ảnh'
+                                                    }}
+                                                    fallback="/placeholder-product.jpg"
                                                 />
-                                                <div className={styles.imageOverlay}>
-                                                    <Button
-                                                        type="text"
-                                                        icon={<EyeOutlined />}
-                                                        className={styles.overlayButton}
-                                                        onClick={() => handleViewDetail(product)}
-                                                    />
-                                                    <Button
-                                                        type="text"
-                                                        icon={<DeleteOutlined />}
-                                                        className={styles.overlayButton}
-                                                        onClick={() => handleRemoveFromWishlist(product.id)}
-                                                        danger
-                                                    />
-                                                </div>
                                             </div>
                                         }
                                     >
                                         <div className={styles.productInfo}>
-                                            <Title level={5} className={styles.productName}>
+                                            <Title level={5}>
                                                 {product.name}
                                             </Title>
 
@@ -214,7 +203,7 @@ export default function UserWishlist() {
                                                 <Button
                                                     type="primary"
                                                     icon={<ShoppingCartOutlined />}
-                                                    onClick={() => handleAddToCart(product.id)}
+                                                    onClick={() => handleAddToCart(product)}
                                                     className={styles.addToCartButton}
                                                     block
                                                 >
@@ -250,10 +239,11 @@ export default function UserWishlist() {
                         <div className={styles.modalContent}>
                             <Row gutter={24}>
                                 <Col span={12}>
-                                    <img
+                                    <Image
                                         src={selectedProduct.product_images?.[0]?.name || selectedProduct.thumbnail || '/placeholder-product.jpg'}
                                         alt={selectedProduct.name}
                                         className={styles.modalImage}
+                                        fallback="/placeholder-product.jpg"
                                     />
                                 </Col>
                                 <Col span={12}>
@@ -288,7 +278,7 @@ export default function UserWishlist() {
                                                 type="primary"
                                                 size="large"
                                                 icon={<ShoppingCartOutlined />}
-                                                onClick={() => handleAddToCart(selectedProduct.id)}
+                                                onClick={() => handleAddToCart(selectedProduct)}
                                                 block
                                             >
                                                 Thêm vào giỏ hàng

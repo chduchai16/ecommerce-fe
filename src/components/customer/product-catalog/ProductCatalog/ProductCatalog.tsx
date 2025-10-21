@@ -168,7 +168,6 @@ export default function ProductCatalog() {
                   </span>
                   <Button
                     type="text"
-                    size="small"
                     icon={<ClearOutlined />}
                     onClick={handleClearFilters}
                   >

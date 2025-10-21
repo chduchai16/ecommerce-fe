@@ -148,6 +148,7 @@ export default function UserOrders() {
             {orders.map(order => (
               <Card key={order.id} className={styles.orderCard}>
                 <Row gutter={[16, 16]}>
+                  {/* header */}
                   <Col span={24}>
                     <div className={styles.orderHeader}>
                       <div className={styles.orderInfo}>
@@ -156,10 +157,11 @@ export default function UserOrders() {
                       </div>
                       <div className={styles.orderActions}>
                         <Tag color={getOrderStatusColor(order.status)} className={styles.statusTag}>{getOrderStatusText(order.status)}</Tag>
-                        <Button type="primary" size="small" icon={<EyeOutlined />} onClick={() => handleViewOrder(order)}>Xem chi tiết</Button>
+                        <Button type="primary" icon={<EyeOutlined />} onClick={() => handleViewOrder(order)}>Xem chi tiết</Button>
                       </div>
                     </div>
                   </Col>
+                  {/* danh sách đơn hàng */}
                   <Col span={24}>
                     <div className={styles.orderItems}>
                       {order.items?.map(item => (

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Row, Col, Card, Form, Input, Button, Upload, Avatar, Select, DatePicker, Typography, Divider, Space, App } from 'antd'
-import { UserOutlined, EditOutlined, SaveOutlined, CameraOutlined } from '@ant-design/icons'
+import { Row, Col, Card, Form, Input, Button, Upload, Avatar, Select, DatePicker, Typography, Divider, Space, App, Tabs } from 'antd'
+import { UserOutlined, EditOutlined, SaveOutlined, CameraOutlined, InfoCircleOutlined, ShopOutlined, LockOutlined } from '@ant-design/icons'
 import type { UploadFile, UploadChangeParam } from 'antd/es/upload/interface'
 import dayjs from 'dayjs'
 import { User } from '@/library/models/user/user'
@@ -15,11 +15,13 @@ const { Option } = Select
 export default function UserProfile() {
   const { message } = App.useApp();
   const [form] = Form.useForm()
+  const [passwordForm] = Form.useForm()
   const [profile, setProfile] = useState<User | null>(null)
   const [editing, setEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState('basic')
 
   // Sử dụng useMemo để tránh tạo mới UserService mỗi khi render
   const userService = useMemo(() => new UserService(), [])
@@ -47,7 +49,12 @@ export default function UserProfile() {
     setEditing(true)
     form.setFieldsValue({
       ...profile,
-      date_of_birth: profile.date_of_birth ? dayjs(profile.date_of_birth) : null
+      date_of_birth: profile.date_of_birth ? dayjs(profile.date_of_birth) : null,
+      // Load shop data if user is seller
+      shop_name: profile.shop_name,
+      shop_description: profile.shop_description,
+      tax_code: profile.tax_code,
+      business_license: profile.business_license
     })
   }
 
@@ -99,7 +106,7 @@ export default function UserProfile() {
 
   const handleAvatarChange = (info: UploadChangeParam<UploadFile>) => {
     console.log('Upload info:', info)
-    
+
     const { fileList: newFileList } = info
     setFileList(newFileList)
 
@@ -115,6 +122,23 @@ export default function UserProfile() {
       }
     } else {
       setPreviewAvatar(null)
+    }
+  }
+
+  const handleChangePassword = async (values: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
+    setLoading(true)
+    try {
+      // Simulate API call - Ở đây bạn có thể thêm API gọi thực sự
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      console.log('Password changed:', values)
+      message.success('Đổi mật khẩu thành công!')
+      passwordForm.resetFields()
+    } catch (error) {
+      console.error('Error changing password:', error)
+      message.error('Đổi mật khẩu thất bại!')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -148,7 +172,6 @@ export default function UserProfile() {
                       >
                         <Button
                           icon={<CameraOutlined />}
-                          size="small"
                           className={styles.changeAvatarButton}
                         >
                           Thay đổi
@@ -167,13 +190,11 @@ export default function UserProfile() {
                         >
                           <Button
                             icon={<CameraOutlined />}
-                            size="small"
                           >
                             Chọn ảnh khác
                           </Button>
                         </Upload>
                         <Button
-                          size="small"
                           onClick={() => {
                             setPreviewAvatar(null)
                             setFileList([])
@@ -204,16 +225,6 @@ export default function UserProfile() {
                     <Text className={styles.userRole}>
                       Người bán {profile.is_verified && '✓'}
                     </Text>
-                  )}
-                  {!editing && (
-                    <Button
-                      type="primary"
-                      icon={<EditOutlined />}
-                      onClick={handleEdit}
-                      size="small"
-                    >
-                      Chỉnh sửa thông tin
-                    </Button>
                   )}
                 </div>
               </div>
@@ -256,254 +267,389 @@ export default function UserProfile() {
           {/* Profile Details */}
           <Col xs={24} lg={16}>
             <Card className={styles.detailsCard}>
-              {editing ? (
-                <Form
-                  form={form}
-                  layout="vertical"
-                  onFinish={handleSave}
-                  className={styles.editForm}
-                >
-                  <Form.Item
-                    label="Họ và tên"
-                    name="fullname"
-                    rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
-                  >
-                    <Input placeholder="Nhập họ và tên" />
-                  </Form.Item>
+              <Tabs
+                activeKey={activeTab}
+                onChange={setActiveTab}
+                items={[
+                  {
+                    key: 'basic',
+                    label: (
+                      <span>
+                        <InfoCircleOutlined />
+                        Thông tin cơ bản
+                      </span>
+                    ),
+                    children: (
+                      <>
+                        {!editing && (
+                          <div className={styles.tabActions}>
+                            <Button
+                              type="primary"
+                              icon={<EditOutlined />}
+                              onClick={handleEdit}
 
-                  <Row gutter={[16, 0]}>
-                    <Col xs={24} sm={12}>
-                      <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[
-                          { required: true, message: 'Vui lòng nhập email!' },
-                          { type: 'email', message: 'Email không hợp lệ!' }
-                        ]}
-                      >
-                        <Input placeholder="Nhập email" />
-                      </Form.Item>
-                    </Col>
-
-                    <Col xs={24} sm={12}>
-                      <Form.Item
-                        label="Số điện thoại"
-                        name="phone_number"
-                        rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
-                      >
-                        <Input placeholder="Nhập số điện thoại" />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-
-                  <Row gutter={[16, 0]}>
-                    <Col xs={24} sm={12}>
-                      <Form.Item
-                        label="Ngày sinh"
-                        name="date_of_birth"
-                      >
-                        <DatePicker
-                          style={{ width: '100%' }}
-                          placeholder="Chọn ngày sinh"
-                          format="DD/MM/YYYY"
-                        />
-                      </Form.Item>
-                    </Col>
-
-                    <Col xs={24} sm={12}>
-                      <Form.Item
-                        label="Giới tính"
-                        name="gender"
-                      >
-                        <Select placeholder="Chọn giới tính">
-                          <Option value="male">Nam</Option>
-                          <Option value="female">Nữ</Option>
-                          <Option value="other">Khác</Option>
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-
-                  <Title level={5}>Địa chỉ</Title>
-
-                  <Form.Item
-                    label="Địa chỉ đầy đủ"
-                    name="address"
-                    rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
-                  >
-                    <Input.TextArea
-                      placeholder="Nhập địa chỉ đầy đủ (số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố)"
-                      rows={3}
-                    />
-                  </Form.Item>
-
-                  {profile?.role_name === 'SELLER' && (
-                    <>
-                      <Title level={5}>Thông tin cửa hàng</Title>
-
-                      <Form.Item
-                        label="Tên cửa hàng"
-                        name="shop_name"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
-                      >
-                        <Input placeholder="Nhập tên cửa hàng" />
-                      </Form.Item>
-
-                      <Form.Item
-                        label="Mô tả cửa hàng"
-                        name="shop_description"
-                      >
-                        <Input.TextArea placeholder="Mô tả về cửa hàng của bạn" rows={3} />
-                      </Form.Item>
-
-                      <Row gutter={[16, 0]}>
-                        <Col xs={24} sm={12}>
-                          <Form.Item
-                            label="Mã số thuế"
-                            name="tax_code"
+                            >
+                              Chỉnh sửa thông tin
+                            </Button>
+                          </div>
+                        )}
+                        {editing ? (
+                          <Form
+                            form={form}
+                            layout="vertical"
+                            onFinish={handleSave}
+                            className={styles.editForm}
                           >
-                            <Input placeholder="Nhập mã số thuế" />
-                          </Form.Item>
-                        </Col>
+                            <Form.Item
+                              label="Họ và tên"
+                              name="fullname"
+                              rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+                            >
+                              <Input placeholder="Nhập họ và tên" />
+                            </Form.Item>
 
-                        <Col xs={24} sm={12}>
-                          <Form.Item
-                            label="Giấy phép kinh doanh"
-                            name="business_license"
+                            <Row gutter={[16, 0]}>
+                              <Col xs={24} sm={12}>
+                                <Form.Item
+                                  label="Email"
+                                  name="email"
+                                  rules={[
+                                    { required: true, message: 'Vui lòng nhập email!' },
+                                    { type: 'email', message: 'Email không hợp lệ!' }
+                                  ]}
+                                >
+                                  <Input placeholder="Nhập email" />
+                                </Form.Item>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <Form.Item
+                                  label="Số điện thoại"
+                                  name="phone_number"
+                                  rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+                                >
+                                  <Input placeholder="Nhập số điện thoại" />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+
+                            <Row gutter={[16, 0]}>
+                              <Col xs={24} sm={12}>
+                                <Form.Item
+                                  label="Ngày sinh"
+                                  name="date_of_birth"
+                                >
+                                  <DatePicker
+                                    style={{ width: '100%' }}
+                                    placeholder="Chọn ngày sinh"
+                                    format="DD/MM/YYYY"
+                                  />
+                                </Form.Item>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <Form.Item
+                                  label="Giới tính"
+                                  name="gender"
+                                >
+                                  <Select placeholder="Chọn giới tính">
+                                    <Option value="male">Nam</Option>
+                                    <Option value="female">Nữ</Option>
+                                    <Option value="other">Khác</Option>
+                                  </Select>
+                                </Form.Item>
+                              </Col>
+                            </Row>
+
+                            <Title level={5}>Địa chỉ</Title>
+
+                            <Form.Item
+                              label="Địa chỉ đầy đủ"
+                              name="address"
+                              rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
+                            >
+                              <Input.TextArea
+                                placeholder="Nhập địa chỉ đầy đủ (số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố)"
+                                rows={3}
+                              />
+                            </Form.Item>
+
+                            <div className={styles.formActions}>
+                              <Space>
+                                <Button onClick={handleCancel} >
+                                  Hủy
+                                </Button>
+                                <Button
+                                  type="primary"
+                                  htmlType="submit"
+                                  loading={loading}
+
+                                  icon={<SaveOutlined />}
+                                >
+                                  Lưu thông tin
+                                </Button>
+                              </Space>
+                            </div>
+                          </Form>
+                        ) : (
+                          <div className={styles.profileDetails}>
+                            <Row gutter={[16, 16]}>
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Họ và tên:</Text>
+                                  <Text className={styles.infoValue}>
+                                    {profile?.fullname}
+                                  </Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Email:</Text>
+                                  <Text className={styles.infoValue}>{profile?.email}</Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Số điện thoại:</Text>
+                                  <Text className={styles.infoValue}>{profile?.phone_number}</Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Ngày sinh:</Text>
+                                  <Text className={styles.infoValue}>
+                                    {profile?.date_of_birth ? dayjs(profile.date_of_birth).format('DD/MM/YYYY') : 'Chưa cập nhật'}
+                                  </Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Giới tính:</Text>
+                                  <Text className={styles.infoValue}>
+                                    {profile?.gender === 'male' ? 'Nam' : profile?.gender === 'female' ? 'Nữ' : 'Khác'}
+                                  </Text>
+                                </div>
+                              </Col>
+                            </Row>
+
+                            <Divider />
+
+                            <Title level={4}>Địa chỉ</Title>
+                            <div className={styles.addressInfo}>
+                              <Text>
+                                {profile?.address || 'Chưa cập nhật'}
+                              </Text>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )
+                  },
+                  ...(profile?.role_name === 'SELLER' ? [{
+                    key: 'shop',
+                    label: (
+                      <span>
+                        <ShopOutlined />
+                        Thông tin cửa hàng
+                      </span>
+                    ),
+                    children: (
+                      <>
+                        {!editing && (
+                          <div className={styles.tabActions}>
+                            <Button
+                              type="primary"
+                              icon={<EditOutlined />}
+                              onClick={handleEdit}
+
+                            >
+                              Chỉnh sửa thông tin
+                            </Button>
+                          </div>
+                        )}
+                        {editing ? (
+                          <Form
+                            form={form}
+                            layout="vertical"
+                            onFinish={handleSave}
+                            className={styles.editForm}
                           >
-                            <Input placeholder="Nhập số giấy phép kinh doanh" />
+                            <Form.Item
+                              label="Tên cửa hàng"
+                              name="shop_name"
+                              rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
+                            >
+                              <Input placeholder="Nhập tên cửa hàng" />
+                            </Form.Item>
+
+                            <Form.Item
+                              label="Mô tả cửa hàng"
+                              name="shop_description"
+                            >
+                              <Input.TextArea placeholder="Mô tả về cửa hàng của bạn" rows={3} />
+                            </Form.Item>
+
+                            <Row gutter={[16, 0]}>
+                              <Col xs={24} sm={12}>
+                                <Form.Item
+                                  label="Mã số thuế"
+                                  name="tax_code"
+                                >
+                                  <Input placeholder="Nhập mã số thuế" />
+                                </Form.Item>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <Form.Item
+                                  label="Giấy phép kinh doanh"
+                                  name="business_license"
+                                >
+                                  <Input placeholder="Nhập số giấy phép kinh doanh" />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+
+                            <div className={styles.formActions}>
+                              <Space>
+                                <Button onClick={handleCancel} >
+                                  Hủy
+                                </Button>
+                                <Button
+                                  type="primary"
+                                  htmlType="submit"
+                                  loading={loading}
+
+                                  icon={<SaveOutlined />}
+                                >
+                                  Lưu thông tin
+                                </Button>
+                              </Space>
+                            </div>
+                          </Form>
+                        ) : (
+                          <div className={styles.profileDetails}>
+                            <Title level={4}>Thông tin cửa hàng</Title>
+                            <Row gutter={[16, 16]}>
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Tên cửa hàng:</Text>
+                                  <Text className={styles.infoValue}>{profile.shop_name || 'Chưa cập nhật'}</Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Mô tả cửa hàng:</Text>
+                                  <Text className={styles.infoValue}>{profile.shop_description || 'Chưa cập nhật'}</Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Mã số thuế:</Text>
+                                  <Text className={styles.infoValue}>{profile.tax_code || 'Chưa cập nhật'}</Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Giấy phép kinh doanh:</Text>
+                                  <Text className={styles.infoValue}>{profile.business_license || 'Chưa cập nhật'}</Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Đánh giá:</Text>
+                                  <Text className={styles.infoValue}>{profile.seller_rating || 0}/5</Text>
+                                </div>
+                              </Col>
+
+                              <Col xs={24} sm={12}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>Đã bán:</Text>
+                                  <Text className={styles.infoValue}>{profile.total_sales || 0} sản phẩm</Text>
+                                </div>
+                              </Col>
+                            </Row>
+                          </div>
+                        )}
+                      </>
+                    )
+                  }] : []),
+                  {
+                    key: 'password',
+                    label: (
+                      <span>
+                        <LockOutlined />
+                        Mật khẩu
+                      </span>
+                    ),
+                    children: (
+                      <div className={styles.profileDetails}>
+                        <Title level={4}>Đổi mật khẩu</Title>
+                        <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
+                          Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu cho người khác
+                        </Text>
+                        <Form
+                          form={passwordForm}
+                          layout="vertical"
+                          onFinish={handleChangePassword}
+                          className={styles.passwordForm}
+                        >
+                          <Form.Item
+                            label="Mật khẩu hiện tại"
+                            name="currentPassword"
+                            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu hiện tại!' }]}
+                          >
+                            <Input.Password placeholder="Nhập mật khẩu hiện tại" />
                           </Form.Item>
-                        </Col>
-                      </Row>
-                    </>
-                  )}
 
-                  <div className={styles.formActions}>
-                    <Space>
-                      <Button onClick={handleCancel} size='small'>
-                        Hủy
-                      </Button>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        loading={loading}
-                        size='small'
-                        icon={<SaveOutlined />}
-                      >
-                        Lưu thông tin
-                      </Button>
-                    </Space>
-                  </div>
-                </Form>
-              ) : (
-                <div className={styles.profileDetails}>
-                  <Title level={4}>Thông tin cá nhân</Title>
+                          <Form.Item
+                            label="Mật khẩu mới"
+                            name="newPassword"
+                            rules={[
+                              { required: true, message: 'Vui lòng nhập mật khẩu mới!' },
+                              { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
+                            ]}
+                          >
+                            <Input.Password placeholder="Nhập mật khẩu mới" />
+                          </Form.Item>
 
-                  <Row gutter={[16, 16]}>
-                    <Col xs={24} sm={12}>
-                      <div className={styles.infoItem}>
-                        <Text className={styles.infoLabel}>Họ và tên:</Text>
-                        <Text className={styles.infoValue}>
-                          {profile?.fullname}
-                        </Text>
+                          <Form.Item
+                            label="Xác nhận mật khẩu mới"
+                            name="confirmPassword"
+                            dependencies={['newPassword']}
+                            rules={[
+                              { required: true, message: 'Vui lòng xác nhận mật khẩu mới!' },
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (!value || getFieldValue('newPassword') === value) {
+                                    return Promise.resolve();
+                                  }
+                                  return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
+                                },
+                              }),
+                            ]}
+                          >
+                            <Input.Password placeholder="Nhập lại mật khẩu mới" />
+                          </Form.Item>
+
+                          <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={loading} >
+                              Đổi mật khẩu
+                            </Button>
+                          </Form.Item>
+                        </Form>
                       </div>
-                    </Col>
-
-                    <Col xs={24} sm={12}>
-                      <div className={styles.infoItem}>
-                        <Text className={styles.infoLabel}>Email:</Text>
-                        <Text className={styles.infoValue}>{profile?.email}</Text>
-                      </div>
-                    </Col>
-
-                    <Col xs={24} sm={12}>
-                      <div className={styles.infoItem}>
-                        <Text className={styles.infoLabel}>Số điện thoại:</Text>
-                        <Text className={styles.infoValue}>{profile?.phone_number}</Text>
-                      </div>
-                    </Col>
-
-                    <Col xs={24} sm={12}>
-                      <div className={styles.infoItem}>
-                        <Text className={styles.infoLabel}>Ngày sinh:</Text>
-                        <Text className={styles.infoValue}>
-                          {profile?.date_of_birth ? dayjs(profile.date_of_birth).format('DD/MM/YYYY') : 'Chưa cập nhật'}
-                        </Text>
-                      </div>
-                    </Col>
-
-                    <Col xs={24} sm={12}>
-                      <div className={styles.infoItem}>
-                        <Text className={styles.infoLabel}>Giới tính:</Text>
-                        <Text className={styles.infoValue}>
-                          {profile?.gender === 'male' ? 'Nam' : profile?.gender === 'female' ? 'Nữ' : 'Khác'}
-                        </Text>
-                      </div>
-                    </Col>
-                  </Row>
-
-                  <Divider />
-
-                  <Title level={4}>Địa chỉ</Title>
-                  <div className={styles.addressInfo}>
-                    <Text>
-                      {profile?.address || 'Chưa cập nhật'}
-                    </Text>
-                  </div>
-
-                  {/* Seller information section */}
-                  {profile?.role_name === 'SELLER' && (
-                    <>
-                      <Divider />
-
-                      <Title level={4}>Thông tin cửa hàng</Title>
-                      <Row gutter={[16, 16]}>
-                        <Col xs={24} sm={12}>
-                          <div className={styles.infoItem}>
-                            <Text className={styles.infoLabel}>Tên cửa hàng:</Text>
-                            <Text className={styles.infoValue}>{profile.shop_name || 'Chưa cập nhật'}</Text>
-                          </div>
-                        </Col>
-
-                        <Col xs={24}>
-                          <div className={styles.infoItem}>
-                            <Text className={styles.infoLabel}>Mô tả cửa hàng:</Text>
-                            <Text className={styles.infoValue}>{profile.shop_description || 'Chưa cập nhật'}</Text>
-                          </div>
-                        </Col>
-
-                        <Col xs={24} sm={12}>
-                          <div className={styles.infoItem}>
-                            <Text className={styles.infoLabel}>Mã số thuế:</Text>
-                            <Text className={styles.infoValue}>{profile.tax_code || 'Chưa cập nhật'}</Text>
-                          </div>
-                        </Col>
-
-                        <Col xs={24} sm={12}>
-                          <div className={styles.infoItem}>
-                            <Text className={styles.infoLabel}>Giấy phép kinh doanh:</Text>
-                            <Text className={styles.infoValue}>{profile.business_license || 'Chưa cập nhật'}</Text>
-                          </div>
-                        </Col>
-
-                        <Col xs={24} sm={12}>
-                          <div className={styles.infoItem}>
-                            <Text className={styles.infoLabel}>Đánh giá:</Text>
-                            <Text className={styles.infoValue}>{profile.seller_rating || 0}/5</Text>
-                          </div>
-                        </Col>
-
-                        <Col xs={24} sm={12}>
-                          <div className={styles.infoItem}>
-                            <Text className={styles.infoLabel}>Đã bán:</Text>
-                            <Text className={styles.infoValue}>{profile.total_sales || 0} sản phẩm</Text>
-                          </div>
-                        </Col>
-                      </Row>
-                    </>
-                  )}
-                </div>
-              )}
+                    )
+                  }
+                ]}
+              />
             </Card>
           </Col>
         </Row>

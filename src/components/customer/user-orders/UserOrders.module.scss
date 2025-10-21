@@ -98,6 +98,8 @@
   .itemInfo {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
 
     .itemName {
       display: inline;
