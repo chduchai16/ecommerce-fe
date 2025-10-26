@@ -23,7 +23,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 import { useMessage } from '@/hooks/use-message'
-import { useUser } from '@/contexts/UserContext'
+import { useAuth } from '@/contexts/auth-context'
 import { WishlistService } from '@/library/services/wishlist-service'
 import { CartService } from '@/library/services/cart-service'
 import { CategoryService } from '@/library/services/category-service'
@@ -41,7 +41,7 @@ export default function CustomerHeader() {
   // hooks
   const router = useRouter()
   const message = useMessage()
-  const { user, clearUser, loadUser } = useUser()
+  const { user, logout } = useAuth()
 
   // states
   const [numberOfWishlistItems, setNumberOfWishlistItems] = useState(0)
@@ -65,8 +65,9 @@ export default function CustomerHeader() {
 
   // reload user khi mount
   useEffect(() => {
-    loadUser()
-  }, [loadUser])
+    // User đã được load từ localStorage trong AuthProvider
+    // Không cần load lại ở đây
+  }, [])
 
   // khôi phục search query từ URL
   useEffect(() => {
@@ -102,8 +103,7 @@ export default function CustomerHeader() {
 
   // logout
   const handleLogout = async () => {
-    clearUser()
-    router.push('/auth/sign-in')
+    logout()
     message.success('Đăng xuất thành công!')
   }
 

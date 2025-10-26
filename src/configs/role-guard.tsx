@@ -1,6 +1,6 @@
 "use client"
 
-import { useUser } from "@/contexts/UserContext";
+import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { AccessDenied } from "@/components";
@@ -11,13 +11,13 @@ type RoleGuardProps = PropsWithChildren<{
 
 export default function RoleGuard({ children, roles }: RoleGuardProps) {
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [unauthorized, setUnauthorized] = useState(false);
 
   useEffect(() => {
     // If user is not logged in, send to login
     if (!user) {
-      router.push("/login");
+      router.push("/auth/sign-in");
       return;
     }
     // If user is logged in but doesn't have required role, do not redirect here.

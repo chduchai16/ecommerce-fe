@@ -274,7 +274,7 @@ export default function UserProfile() {
                   {
                     key: 'basic',
                     label: (
-                      <span>
+                      <span className={styles.tabLabel}>
                         <InfoCircleOutlined />
                         Thông tin cơ bản
                       </span>
@@ -452,7 +452,7 @@ export default function UserProfile() {
                   ...(profile?.role_name === 'SELLER' ? [{
                     key: 'shop',
                     label: (
-                      <span>
+                      <span className={styles.tabLabel}>
                         <ShopOutlined />
                         Thông tin cửa hàng
                       </span>
@@ -584,7 +584,7 @@ export default function UserProfile() {
                   {
                     key: 'password',
                     label: (
-                      <span>
+                      <span className={styles.tabLabel}>
                         <LockOutlined />
                         Mật khẩu
                       </span>

@@ -6,7 +6,7 @@ import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOut
 import Link from 'next/link'
 import { AuthService } from '@/library/services/auth-service'
 import { useMessage } from '@/hooks/use-message'
-import { useUser } from '@/contexts/UserContext'
+import { useAuth } from '@/contexts/auth-context'
 import styles from './sign-in-form.module.scss'
 import { useRouter } from 'next/navigation'
 
@@ -20,7 +20,7 @@ export default function SignInForm() {
     // hooks
     const message = useMessage()
     const router = useRouter()
-    const { setUser } = useUser()
+    const { setToken, setUser } = useAuth()
 
     // services
     const authService = new AuthService()
@@ -29,13 +29,19 @@ export default function SignInForm() {
         setIsLoading(true)
         try {
             const response = await authService.signIn(values.username, values.password, values.remember);
-            await authService.setToken(response); // response.data là token
-            const user = await authService.getUserByToken(response);
 
-            // Update UserContext and localStorage
+            // response contains { access_token, refresh_token, user?, ... }
+            const responseData = response as Record<string, unknown>;
+            const token = responseData.access_token as string;
+
+            // Set token
+            setToken(token);
+
+            // Fetch user data
+            const user = await authService.getUserByToken(token);
             setUser(user);
 
-            message.success(response.message || 'Đăng nhập thành công!');
+            message.success('Đăng nhập thành công!');
             router.push('/');
             form.resetFields();
         } catch (error) {
