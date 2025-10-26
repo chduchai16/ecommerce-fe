@@ -3,10 +3,11 @@ import api from "../../configs/axios-config";
 
 export class AuthService {
 
-    async signIn(username: string, password: string, remember?: boolean){
+    async signIn(username: string, password: string, role : number ,remember?: boolean){
         const payload: LoginRequest = {
             phone_number: username,
             password: password,
+            role : role,
             remember: remember
         }
         const response = await api.post('/auth/sign-in', payload);

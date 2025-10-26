@@ -49,6 +49,20 @@
             height: auto !important;
         }
     }
+
+    :global(.ant-radio-group) {
+        display: flex;
+        gap: 24px;
+    }
+
+    :global(.ant-radio-wrapper) {
+        font-size: 16px;
+        color: $text-primary;
+
+        &:hover {
+            color: $primary-color;
+        }
+    }
 }
 
 .rememberSection {

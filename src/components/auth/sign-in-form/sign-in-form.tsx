@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Form, Input, Button, Checkbox, Typography, Divider } from 'antd'
-import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Checkbox, Typography, Divider, Radio } from 'antd'
+import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined, ShoppingCartOutlined, SettingOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { AuthService } from '@/library/services/auth-service'
 import { useMessage } from '@/hooks/use-message'
@@ -16,6 +16,7 @@ export default function SignInForm() {
     // states 
     const [form] = Form.useForm()
     const [isLoading, setIsLoading] = useState(false)
+    const [loginRole, setLoginRole] = useState<1 | 2>(2)  // 1 = ADMIN, 2 = CUSTOMER
 
     // hooks
     const message = useMessage()
@@ -28,25 +29,20 @@ export default function SignInForm() {
     const handleSubmit = async (values: { username: string; password: string; remember?: boolean }) => {
         setIsLoading(true)
         try {
-            const response = await authService.signIn(values.username, values.password, values.remember);
-
-            // response contains { access_token, refresh_token, user?, ... }
-            const responseData = response as Record<string, unknown>;
-            const token = responseData.access_token as string;
-
-            // Set token
+            const response = await authService.signIn(values.username, values.password, loginRole, values.remember);
+            const token = response as string;
             setToken(token);
-
-            // Fetch user data
             const user = await authService.getUserByToken(token);
             setUser(user);
-
             message.success('Đăng nhập thành công!');
-            router.push('/');
+            if (loginRole === 1) {
+                router.replace('/admin/dashboard');
+            } else {
+                router.replace('/customer/products');
+            }
             form.resetFields();
         } catch (error) {
-            console.error('Login error:', error);
-            message.error('Đăng nhập thất bại. Vui lòng thử lại!');
+            message.error(error instanceof Error ? error.message : 'Vui lòng thử lại!');
         } finally {
             setIsLoading(false)
         }
@@ -83,6 +79,7 @@ export default function SignInForm() {
                             prefix={<UserOutlined className={styles.inputIcon} />}
                             placeholder="Nhập tài khoản của bạn"
                             className={styles.inputField}
+                            autoComplete="username"
                         />
                     </Form.Item>
 
@@ -99,7 +96,25 @@ export default function SignInForm() {
                             prefix={<LockOutlined className={styles.inputIcon} />}
                             placeholder="Nhập mật khẩu"
                             className={styles.inputField}
+                            autoComplete="current-password"
                         />
+                    </Form.Item>
+
+                    <Form.Item
+                        className={styles.formItem}
+                    >
+                        <Radio.Group
+                            value={loginRole}
+                            onChange={(e) => setLoginRole(e.target.value)}
+                            style={{ width: '100%' }}
+                        >
+                            <Radio value={2} style={{ marginRight: '24px' }}>
+                                <ShoppingCartOutlined /> Mua hàng
+                            </Radio>
+                            <Radio value={1}>
+                                <SettingOutlined /> Quản trị
+                            </Radio>
+                        </Radio.Group>
                     </Form.Item>
 
                     <Form.Item>
