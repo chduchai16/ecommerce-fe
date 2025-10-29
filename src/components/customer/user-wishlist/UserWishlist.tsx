@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
     Card, Row, Col, Typography, Button, Modal, Input, Rate, Empty, message, Image,
 } from 'antd';
@@ -25,9 +25,9 @@ export default function UserWishlist() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const wishlistService = new WishlistService();
-    const productService = new ProductService();
-    const cartService = new CartService() ;
+    const wishlistService = useMemo(() => new WishlistService(), []);
+    const productService = useMemo(() => new ProductService(), []);
+    const cartService = useMemo(() => new CartService(), []);
 
     // Hàm fetch product theo id
     const fetchWishlistProducts = useCallback(async () => {
@@ -46,7 +46,7 @@ export default function UserWishlist() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [productService, wishlistService]);
 
     // Lần đầu load và lắng nghe sự kiện update
     useEffect(() => {

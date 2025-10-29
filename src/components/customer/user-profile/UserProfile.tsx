@@ -23,25 +23,22 @@ export default function UserProfile() {
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('basic')
 
-  // Sử dụng useMemo để tránh tạo mới UserService mỗi khi render
   const userService = useMemo(() => new UserService(), [])
 
-  // Tải thông tin người dùng
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const userData = await userService.getProfile();
-        setProfile(userData);
-      } catch (error) {
-        message.error('Không thể tải thông tin người dùng. Vui lòng thử lại sau.');
-        console.error('Error fetching profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, [userService, message]);
+    setLoading(true)
+    userService
+      .getProfile()
+      .then((userData) => {
+        setProfile(userData)
+      })
+      .catch(() => {
+        message.error('Không thể tải thông tin người dùng. Vui lòng thử lại sau.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [userService, message])
 
   const handleEdit = () => {
     if (!profile) return;

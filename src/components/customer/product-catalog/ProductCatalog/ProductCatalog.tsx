@@ -45,15 +45,20 @@ export default function ProductCatalog() {
   }
 
   const handleAddToCart = async (product: Product) => {
-    if (product) {
-      const cartItemId = await cartService.addItem(product);
-      if (cartItemId) {
-        message.success(`Đã thêm ${product.name} vào giỏ hàng`)
-      }
-      else {
+    if (!product) return;
+
+    cartService.addItem(product)
+      .then((cartItemId) => {
+        if (cartItemId) {
+          message.success(`Đã thêm ${product.name} vào giỏ hàng`)
+        } else {
+          message.error(`Không thể thêm ${product.name} vào giỏ hàng. Vui lòng thử lại sau.`)
+        }
+      })
+      .catch((err) => {
+        console.error('Add to cart failed:', err);
         message.error(`Không thể thêm ${product.name} vào giỏ hàng. Vui lòng thử lại sau.`)
-      }
-    }
+      })
   }
 
   const handleAddToWishlist = (productId: number) => {

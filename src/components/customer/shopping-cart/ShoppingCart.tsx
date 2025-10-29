@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Row, Col, Typography, Button, Table, InputNumber, Image, Card, Divider, Empty, App } from 'antd'
 import { DeleteOutlined, ShoppingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
@@ -16,14 +16,12 @@ const { Title, Text } = Typography
 export default function ShoppingCart() {
   const { message } = App.useApp();
   const router = useRouter();
-  const cartServiceRef = useRef<CartService>(new CartService())
-  const cartService = cartServiceRef.current
+  const cartService = useMemo(() => new CartService(), [])
 
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [cartId, setCartId] = useState<number>(0);
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-
 
   // lấy giỏ hàng từ api
   useEffect(() => {

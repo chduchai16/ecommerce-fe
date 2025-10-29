@@ -45,7 +45,7 @@ export default function Checkout({ cartId }: CheckoutProps) {
     const { message } = App.useApp()
     const router = useRouter()
     const cartService = useMemo(() => new CartService(), [])
-    const orderService = new OrderService()
+    const orderService = useMemo(() => new OrderService(), [])
 
     // Khởi tạo trạng thái form giao hàng
     const [deliveryFormValues, setDeliveryFormValues] = useState<DeliveryFormValues>({

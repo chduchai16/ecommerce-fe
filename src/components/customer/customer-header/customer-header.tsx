@@ -33,7 +33,6 @@ import styles from './customer-header.module.scss'
 import cartGif from '../../../assets/gifs/cart.gif'
 
 export default function CustomerHeader() {
-  // services (dùng useMemo để không khởi tạo lại mỗi lần render)
   const wishListService = useMemo(() => new WishlistService(), [])
   const cartService = useMemo(() => new CartService(), [])
   const categoryService = useMemo(() => new CategoryService(), [])
@@ -49,7 +48,6 @@ export default function CustomerHeader() {
   const [searchQuery, setSearchQuery] = useState('')
   const [categories, setCategories] = useState<Category[]>([])
   const [loadingCategories, setLoadingCategories] = useState(false)
-  // Loại bỏ searchType, mặc định luôn là tìm kiếm tất cả
 
   // lấy số lượng wishlist
   const getNumberOfWishlistItems = useCallback(() => {
@@ -57,17 +55,14 @@ export default function CustomerHeader() {
     setNumberOfWishlistItems(items.length)
   }, [wishListService])
 
-  // lấy số lượng cart
-  const getNumberOfCartItems = useCallback(async () => {
-    const count = await cartService.getNumberOfItems()
-    setNumberOfCartItems(count)
+  // lấy số lượng cart 
+  const getNumberOfCartItems = useCallback(() => {
+    cartService.getNumberOfItems()
+      .then((count) => setNumberOfCartItems(count))
+      .catch((err) => {
+        console.error('Failed to load cart items count', err)
+      })
   }, [cartService])
-
-  // reload user khi mount
-  useEffect(() => {
-    // User đã được load từ localStorage trong AuthProvider
-    // Không cần load lại ở đây
-  }, [])
 
   // khôi phục search query từ URL
   useEffect(() => {
@@ -80,26 +75,50 @@ export default function CustomerHeader() {
     }
   }, [])
 
-  // load wishlist + cart khi mount
-  // lấy danh mục sản phẩm
-  const getCategories = useCallback(async () => {
-    try {
-      setLoadingCategories(true)
-      const data = await categoryService.getAllCategories()
-      setCategories(data)
-    } catch (error) {
-      console.error('Lỗi khi tải danh mục:', error)
-      message.error('Không thể tải danh mục sản phẩm')
-    } finally {
-      setLoadingCategories(false)
-    }
+  const getCategories = useCallback(() => {
+    setLoadingCategories(true)
+    categoryService.getAllCategories()
+      .then((data) => setCategories(data))
+      .catch((error) => {
+        console.error('Lỗi khi tải danh mục:', error)
+        message.error('Không thể tải danh mục sản phẩm')
+      })
+      .finally(() => setLoadingCategories(false))
   }, [categoryService, message])
 
   useEffect(() => {
-    getNumberOfWishlistItems()
-    getNumberOfCartItems()
+    getNumberOfWishlistItems();
+    const onWishlistUpdate = () => {
+      try {
+        getNumberOfWishlistItems()
+      } catch (err) {
+        console.error('Error handling wishlist:update event', err)
+      }
+    }
+    window.addEventListener('wishlist:update', onWishlistUpdate as EventListener)
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'wishlist') getNumberOfWishlistItems()
+    }
+    window.addEventListener('storage', onStorage)
+    return () => {
+      window.removeEventListener('wishlist:update', onWishlistUpdate as EventListener)
+      window.removeEventListener('storage', onStorage)
+    }
+  }, [getNumberOfWishlistItems])
+
+  useEffect(() => {
+    getNumberOfCartItems();
+    const onStorageCart = (e: StorageEvent) => {
+      if (e.key === 'cart') getNumberOfCartItems()
+    }
+    window.addEventListener('storage', onStorageCart)
+    return () => window.removeEventListener('storage', onStorageCart)
+  }, [getNumberOfCartItems])
+
+  // lấy danh sách danh mục
+  useEffect(() => {
     getCategories()
-  }, [getNumberOfWishlistItems, getNumberOfCartItems, getCategories])
+  }, [getCategories])
 
   // logout
   const handleLogout = async () => {

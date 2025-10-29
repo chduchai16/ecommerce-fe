@@ -44,9 +44,14 @@ export default function SignUpForm({ onSubmit }: SignUpFormProps) {
                 })
                 message.success('Đăng ký thành công!')
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Registration error:', error)
-            message.error('Đăng ký thất bại. Vui lòng thử lại!')
+            // Nếu onSubmit ném lỗi với message, hiển thị nó
+            if (error instanceof Error) {
+                message.error(error.message)
+            } else {
+                message.error('Đăng ký thất bại. Vui lòng thử lại!')
+            }
         } finally {
             setIsLoading(false)
         }

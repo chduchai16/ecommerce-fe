@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Form, Input, Button, Checkbox, Typography, Divider, Radio } from 'antd'
 import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined, ShoppingCartOutlined, SettingOutlined } from '@ant-design/icons'
 import Link from 'next/link'
@@ -24,7 +24,7 @@ export default function SignInForm() {
     const { setToken, setUser } = useAuth()
 
     // services
-    const authService = new AuthService()
+    const authService = useMemo(() => new AuthService(), [])
 
     const handleSubmit = async (values: { username: string; password: string; remember?: boolean }) => {
         setIsLoading(true)

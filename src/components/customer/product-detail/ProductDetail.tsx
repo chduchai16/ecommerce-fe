@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Row, Col, Image, Typography, Rate, Tag, Button, InputNumber, Divider, Card, Tabs } from 'antd'
 import { ShoppingCartOutlined, HeartOutlined, ShareAltOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { CurrencyHelper } from '@/library/helpers'
@@ -20,8 +20,8 @@ interface ProductDetailProps {
 export default function ProductDetail({ product }: ProductDetailProps) {
 
   // services
-  const wishListService = new WishlistService() ;
-  const message = useMessage() ;
+  const wishListService = useMemo(() => new WishlistService(), []);
+  const message = useMessage();
 
   // states
   const [selectedImage, setSelectedImage] = useState(0)
@@ -39,20 +39,20 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   }
 
   const handleAddToWishlist = () => {
-    const productId : number | null = wishListService.add(product.id) ;
+    const productId: number | null = wishListService.add(product.id);
 
     if (productId) {
       message.success('Đã thêm sản phẩm vào danh sách yêu thích')
     } else {
       message.error('Sản phẩm đã có trong danh sách yêu thích')
     }
-    
+
   }
 
   return (
     <div className={styles.productDetail}>
       <div className={styles.container}>
-        
+
         {/* Breadcrumb */}
         <div className={styles.breadcrumb}>
           <Link href="/customer/products">Sản phẩm</Link>
@@ -63,14 +63,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
 
         <Row gutter={[32, 32]}>
-          
+
           {/* Image Gallery */}
           <Col xs={24} md={12}>
             <div className={styles.imageGallery}>
               <div className={styles.mainImage}>
                 <Image
-                  src={typeof images[selectedImage] === "string" 
-                    ? images[selectedImage] 
+                  src={typeof images[selectedImage] === "string"
+                    ? images[selectedImage]
                     : images[selectedImage]?.name ?? ""}
                   alt={product.name}
                   width="100%"
@@ -83,7 +83,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   </Tag>
                 )}
               </div>
-              
+
               {images.length > 1 && (
                 <div className={styles.thumbnails}>
                   {images.map((image, index) => (
@@ -110,7 +110,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           {/* Product Info */}
           <Col xs={24} md={12}>
             <div className={styles.productInfo}>
-              
+
               {/* Title & Brand */}
               <div className={styles.titleSection}>
                 <Title level={2} className={styles.productTitle}>
@@ -144,13 +144,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               {/* Tags */}
               {product.tags && (
                 <div className={styles.tagsSection}>
-                  <Tag 
+                  <Tag
                     key={product.tags}
                     color={
                       product.tags === 'hot' ? 'red' :
-                      product.tags === 'new' ? 'blue' :
-                      product.tags === 'best seller' ? 'gold' :
-                      'default'
+                        product.tags === 'new' ? 'blue' :
+                          product.tags === 'best seller' ? 'gold' :
+                            'default'
                     }
                   >
                     {product.tags.toUpperCase()}
@@ -195,7 +195,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   >
                     Thêm vào giỏ
                   </Button>
-                  
+
                   <Button
                     type="default"
                     size="large"
@@ -245,7 +245,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         {/* Product Details Tabs */}
         <div className={styles.productTabs}>
           <Tabs defaultActiveKey="description" size="large">
-            
+
             <TabPane tab="Mô tả sản phẩm" key="description">
               <div className={styles.tabContent}>
                 <Paragraph>
