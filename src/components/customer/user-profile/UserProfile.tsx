@@ -12,6 +12,20 @@ import { UserService } from '@/library/services/user-service'
 const { Title, Text } = Typography
 const { Option } = Select
 
+  // Định nghĩa kiểu dữ liệu cho form values
+  interface UserFormValues {
+    fullname: string;
+    email: string;
+    phone_number: string;
+    date_of_birth?: dayjs.Dayjs;
+    gender?: string;
+    address: string;
+    shop_name?: string;
+    shop_description?: string;
+    tax_code?: string;
+    business_license?: string;
+  }
+
 export default function UserProfile() {
   const { message } = App.useApp();
   const [form] = Form.useForm()
@@ -22,6 +36,9 @@ export default function UserProfile() {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('basic')
+
+  // để gửi xuống backend 
+  const [originalFile , setOriginalFile] = useState<Blob | null>(null);
 
   const userService = useMemo(() => new UserService(), [])
 
@@ -60,28 +77,12 @@ export default function UserProfile() {
     form.resetFields()
   }
 
-  // Định nghĩa kiểu dữ liệu cho form values
-  interface UserFormValues {
-    fullname: string;
-    email: string;
-    phone_number: string;
-    date_of_birth?: dayjs.Dayjs;
-    gender?: string;
-    address: string;
-    shop_name?: string;
-    shop_description?: string;
-    tax_code?: string;
-    business_license?: string;
-  }
 
   const handleSave = async (values: UserFormValues) => {
     if (!profile) return;
     setLoading(true)
 
     try {
-      // Simulate API call - Ở đây bạn có thể thêm API gọi thực sự
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
       const updatedProfile: User = {
         ...profile,
         ...values,
@@ -90,9 +91,6 @@ export default function UserProfile() {
 
       setProfile(updatedProfile)
       setEditing(false)
-      console.log('Updated profile:', updatedProfile)
-      message.success('Cập nhật thông tin thành công!')
-
     } catch (error: unknown) {
       console.error('Lỗi cập nhật thông tin:', error);
       message.error('Có lỗi xảy ra, vui lòng thử lại!')
@@ -102,8 +100,6 @@ export default function UserProfile() {
   }
 
   const handleAvatarChange = (info: UploadChangeParam<UploadFile>) => {
-    console.log('Upload info:', info)
-
     const { fileList: newFileList } = info
     setFileList(newFileList)
 
@@ -114,6 +110,7 @@ export default function UserProfile() {
         const reader = new FileReader()
         reader.onload = (e) => {
           setPreviewAvatar(e.target?.result as string)
+          setOriginalFile(file.originFileObj as Blob);
         }
         reader.readAsDataURL(file.originFileObj)
       }
@@ -122,13 +119,11 @@ export default function UserProfile() {
     }
   }
 
-  const handleChangePassword = async (values: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
+  const handleChangePassword = async (values: { oldPassword: string; newPassword: string; confirmNewPassword: string }) => {
     setLoading(true)
     try {
-      // Simulate API call - Ở đây bạn có thể thêm API gọi thực sự
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      console.log('Password changed:', values)
+      const response = await userService.changePassword(values)
+      console.log('Change password response:', response)
       message.success('Đổi mật khẩu thành công!')
       passwordForm.resetFields()
     } catch (error) {
@@ -600,7 +595,7 @@ export default function UserProfile() {
                         >
                           <Form.Item
                             label="Mật khẩu hiện tại"
-                            name="currentPassword"
+                            name="oldPassword"
                             rules={[{ required: true, message: 'Vui lòng nhập mật khẩu hiện tại!' }]}
                           >
                             <Input.Password placeholder="Nhập mật khẩu hiện tại" />
@@ -619,7 +614,7 @@ export default function UserProfile() {
 
                           <Form.Item
                             label="Xác nhận mật khẩu mới"
-                            name="confirmPassword"
+                            name="confirmNewPassword"
                             dependencies={['newPassword']}
                             rules={[
                               { required: true, message: 'Vui lòng xác nhận mật khẩu mới!' },

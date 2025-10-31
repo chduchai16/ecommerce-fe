@@ -64,7 +64,6 @@ export default function SignInForm() {
                     layout="vertical"
                     size="large"
                     autoComplete="off"
-                    initialValues={{ remember: true }}
                 >
                     <Form.Item
                         name="username"
