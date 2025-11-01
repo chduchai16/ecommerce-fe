@@ -8,23 +8,25 @@ import dayjs from 'dayjs'
 import { User } from '@/library/models/user/user'
 import styles from './UserProfile.module.scss'
 import { UserService } from '@/library/services/user-service'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/auth-context'
 
 const { Title, Text } = Typography
 const { Option } = Select
 
-  // Định nghĩa kiểu dữ liệu cho form values
-  interface UserFormValues {
-    fullname: string;
-    email: string;
-    phone_number: string;
-    date_of_birth?: dayjs.Dayjs;
-    gender?: string;
-    address: string;
-    shop_name?: string;
-    shop_description?: string;
-    tax_code?: string;
-    business_license?: string;
-  }
+// Định nghĩa kiểu dữ liệu cho form values
+interface UserFormValues {
+  fullname: string;
+  email: string;
+  phone_number: string;
+  date_of_birth?: dayjs.Dayjs;
+  gender?: string;
+  address: string;
+  shop_name?: string;
+  shop_description?: string;
+  tax_code?: string;
+  business_license?: string;
+}
 
 export default function UserProfile() {
   const { message } = App.useApp();
@@ -36,9 +38,11 @@ export default function UserProfile() {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('basic')
+  const route = useRouter();
+  const { logout } = useAuth();
 
   // để gửi xuống backend 
-  const [originalFile , setOriginalFile] = useState<Blob | null>(null);
+  const [originalFile, setOriginalFile] = useState<Blob | null>(null);
 
   const userService = useMemo(() => new UserService(), [])
 
@@ -89,8 +93,23 @@ export default function UserProfile() {
         date_of_birth: values.date_of_birth ? values.date_of_birth.format('YYYY-MM-DD') : profile.date_of_birth
       }
 
+      // Chạy cả updateProfile và uploadAvatar song song (nếu có avatar)
+      const promises = [
+        userService.updateProfile(updatedProfile),
+        ...(originalFile ? [userService.uploadAvatar(originalFile)] : [])
+      ]
+
+      await Promise.all(promises)
+
+      // Cập nhật state sau khi thành công
       setProfile(updatedProfile)
       setEditing(false)
+      setFileList([])
+      setPreviewAvatar(null)
+      setOriginalFile(null)
+
+      // Hiển thị thông báo thành công
+      message.success('Cập nhật thông tin thành công!')
     } catch (error: unknown) {
       console.error('Lỗi cập nhật thông tin:', error);
       message.error('Có lỗi xảy ra, vui lòng thử lại!')
@@ -119,17 +138,21 @@ export default function UserProfile() {
     }
   }
 
+  // đổi mật khẩu 
   const handleChangePassword = async (values: { oldPassword: string; newPassword: string; confirmNewPassword: string }) => {
     setLoading(true)
     try {
       const response = await userService.changePassword(values)
-      console.log('Change password response:', response)
-      message.success('Đổi mật khẩu thành công!')
-      passwordForm.resetFields()
+      if (response.status === 200) {
+        message.success('Đổi mật khẩu thành công!');
+        logout();
+        route.push('/auth/login');
+      }
     } catch (error) {
       console.error('Error changing password:', error)
       message.error('Đổi mật khẩu thất bại!')
     } finally {
+      passwordForm.resetFields()
       setLoading(false)
     }
   }
@@ -606,7 +629,7 @@ export default function UserProfile() {
                             name="newPassword"
                             rules={[
                               { required: true, message: 'Vui lòng nhập mật khẩu mới!' },
-                              { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
+                              // { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
                             ]}
                           >
                             <Input.Password placeholder="Nhập mật khẩu mới" />

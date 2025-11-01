@@ -16,7 +16,7 @@ export class UserService {
         const formData = new FormData();
         formData.append('avatar', file);
 
-        const response = await api.post('/users/user', formData, {
+        const response = await api.post('/media/uploads/users', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         return response.data;
@@ -29,6 +29,6 @@ export class UserService {
             confirm_new_password: dto.confirmNewPassword
         }
         const response = await api.put('/users/change-password', payload);
-        return response.data;
+        return response;
     }
 }

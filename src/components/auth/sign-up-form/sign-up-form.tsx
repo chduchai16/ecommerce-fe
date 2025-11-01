@@ -1,13 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Form, Input, Button, Select, Typography, Space, Divider, App, Checkbox } from 'antd'
+import { Form, Input, Button, Select, Typography, Divider, App, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined, MailOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import styles from './sign-up-form.module.scss'
 
 const { Title, Text } = Typography
-const { Option } = Select
 const { useApp } = App
 
 interface SignUpFormProps {
@@ -114,7 +113,7 @@ export default function SignUpForm({ onSubmit }: SignUpFormProps) {
                         className={styles.formItem}
                         rules={[
                             { required: true, message: 'Vui lòng nhập mật khẩu!' },
-                            { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
+                            // { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
                             {
                                 pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
                                 message: 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số!'
