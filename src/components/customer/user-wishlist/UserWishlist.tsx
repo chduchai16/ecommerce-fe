@@ -11,6 +11,7 @@ import {
 import styles from './UserWishlist.module.scss';
 import Link from 'next/link';
 import { Product } from '@/library/models/product/product';
+import { mediaProductBaseUrl } from '@/library/consts/app_constants'
 import { WishlistService } from '@/library/services/wishlist-service';
 import { ProductService } from '@/library/services/product-service';
 import { CartService } from '@/library/services/cart-service';
@@ -166,7 +167,10 @@ export default function UserWishlist() {
                                         cover={
                                             <div className={styles.productImage}>
                                                 <Image
-                                                    src={product.product_images?.[0]?.name || product.thumbnail || '/placeholder-product.jpg'}
+                                                    src={
+                                                        mediaProductBaseUrl +
+                                                        (product.thumbnail ?? product.product_images?.[0]?.image_name ?? '')
+                                                    }
                                                     alt={product.name}
                                                     preview={{
                                                         mask: 'Xem ảnh'
@@ -240,7 +244,10 @@ export default function UserWishlist() {
                             <Row gutter={24}>
                                 <Col span={12}>
                                     <Image
-                                        src={selectedProduct.product_images?.[0]?.name || selectedProduct.thumbnail || '/placeholder-product.jpg'}
+                                        src={
+                                            mediaProductBaseUrl +
+                                            (selectedProduct.thumbnail ?? selectedProduct.product_images?.[0]?.image_name ?? '')
+                                        }
                                         alt={selectedProduct.name}
                                         className={styles.modalImage}
                                         fallback="/placeholder-product.jpg"

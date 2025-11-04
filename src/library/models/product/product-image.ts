@@ -1,4 +1,5 @@
 export interface ProductImage{
-    id ? : number ,
-    name : string | null,
+    id : number ,
+    product_id : number ,
+    image_name : string,
 }

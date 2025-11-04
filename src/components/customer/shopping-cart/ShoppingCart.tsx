@@ -6,6 +6,7 @@ import { DeleteOutlined, ShoppingOutlined, ArrowLeftOutlined } from '@ant-design
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CurrencyHelper } from '@/library/helpers'
+import { mediaProductBaseUrl } from '@/library/consts/app_constants'
 import styles from './ShoppingCart.module.scss'
 import { CartService } from '@/library/services/cart-service'
 import { Cart } from '@/library/models/cart/cart'
@@ -130,7 +131,10 @@ export default function ShoppingCart() {
           {record.product ? (
             <>
               <Image
-                src={record.product.thumbnail ?? ""}
+                src={
+                  mediaProductBaseUrl +
+                  (record.product.thumbnail ?? record.product.product_images?.[0]?.image_name ?? '')
+                }
                 alt={record.product.name}
                 width={80}
                 height={80}

@@ -1,9 +1,10 @@
 // lib/axios.ts
 import axios from "axios";
 import { notificationService } from "../library/services/notification-service";
+import { apiBaseUrl } from "@/library/consts/app_constants";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api",
+  baseURL: apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ProductCard.module.scss'
 import { Product } from '@/library/models/product/product'
+import { mediaProductBaseUrl } from '@/library/consts/app_constants'
 
 const { Text, Title } = Typography
 const { Meta } = Card
@@ -49,7 +50,8 @@ export default function ProductCard({
       description: product.description,
       average_rating: product.average_rating,
       discount: product.discount,
-      in_stock: product.in_stock
+      in_stock: product.in_stock,
+      category_name : product.category_name
     };
 
     // Loại bỏ các thuộc tính null/undefined để giảm kích thước URL
@@ -70,7 +72,10 @@ export default function ProductCard({
           <div className={styles.imageContainer}>
             <Image
               alt={product.name}
-              src={product.thumbnail || ""}
+              src={
+                mediaProductBaseUrl +
+                (product.thumbnail ?? product.product_images?.[0]?.image_name ?? '')
+              }
               className={styles.productImage}
               preview={false}
             />

@@ -12,7 +12,7 @@ export interface Product{
     in_stock?: boolean
     tags?:string | null
     stock_quantity?: number
-    category_name: string | null
+    category_name: string
     brand?: string | null
     color?: string | null
     average_rating?: number | null

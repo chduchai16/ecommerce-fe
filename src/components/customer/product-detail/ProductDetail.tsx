@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Row, Col, Image, Typography, Rate, Tag, Button, InputNumber, Divider, Card, Tabs } from 'antd'
 import { ShoppingCartOutlined, HeartOutlined, ShareAltOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './ProductDetail.module.scss'
 import { Product } from '@/library/models/product/product'
+import { mediaProductBaseUrl } from '@/library/consts/app_constants'
 import Link from 'next/link'
 import { WishlistService } from '@/library/services/wishlist-service'
+import { CartService } from '@/library/services/cart-service'
 import { useMessage } from '@/hooks/use-message'
 
 const { Title, Text, Paragraph } = Typography
@@ -21,6 +23,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
   // services
   const wishListService = useMemo(() => new WishlistService(), []);
+  const cartService = useMemo(() => new CartService(), []);
   const message = useMessage();
 
   // states
@@ -30,8 +33,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
   const images = product.product_images || [product.thumbnail || ""]
 
-  const handleAddToCart = () => {
-    console.log('Add to cart:', { product, quantity, selectedVariant })
+  const handleAddToCart = async () => {
+    try {
+      await cartService.addItem(product);
+      message.success('Đã thêm sản phẩm vào giỏ hàng');
+    } catch (err) {
+      console.error('Add to cart failed', err);
+      message.error('Thêm vào giỏ hàng thất bại. Vui lòng thử lại');
+    }
   }
 
   const handleBuyNow = () => {
@@ -48,6 +57,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     }
 
   }
+
+  useEffect(()=>{
+    console.log('Product in detail page:', product);
+  }, [product])
 
   return (
     <div className={styles.productDetail}>
@@ -69,9 +82,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             <div className={styles.imageGallery}>
               <div className={styles.mainImage}>
                 <Image
-                  src={typeof images[selectedImage] === "string"
-                    ? images[selectedImage]
-                    : images[selectedImage]?.name ?? ""}
+                  src={
+                    mediaProductBaseUrl +
+                    (
+                      typeof images[selectedImage] === 'string'
+                        ? (images[selectedImage] || product.thumbnail || '')
+                        : (images[selectedImage]?.image_name ?? product.thumbnail ?? '')
+                    )
+                  }
                   alt={product.name}
                   width="100%"
                   height={400}
@@ -93,7 +111,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       onClick={() => setSelectedImage(index)}
                     >
                       <Image
-                        src={typeof image === "string" ? image : image.name ?? ""}
+                        src={
+                          mediaProductBaseUrl +
+                          (
+                            typeof image === 'string'
+                              ? (image || product.thumbnail || '')
+                              : (image?.image_name ?? product.thumbnail ?? '')
+                          )
+                        }
                         alt={`${product.name} ${index + 1}`}
                         width={80}
                         height={80}

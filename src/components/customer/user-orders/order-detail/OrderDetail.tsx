@@ -3,6 +3,7 @@
 import { Row, Col, Typography, Card, Tag, Image, Timeline, Modal, Descriptions } from 'antd'
 import dayjs from 'dayjs'
 import { CurrencyHelper } from '@/library/helpers'
+import { mediaProductBaseUrl } from '@/library/consts/app_constants'
 import { Order } from '@/library/models/order/order'
 import { OrderStatus } from '@/library/enums/order-status'
 import styles from './OrderDetail.module.scss'
@@ -153,7 +154,10 @@ export default function OrderDetail({ order, visible, onClose }: OrderDetailProp
                                     <div key={item.id} className={styles.modalItem}>
                                         <div className={styles.productImageWrapper}>
                                             <Image
-                                                src={item.productImage}
+                                                src={
+                                                    mediaProductBaseUrl +
+                                                    (item.productImage ?? '')
+                                                }
                                                 alt={item.productName}
                                                 width={80}
                                                 height={80}
