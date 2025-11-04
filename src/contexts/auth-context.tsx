@@ -36,12 +36,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
 
-    // Setter functions
     const setToken = useCallback((newToken: string | null) => {
         setTokenState(newToken);
         if (typeof window !== 'undefined') {
             if (newToken) {
                 localStorage.setItem('token', newToken);
+                console.log('set token: ' , newToken);
             } else {
                 localStorage.removeItem('token');
             }

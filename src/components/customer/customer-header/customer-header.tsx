@@ -7,7 +7,8 @@ import {
   Badge,
   Dropdown,
   Space,
-  Spin
+  Spin,
+  Avatar
 } from 'antd'
 import {
   SearchOutlined,
@@ -27,6 +28,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { WishlistService } from '@/library/services/wishlist-service'
 import { CartService } from '@/library/services/cart-service'
 import { CategoryService } from '@/library/services/category-service'
+import { UserService } from '@/library/services/user-service'
 import { Category } from '@/library/models/category/category'
 
 import styles from './customer-header.module.scss'
@@ -36,6 +38,7 @@ export default function CustomerHeader() {
   const wishListService = useMemo(() => new WishlistService(), [])
   const cartService = useMemo(() => new CartService(), [])
   const categoryService = useMemo(() => new CategoryService(), [])
+  const userService = useMemo(() => new UserService(), [])
 
   // hooks
   const router = useRouter()
@@ -48,6 +51,7 @@ export default function CustomerHeader() {
   const [searchQuery, setSearchQuery] = useState('')
   const [categories, setCategories] = useState<Category[]>([])
   const [loadingCategories, setLoadingCategories] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   // lấy số lượng wishlist
   const getNumberOfWishlistItems = useCallback(() => {
@@ -85,6 +89,25 @@ export default function CustomerHeader() {
       })
       .finally(() => setLoadingCategories(false))
   }, [categoryService, message])
+
+
+  // đọc ảnh user
+  useEffect(() => {
+    if (user?.avatar) {
+      console.log('header reload');
+      userService
+        .viewAvatar(user.avatar)
+        .then((blob) => {
+          const url = URL.createObjectURL(blob)
+          setAvatarUrl(url)
+        })
+        .catch((error) => {
+          setAvatarUrl(null)
+        })
+    } else {
+      setAvatarUrl(null)
+    }
+  }, [user, userService])
 
   useEffect(() => {
     getNumberOfWishlistItems();
@@ -235,8 +258,15 @@ export default function CustomerHeader() {
                   }}
                   placement="bottomRight"
                 >
-                  <Button type="text" icon={<UserOutlined />}>
-                    {user?.fullname || 'Tài khoản'}
+                  <Button type="text">
+                    <Space size="small">
+                      <Avatar
+                        size={24}
+                        src={avatarUrl}
+                        icon={<UserOutlined />}
+                      />
+                      <span>{user?.fullname || 'Tài khoản'}</span>
+                    </Space>
                   </Button>
                 </Dropdown>
               ) : (

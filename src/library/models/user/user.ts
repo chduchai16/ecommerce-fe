@@ -11,7 +11,8 @@ export interface User {
   avatar: string;
 
   card_id: number;           
-  role_name: string;        
+  role_name: string;      
+  role_id : number ;  
 
   // Seller-specific
   shop_name?: string;

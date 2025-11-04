@@ -14,13 +14,22 @@ export class UserService {
 
     public async uploadAvatar(file: Blob) {
         const formData = new FormData();
-        formData.append('avatar', file);
+        formData.append('file', file);
 
         const response = await api.post('/media/uploads/users', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
+            headers: { 'Content-Type': 'multipart/form-data' },
         });
+
         return response.data;
     }
+
+    public async viewAvatar(avatarId: string) : Promise<Blob> {
+        const response = await api.get(`/media/images/users/${avatarId}`, {
+            responseType: 'blob',
+        });
+        return response as unknown as Blob;
+    }
+
 
     public async changePassword(dto: { oldPassword: string; newPassword: string; confirmNewPassword: string }) {
         const payload = {

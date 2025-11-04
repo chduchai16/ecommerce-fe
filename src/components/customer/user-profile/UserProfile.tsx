@@ -22,6 +22,7 @@ interface UserFormValues {
   date_of_birth?: dayjs.Dayjs;
   gender?: string;
   address: string;
+  role_id?: number;
   shop_name?: string;
   shop_description?: string;
   tax_code?: string;
@@ -30,16 +31,22 @@ interface UserFormValues {
 
 export default function UserProfile() {
   const { message } = App.useApp();
+
+  // form 
   const [form] = Form.useForm()
   const [passwordForm] = Form.useForm()
+
+  // states
   const [profile, setProfile] = useState<User | null>(null)
   const [editing, setEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('basic')
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
   const route = useRouter();
-  const { logout } = useAuth();
+  const { setUser, logout } = useAuth();
 
   // để gửi xuống backend 
   const [originalFile, setOriginalFile] = useState<Blob | null>(null);
@@ -51,7 +58,7 @@ export default function UserProfile() {
     userService
       .getProfile()
       .then((userData) => {
-        setProfile(userData)
+        setProfile({ ...userData })
       })
       .catch(() => {
         message.error('Không thể tải thông tin người dùng. Vui lòng thử lại sau.')
@@ -59,7 +66,23 @@ export default function UserProfile() {
       .finally(() => {
         setLoading(false)
       })
-  }, [userService, message])
+  }, [userService, message, refreshTrigger])
+
+  // Load avatar khi profile thay đổi
+  useEffect(() => {
+    if (profile?.avatar) {
+      userService
+        .viewAvatar(profile.avatar)
+        .then((blob) => {
+          const url = URL.createObjectURL(blob)
+          setAvatarUrl(url)
+        })
+        .catch((error) => {
+          console.error('Không thể tải avatar:', error)
+          setAvatarUrl(null)
+        })
+    }
+  }, [profile?.avatar, userService, refreshTrigger])
 
   const handleEdit = () => {
     if (!profile) return;
@@ -76,12 +99,13 @@ export default function UserProfile() {
     })
   }
 
+  // 
   const handleCancel = () => {
     setEditing(false)
     form.resetFields()
   }
 
-
+  // lưu 
   const handleSave = async (values: UserFormValues) => {
     if (!profile) return;
     setLoading(true)
@@ -101,12 +125,16 @@ export default function UserProfile() {
 
       await Promise.all(promises)
 
-      // Cập nhật state sau khi thành công
-      setProfile(updatedProfile)
       setEditing(false)
       setFileList([])
       setPreviewAvatar(null)
       setOriginalFile(null)
+
+      // Update user context
+      setUser({ ...updatedProfile })
+
+      // Trigger reload profile từ API
+      setRefreshTrigger(prev => prev + 1)
 
       // Hiển thị thông báo thành công
       message.success('Cập nhật thông tin thành công!')
@@ -171,7 +199,7 @@ export default function UserProfile() {
                   <div className={styles.avatarUploadContainer}>
                     <Avatar
                       size={120}
-                      src={previewAvatar || profile?.avatar}
+                      src={previewAvatar || avatarUrl}
                       icon={<UserOutlined />}
                       className={styles.avatar}
                     />
@@ -223,7 +251,7 @@ export default function UserProfile() {
                 ) : (
                   <Avatar
                     size={120}
-                    src={profile?.avatar}
+                    src={avatarUrl}
                     icon={<UserOutlined />}
                     className={styles.avatar}
                   />
@@ -260,9 +288,9 @@ export default function UserProfile() {
                 <div className={styles.statItem}>
                   <Text className={styles.statLabel}>Vai trò</Text>
                   <Text className={styles.statValue}>
-                    {profile?.role_name === 'SELLER' ? 'Người bán' :
-                      profile?.role_name === 'ADMIN' ? 'Quản trị viên' :
-                        profile?.role_name === 'CUSTOMER' ? 'Khách hàng' : profile?.role_name || 'Khách hàng'}
+                    {profile?.role_name === 'seller' ? 'Người bán' :
+                      profile?.role_name === 'admin' ? 'Quản trị viên' :
+                        profile?.role_name === 'customer' ? 'Khách hàng' : profile?.role_name || 'Khách hàng'}
                   </Text>
                 </div>
 
