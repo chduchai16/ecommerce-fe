@@ -94,7 +94,6 @@ export default function CustomerHeader() {
   // đọc ảnh user
   useEffect(() => {
     if (user?.avatar) {
-      console.log('header reload');
       userService
         .viewAvatar(user.avatar)
         .then((blob) => {

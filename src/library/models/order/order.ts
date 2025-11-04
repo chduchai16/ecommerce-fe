@@ -42,13 +42,4 @@ export interface Order {
     // Order items
     order_details?: OrderDetail[];
     order_detail_ids?: number[];
-    
-    // For frontend display
-    items?: {
-        id: number;
-        productName: string;
-        productImage: string;
-        price: number;
-        quantity: number;
-    }[];
 }

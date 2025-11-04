@@ -1,14 +1,17 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Row, Col, Typography, Card, Tag, Button, Empty, Image } from 'antd'
 import { EyeOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { CurrencyHelper } from '@/library/helpers'
 import styles from './UserOrders.module.scss'
 import { Order } from '@/library/models/order/order'
+import { mediaProductBaseUrl } from '@/library/consts/app_constants'
 import { OrderStatus } from '@/library/enums/order-status'
-import OrderDetail from './order-detail'
+import OrderDetailComponent from './order-detail'
+import { OrderService } from '@/library/services/order-service'
+import { OrderDetail } from '@/library/models/order/order-detail'
 
 const { Text } = Typography
 
@@ -34,97 +37,19 @@ const getOrderStatusText = (status?: number) => {
   }
 }
 
-const mockOrders: Order[] = [
-  {
-    id: 1,
-    user_id: 101,
-    order_number: 'DH001-2025',
-    subtotal: 25900000,
-    shipping_fee: 50000,
-    discount: 0,
-    total_price: 25950000,
-    final_amount: 25950000,
-    status: 2,
-    order_date: '2025-10-05T14:30:00',
-    shipping_address: '123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP HCM',
-    shipping_address_details: {
-      fullName: 'Nguyễn Văn A',
-      phone: '0901234567',
-      street: '123 Nguyễn Huệ',
-      ward: 'Phường Bến Nghé',
-      district: 'Quận 1',
-      city: 'TP HCM'
-    },
-    shipping_method: 'standard',
-    tracking_number: 'VN123456789',
-    customer_name: 'Nguyễn Văn A',
-    phone_number: '0901234567',
-    email: 'nguyenvana@example.com',
-    payment_method: 'vnpay',
-    payment_status: 1,
-    notes: 'Giao hàng giờ hành chính',
-    items: [
-      {
-        id: 101,
-        productName: 'Laptop Asus ZenBook',
-        productImage: 'https://picsum.photos/200/300',
-        price: 25000000,
-        quantity: 1
-      },
-      {
-        id: 102,
-        productName: 'Chuột không dây Logitech',
-        productImage: 'https://picsum.photos/200',
-        price: 450000,
-        quantity: 2
-      }
-    ]
-  },
-  {
-    id: 2,
-    user_id: 101,
-    order_number: 'DH002-2025',
-    subtotal: 10800000,
-    shipping_fee: 30000,
-    discount: 200000,
-    total_price: 10630000,
-    final_amount: 10630000,
-    status: 3,
-    order_date: '2025-09-28T09:15:00',
-    delivered_date: '2025-09-30T14:20:00',
-    shipping_address: '456 Lê Lợi, Phường Bến Thành, Quận 1, TP HCM',
-    shipping_address_details: {
-      fullName: 'Nguyễn Văn A',
-      phone: '0901234567',
-      street: '456 Lê Lợi',
-      ward: 'Phường Bến Thành',
-      district: 'Quận 1',
-      city: 'TP HCM'
-    },
-    shipping_method: 'express',
-    tracking_number: 'VN987654321',
-    customer_name: 'Nguyễn Văn A',
-    phone_number: '0901234567',
-    email: 'nguyenvana@example.com',
-    payment_method: 'cod',
-    payment_status: 1,
-    coupon_code: 'DISCOUNT200K',
-    items: [
-      {
-        id: 201,
-        productName: 'iPhone 15',
-        productImage: 'https://picsum.photos/200/300?random=1',
-        price: 10800000,
-        quantity: 1
-      }
-    ]
-  }
-]
-
 export default function UserOrders() {
-  const [orders] = useState<Order[]>(mockOrders)
+  const [orders, setOrders] = useState<Order[]>([])
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  // thông tin phân trang 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
+
+  const orderService = useMemo(() => new OrderService(), []);
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order)
@@ -135,6 +60,28 @@ export default function UserOrders() {
     setModalVisible(false)
     setSelectedOrder(null)
   }
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await orderService.getOrdersByUser();
+        setOrders(response.page_content);
+        setCurrentPage(response.pagination_info.current_page);
+        setPageSize(response.pagination_info.page_size);
+        setTotalItems(response.pagination_info.total_elements);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách đơn hàng:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    console.log('Orders updated:', orders);
+  }, [orders])
 
   return (
     <div className={styles.userOrders}>
@@ -164,17 +111,32 @@ export default function UserOrders() {
                   {/* danh sách đơn hàng */}
                   <Col span={24}>
                     <div className={styles.orderItems}>
-                      {order.items?.map(item => (
-                        <div key={item.id} className={styles.orderItem}>
-                          <div className={styles.itemImageWrapper}>
-                            <Image src={item.productImage} alt={item.productName} width={60} height={60} style={{ objectFit: 'contain' }} preview={false} />
+                      {(order.order_details ?? order.order_details)?.map((item : OrderDetail) => {
+                        const qty = item.quantity ?? 0;
+                        const total = item.total ?? (item.price * qty);
+                        const productName = item.product_name ?? item.product_name;
+                        const productImage = (item.product_image ?? item.product_image) || '';
+                        const price = item.price;
+
+                        return (
+                          <div key={item.id} className={styles.orderItem}>
+                            <div className={styles.itemImageWrapper}>
+                              <Image
+                                src={mediaProductBaseUrl + productImage}
+                                alt={productName}
+                                width={60}
+                                height={60}
+                                style={{ objectFit: 'contain' }}
+                                preview={false}
+                              />
+                            </div>
+                            <div className={styles.itemInfo}>
+                              <Text className={styles.itemName}>{productName}</Text>
+                              <Text className={styles.itemDetails}>{CurrencyHelper.formatVND(price)} x {qty}</Text>
+                            </div>
                           </div>
-                          <div className={styles.itemInfo}>
-                            <Text className={styles.itemName}>{item.productName}</Text>
-                            <Text className={styles.itemDetails}>{CurrencyHelper.formatVND(item.price)} x {item.quantity}</Text>
-                          </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </Col>
                   <Col span={24}>
@@ -188,7 +150,7 @@ export default function UserOrders() {
             ))}
           </div>
         )}
-        <OrderDetail order={selectedOrder} visible={modalVisible} onClose={handleCloseModal} />
+        <OrderDetailComponent order={selectedOrder} visible={modalVisible} onClose={handleCloseModal} />
       </div>
     </div>
   )
