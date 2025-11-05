@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
+// avoid external jwt-decode import to prevent module export mismatch; decode JWT payload manually
 import { User } from '@/library/models/user/user';
 
 type AuthContextType = {
@@ -17,16 +17,32 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function isTokenExpired(token: string | null): boolean {
-    if (!token) return true;
+function parseJwtPayload(token: string | null): { exp?: number } | null {
+    if (!token) return null;
     try {
-        const decoded = jwtDecode<{ exp?: number }>(token);
-        if (!decoded.exp) return true;
-        const now = Date.now().valueOf() / 1000;
-        return decoded.exp < now;
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        let payload = parts[1];
+        // base64url -> base64
+        payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+        // pad with '='
+        while (payload.length % 4) payload += '=';
+        const decoded = atob(payload);
+        // handle UTF-8
+        const json = decodeURIComponent(Array.prototype.map.call(decoded, (c: string) => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(json);
     } catch {
-        return true;
+        return null;
     }
+}
+
+function isTokenExpired(token: string | null): boolean {
+    const payload = parseJwtPayload(token);
+    if (!payload || !payload.exp) return true;
+    const now = Date.now().valueOf() / 1000;
+    return payload.exp < now;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -72,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (typeof window !== 'undefined') {
                     const tokenInStorage = localStorage.getItem('token');
                     const userInStorage = localStorage.getItem('user');
+                    console.log('load token: ' , tokenInStorage);
 
                     if (tokenInStorage) {
                         setTokenState(tokenInStorage);
@@ -94,14 +111,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loadAuth();
     }, []);
 
-    // kiểm tra hạn token
+    // kiểm tra hạn token — đợi initial load hoàn tất và dùng token state khi có
     useEffect(() => {
+        if (isLoading) return; // chờ loadAuth hoàn tất
         if (pathname?.startsWith('/auth')) return;
 
         const checkToken = () => {
-            const tokenInStorage = localStorage.getItem('token');
+            // ưu tiên dùng state token để đồng bộ với UI; fallback đọc từ localStorage
+            const tokenToCheck = token ?? (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
-            if (!tokenInStorage || isTokenExpired(tokenInStorage)) {
+            if (!tokenToCheck || isTokenExpired(tokenToCheck)) {
                 logout();
             }
         };
@@ -113,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const interval = setInterval(checkToken, 3 * 60 * 1000);
 
         return () => clearInterval(interval);
-    }, [pathname, logout]);
+    }, [pathname, logout, isLoading, token]);
 
     useEffect(() => {
         const handleStorageChange = (e: StorageEvent) => {

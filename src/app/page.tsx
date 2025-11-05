@@ -3,28 +3,27 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
-import type { User } from '@/library/models/user/user'
 
 export default function HomePage() {
   const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading } = useAuth()
 
   useEffect(() => {
+    if (isLoading) return; 
+
     if (!isAuthenticated) {
-      router.replace('/auth/sign-in')
-      return
+      router.replace('/auth/sign-in');
+      return;
     }
 
-    const userRole = (user as User | null)?.role_name
+    const userRole = user?.role_name;
 
     if (userRole === 'ADMIN') {
-      router.replace('/admin')
-    } else if (userRole === 'CUSTOMER' || userRole === 'SELLER') {
-      router.replace('/customer/products')
+      router.replace('/admin');
     } else {
-      router.replace('/auth/sign-in')
+      router.replace('/customer/products');
     }
-  }, [user, isAuthenticated, router])
+  }, [user, isAuthenticated, isLoading, router]);
 
-  return null
+  return null;
 }
