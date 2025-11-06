@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Row, Col, Spin, Result, Button, App } from 'antd'
+import { Row, Col, Spin, Result, Button, App, Pagination } from 'antd'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ClearOutlined } from '@ant-design/icons'
 import ProductCard from '../ProductCard'
@@ -11,6 +11,7 @@ import { Product } from '@/library/models/product/product'
 import { CartService } from '@/library/services/cart-service'
 import { WishlistService } from '@/library/services/wishlist-service'
 import ProductFilter from '../ProductFilter'
+import { PaginationInfo } from '@/common/models/pagination-info'
 
 
 export default function ProductCatalog() {
@@ -27,6 +28,12 @@ export default function ProductCatalog() {
   const [loading, setLoading] = useState(false)
   const [productList, setProductList] = useState<Product[]>([]);
   const [noResults, setNoResults] = useState(false);
+  
+  // thông tin phân trang
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(12);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   // Lấy search query từ URL params
   const searchQuery = searchParams.get('search') || '';
@@ -71,12 +78,38 @@ export default function ProductCatalog() {
     }
   }
 
+  // handle phân trang
+  const handlePaginationChange = (page: number, size?: number) => {
+    setCurrentPage(page - 1);
+    if (size && size !== pageSize) setPageSize(size);
+  }
+
+  // lấy hàng hoá khi thay đổi phân trang
+  useEffect( () => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        let products: Product[] = [];
+        const data = await productService.getProducts({ page: currentPage, limit: pageSize });
+        products = data.page_content;
+        setProductList(products);
+      } catch (error) {
+        console.error("Lỗi khi tải sản phẩm:", error);
+        message.error("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  } , [currentPage, pageSize])
+
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       setNoResults(false);
       try {
         let products: Product[] = [];
+        let paginationInfo : PaginationInfo = {} as PaginationInfo;
         const searchParams: Record<string, unknown> = {};
 
         // Thêm các tham số tìm kiếm vào object params
@@ -85,13 +118,21 @@ export default function ProductCatalog() {
 
         // Nếu có tham số tìm kiếm
         if (Object.keys(searchParams).length > 0) {
-          products = await productService.getProducts(searchParams);
+          const data = await productService.getProducts(searchParams);
+          products = data.page_content;
+          paginationInfo = data.pagination_info;
         } else {
           // Nếu không có filter nào thì lấy tất cả sản phẩm
-          products = await productService.getProducts();
+          const data = await productService.getProducts();
+          products = data.page_content;
+          paginationInfo = data.pagination_info;
         }
 
         setProductList(products);
+        setTotalItems(paginationInfo.total_elements);
+        setCurrentPage(paginationInfo.current_page);
+        setPageSize(paginationInfo.page_size);
+        setTotalPages(paginationInfo.total_pages);
 
         // Xác định xem có đang tìm kiếm không
         const isSearching = searchQuery || categoryQuery;
@@ -180,6 +221,7 @@ export default function ProductCatalog() {
                   </Button>
                 </div>
               )}
+              {/* danh sách sản phẩm */}
               <Row gutter={[16, 16]} className={styles.productGridRow}>
                 {productList.map(product => (
                   <Col
@@ -200,6 +242,18 @@ export default function ProductCatalog() {
                   </Col>
                 ))}
               </Row>
+              {/* phân trang */}
+              <div className={styles.paginationContainer}>
+                <Pagination
+                  current={currentPage}
+                  pageSize={pageSize}
+                  total={totalItems}
+                  onChange={handlePaginationChange}
+                  showSizeChanger
+                  showQuickJumper
+                  pageSizeOptions={["8", "12", "24", "48"]}
+                />
+              </div>
             </div>
           )}
 

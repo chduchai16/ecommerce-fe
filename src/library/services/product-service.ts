@@ -37,10 +37,10 @@ export class ProductService {
       }
 
       const response = await api.get("/products", { params: apiParams });
-      return response.data.page_content;
+      return response.data;
     } else {
       const response = await api.get("/products");
-      return response.data.page_content;
+      return response.data;
     }
   }
 

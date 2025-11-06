@@ -57,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (typeof window !== 'undefined') {
             if (newToken) {
                 localStorage.setItem('token', newToken);
-                console.log('set token: ' , newToken);
             } else {
                 localStorage.removeItem('token');
             }
@@ -88,8 +87,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (typeof window !== 'undefined') {
                     const tokenInStorage = localStorage.getItem('token');
                     const userInStorage = localStorage.getItem('user');
-                    console.log('load token: ' , tokenInStorage);
-
                     if (tokenInStorage) {
                         setTokenState(tokenInStorage);
                     }
