@@ -28,7 +28,7 @@ export default function ProductCatalog() {
   const [loading, setLoading] = useState(false)
   const [productList, setProductList] = useState<Product[]>([]);
   const [noResults, setNoResults] = useState(false);
-  
+
   // thông tin phân trang
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(12);
@@ -82,10 +82,13 @@ export default function ProductCatalog() {
   const handlePaginationChange = (page: number, size?: number) => {
     setCurrentPage(page - 1);
     if (size && size !== pageSize) setPageSize(size);
+
+    // Scroll lên đầu trang khi chuyển trang
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // lấy hàng hoá khi thay đổi phân trang
-  useEffect( () => {
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
@@ -101,7 +104,7 @@ export default function ProductCatalog() {
       }
     };
     fetchProducts();
-  } , [currentPage, pageSize])
+  }, [currentPage, pageSize])
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -109,7 +112,7 @@ export default function ProductCatalog() {
       setNoResults(false);
       try {
         let products: Product[] = [];
-        let paginationInfo : PaginationInfo = {} as PaginationInfo;
+        let paginationInfo: PaginationInfo = {} as PaginationInfo;
         const searchParams: Record<string, unknown> = {};
 
         // Thêm các tham số tìm kiếm vào object params
@@ -130,7 +133,8 @@ export default function ProductCatalog() {
 
         setProductList(products);
         setTotalItems(paginationInfo.total_elements);
-        setCurrentPage(paginationInfo.current_page);
+        // Không set lại currentPage từ API để tránh ghi đè giá trị người dùng chọn
+        // setCurrentPage(paginationInfo.current_page);
         setPageSize(paginationInfo.page_size);
         setTotalPages(paginationInfo.total_pages);
 
@@ -245,7 +249,7 @@ export default function ProductCatalog() {
               {/* phân trang */}
               <div className={styles.paginationContainer}>
                 <Pagination
-                  current={currentPage}
+                  current={currentPage + 1}
                   pageSize={pageSize}
                   total={totalItems}
                   onChange={handlePaginationChange}

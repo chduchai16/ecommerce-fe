@@ -111,7 +111,7 @@ export default function UserOrders() {
                   {/* danh sách đơn hàng */}
                   <Col span={24}>
                     <div className={styles.orderItems}>
-                      {(order.order_details ?? order.order_details)?.map((item : OrderDetail) => {
+                      {(order.order_details ?? order.order_details)?.map((item: OrderDetail) => {
                         const qty = item.quantity ?? 0;
                         const total = item.total ?? (item.price * qty);
                         const productName = item.product_name ?? item.product_name;
