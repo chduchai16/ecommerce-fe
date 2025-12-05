@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
     "antd": "^5.27.4",
     "axios": "^1.12.2",
     "jwt-decode": "^4.0.0",
