@@ -166,26 +166,46 @@ export default function CustomerHeader() {
     }
   }, [router, searchQuery])
 
-  // user menu
-  const userMenuItems = [
-    {
-      key: 'profile',
-      label: <Link href="/customer/profile">Thông tin cá nhân</Link>
-    },
-    {
-      key: 'orders',
-      label: <Link href="/customer/orders">Đơn hàng của tôi</Link>
-    },
-    {
-      key: 'wishlist',
-      label: <Link href="/customer/wishlist">Sản phẩm yêu thích</Link>
-    },
-    { type: 'divider' as const },
-    {
-      key: 'logout',
-      label: 'Đăng xuất'
+  // user menu - động dựa trên role
+  const userMenuItems = useMemo(() => {
+    const items = [
+      {
+        key: 'profile',
+        label: <Link href="/customer/profile">Thông tin cá nhân</Link>
+      },
+      {
+        key: 'orders',
+        label: <Link href="/customer/orders">Đơn hàng của tôi</Link>
+      },
+      {
+        key: 'wishlist',
+        label: <Link href="/customer/wishlist">Sản phẩm yêu thích</Link>
+      }
+    ]
+
+    // Thêm link trang quản lý nếu user có role seller hoặc admin
+    if (user?.role_name === 'seller') {
+      items.push({
+        key: 'seller-dashboard',
+        label: <Link href="/seller">Trang quản lý</Link>
+      })
+    } else if (user?.role_name === 'admin') {
+      items.push({
+        key: 'admin-dashboard',
+        label: <Link href="/admin">Trang quản trị</Link>
+      })
     }
-  ]
+
+    items.push(
+      { type: 'divider' as const } as any,
+      {
+        key: 'logout',
+        label: 'Đăng xuất'
+      }
+    )
+
+    return items
+  }, [user])
 
   return (
     <header className={styles.customerHeader}>
