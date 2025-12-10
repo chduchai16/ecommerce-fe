@@ -180,6 +180,10 @@ export default function CustomerHeader() {
       key: 'wishlist',
       label: <Link href="/customer/wishlist">Sản phẩm yêu thích</Link>
     },
+    {
+      key: 'admin-dashboard',
+      label: <Link href="/seller">Quản lý gian hàng</Link>,
+    },
     { type: 'divider' as const },
     {
       key: 'logout',

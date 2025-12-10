@@ -3,11 +3,8 @@
 import React, { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import {
-  DashboardOutlined,
   ShoppingOutlined,
   ShoppingCartOutlined,
-  LineChartOutlined,
-  SettingOutlined,
   InboxOutlined,
 } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
@@ -44,18 +41,14 @@ export default function SellerLayout({
   } = theme.useToken()
 
   const menuItems: MenuItem[] = [
-    getItem('Dashboard', '/seller', <DashboardOutlined />, () => router.push('/seller')),
     getItem('Sản phẩm của tôi', '/seller/products', <ShoppingOutlined />, () => router.push('/seller/products')),
     getItem('Đơn hàng', '/seller/orders', <ShoppingCartOutlined />, () => router.push('/seller/orders')),
     getItem('Kho hàng', '/seller/inventory', <InboxOutlined />, () => router.push('/seller/inventory')),
-    getItem('Doanh thu', '/seller/revenue', <LineChartOutlined />, () => router.push('/seller/revenue')),
-    getItem('Cài đặt', '/seller/settings', <SettingOutlined />, () => router.push('/seller/settings')),
   ]
 
   const getSelectedKey = () => {
-    if (pathname === '/seller') return ['/seller']
-    const match = menuItems.find(item => item?.key !== '/seller' && pathname.startsWith(item?.key as string))
-    return match ? [match.key as string] : ['/seller']
+    const match = menuItems.find(item => pathname.startsWith(item?.key as string))
+    return match ? [match.key as string] : []
   }
 
   return (
@@ -96,10 +89,13 @@ export default function SellerLayout({
           </div>
         </Header>
         <Content style={{ margin: '0 16px' }}>
-          <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>Seller</Breadcrumb.Item>
-            <Breadcrumb.Item>{pathname.split('/').pop() || 'Dashboard'}</Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumb 
+            style={{ margin: '16px 0' }}
+            items={[
+              { title: 'Seller' },
+              { title: pathname.split('/').pop() || 'Dashboard' }
+            ]}
+          />
           <div
             style={{
               padding: 24,
