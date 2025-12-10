@@ -6,9 +6,12 @@ import {
   ShoppingOutlined,
   ShoppingCartOutlined,
   InboxOutlined,
+  HomeOutlined,
 } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { Layout, Menu, theme, Breadcrumb } from 'antd'
+import AuthGuard from '@/configs/auth-guard'
+import RoleGuard from '@/configs/role-guard'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -108,7 +111,7 @@ export default function SellerLayout({
           </div>
         </Content>
         <Footer style={{ textAlign: 'center' }}>
-          Seller Center ©{new Date().getFullYear()} Your Store
+          Seller Center ©{new Date().getFullYear()}
         </Footer>
       </Layout>
     </Layout>
