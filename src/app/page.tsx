@@ -9,8 +9,10 @@ export default function HomePage() {
   const { user, isAuthenticated, isLoading } = useAuth()
 
   useEffect(() => {
+    //Nếu đang loading thì không làm gì
     if (isLoading) return; 
 
+    // Nếu chưa login → chuyển trang login
     if (!isAuthenticated) {
       router.replace('/auth/sign-in');
       return;
@@ -18,6 +20,7 @@ export default function HomePage() {
 
     const userRole = user?.role_name;
 
+    // Nếu là admin → redirect admin
     if (userRole === 'ADMIN') {
       router.replace('/admin');
     } else {

@@ -11,6 +11,7 @@ export class AuthService {
             remember: remember
         }
         const response = await api.post('/auth/sign-in', payload);
+        console.log('Sign-in response:', response);
         return response.data ; 
     }
 

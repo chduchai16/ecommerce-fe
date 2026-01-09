@@ -112,7 +112,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (isLoading) return; // chờ loadAuth hoàn tất
         if (pathname?.startsWith('/auth')) return;
-
         const checkToken = () => {
             // ưu tiên dùng state token để đồng bộ với UI; fallback đọc từ localStorage
             const tokenToCheck = token ?? (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
