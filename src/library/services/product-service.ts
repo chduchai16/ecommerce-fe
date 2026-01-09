@@ -54,18 +54,24 @@ export class ProductService {
     return response.data;
   }
 
-  public async createProduct(data: Product) {
+  public async createProduct(data: Partial<Product>) {
     const response = await api.post("/products", data);
     return response.data;
   }
 
-  public async updateProduct(id: number, data: Product) {
-    const response = await api.put(`/products/${id}`, data);
+  public async updateProduct(data: Partial<Product>) {
+    const response = await api.put("/products", data);
     return response.data;
   }
 
   public async deleteProduct(id: number) {
     const response = await api.delete(`/products/${id}`);
+    return response.data;
+  }
+
+  // Lấy sản phẩm của seller đang đăng nhập
+  public async getMyProducts(params?: Record<string, unknown>) {
+    const response = await api.get("/products/seller/my-products", { params });
     return response.data;
   }
 

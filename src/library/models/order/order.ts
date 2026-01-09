@@ -16,7 +16,7 @@ export interface Order {
     final_amount?: number; // Total after all adjustments
     
     // Order status and dates
-    status?: number; // 0: Pending, 1: Confirmed, 2: Shipping, 3: Delivered, 4: Cancelled
+    status: number; // 0: Pending, 1: Confirmed, 2: Shipping, 3: Delivered, 4: Cancelled
     order_date?: string; // createdAt in Java
     delivered_date?: string; // For tracking delivery completion
     

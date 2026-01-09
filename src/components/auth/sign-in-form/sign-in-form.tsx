@@ -16,7 +16,7 @@ export default function SignInForm() {
     // states 
     const [form] = Form.useForm()
     const [isLoading, setIsLoading] = useState(false)
-    const [loginRole, setLoginRole] = useState<1 | 2>(2)  // 1 = ADMIN, 2 = CUSTOMER
+    const [loginRole, setLoginRole] = useState<3 | 2>(2)  // 1 = ADMIN, 2 = CUSTOMER
 
     // hooks
     const message = useMessage()
@@ -35,8 +35,8 @@ export default function SignInForm() {
             const user = await authService.getUserByToken(token);
             setUser(user);
             message.success('Đăng nhập thành công!');
-            if (loginRole === 1) {
-                router.replace('/admin/dashboard');
+            if (loginRole === 3) {
+                router.replace('/seller');
             } else {
                 router.replace('/customer/products');
             }
@@ -110,7 +110,7 @@ export default function SignInForm() {
                             <Radio value={2} style={{ marginRight: '24px' }}>
                                 <ShoppingCartOutlined /> Mua hàng
                             </Radio>
-                            <Radio value={1}>
+                            <Radio value={3}>
                                 <SettingOutlined /> Quản trị
                             </Radio>
                         </Radio.Group>

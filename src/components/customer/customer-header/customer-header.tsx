@@ -187,12 +187,7 @@ export default function CustomerHeader() {
     if (user?.role_name === 'seller') {
       items.push({
         key: 'seller-dashboard',
-        label: <Link href="/seller">Trang quản lý</Link>
-      })
-    } else if (user?.role_name === 'admin') {
-      items.push({
-        key: 'admin-dashboard',
-        label: <Link href="/admin">Trang quản trị</Link>
+        label: <Link href="/seller">Gian hàng của tôi</Link>
       })
     }
 
@@ -201,11 +196,11 @@ export default function CustomerHeader() {
       {
         key: 'logout',
         label: 'Đăng xuất'
-      }
+      } as any
     )
 
     return items
-  }, [user])
+  }, [user?.role_name])
 
   return (
     <header className={styles.customerHeader}>
