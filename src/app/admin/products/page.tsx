@@ -32,7 +32,7 @@ export default function AdminProductsPage() {
     setModalOpen(true)
   }
 
-  const handleSave = (values: any) => {
+  const handleSave = (values: unknown) => {
     console.log('Save product:', values)
   }
 
