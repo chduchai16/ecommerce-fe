@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Commerce Frontend
 
-## Getting Started
+Ứng dụng E-Commerce được xây dựng với Next.js 15, hỗ trợ 3 vai trò người dùng: Admin, Seller và Customer.
 
-First, run the development server:
+## Công nghệ sử dụng
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Framework**: Next.js 15.5.3 (App Router + Turbopack)
+- **UI Library**: Ant Design 5.27.4
+- **Language**: TypeScript
+- **Styling**: SCSS/SASS
+- **State Management**: React Context API
+- **HTTP Client**: Axios
+- **Charts**: Chart.js, Recharts
+- **Authentication**: JWT
+
+## Cấu trúc dự án
+
+```
+src/
+├── app/                    # Pages và routes
+│   ├── admin/             # Trang quản trị (dashboard, products, reports, settings)
+│   ├── customer/          # Trang khách hàng (cart, checkout, orders, wishlist)
+│   ├── seller/            # Trang người bán (inventory, orders, products, revenue)
+│   └── auth/              # Xác thực (sign-in, sign-up)
+├── components/            # React components
+├── configs/               # Cấu hình (auth-guard, role-guard, axios)
+├── contexts/              # Context providers (AuthContext)
+├── hooks/                 # Custom hooks
+├── library/               # Core logic
+│   ├── models/           # TypeScript interfaces/types
+│   ├── services/         # API services
+│   ├── helpers/          # Utility functions
+│   └── enums/            # Enums & constants
+└── styles/               # Global styles & themes
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tính năng chính
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Admin
+- Quản lý sản phẩm và danh mục
+- Dashboard và báo cáo
+- Quản lý người dùng
+- Cài đặt hệ thống
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Seller
+- Quản lý kho hàng
+- Xử lý đơn hàng
+- Quản lý sản phẩm của shop
+- Theo dõi doanh thu
 
-## Learn More
+### Customer
+- Duyệt và tìm kiếm sản phẩm
+- Giỏ hàng và thanh toán
+- Quản lý đơn hàng
+- Danh sách yêu thích
+- Quản lý hồ sơ
 
-To learn more about Next.js, take a look at the following resources:
+## Yêu cầu hệ thống
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js 20+
+- npm/yarn/pnpm
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Cài đặt
 
-## Deploy on Vercel
+```bash
+# Clone repository
+git clone <repository-url>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Di chuyển vào thư mục dự án
+cd ecommerce-fe
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Cài đặt dependencies
+npm install
+
+# Chạy development server
+npm run dev
+```
+
+## Scripts
+
+```bash
+npm run dev          # Chạy development server (với Turbopack)
+npm run build        # Build production
+npm start            # Chạy production server
+npm run lint         # Kiểm tra code với ESLint
+```
+
+## Cấu hình API
+
+Cập nhật API URL trong file `src/library/consts/app_constants.ts`:
+
+```typescript
+export const apiBaseUrl = "http://localhost:8080/api/";
+export const mediaProductBaseUrl = "http://localhost:8080/api/media/images/";
+export const mediaUserBaseUrl = "http://localhost:8080/api/media/images/users/";
+```
+
+## Authentication & Authorization
+
+- Sử dụng JWT tokens để xác thực
+- Context API để quản lý auth state
+- Role-based access control (ADMIN, SELLER, CUSTOMER)
+- Protected routes với AuthGuard và RoleGuard
+
+## Services
+
+- `auth-service.ts` - Xác thực người dùng
+- `product-service.ts` - Quản lý sản phẩm
+- `cart-service.ts` - Giỏ hàng
+- `order-service.ts` - Đơn hàng
+- `category-service.ts` - Danh mục
+- `inventory-service.ts` - Kho hàng
+- `wishlist-service.ts` - Danh sách yêu thích
+- `notification-service.ts` - Thông báo
+
+## Lưu ý
+
+- React Strict Mode đã được tắt để tránh mount 2 lần trong development
+- Sử dụng Turbopack cho performance tốt hơn
+- Ant Design đã được optimize với `transpilePackages`
+
+## License
+
+Private
